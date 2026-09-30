@@ -270,7 +270,7 @@ footer{max-width:1400px;margin:0 auto;padding:0 28px 36px;font-size:12px;color:v
 </header>
 <section class="ask">
   <h2 class="askt">무엇이 궁금한가요?</h2>
-  <p class="asks">학회 발표 기록을 읽어 내용이 바뀌고 있는 주제를 찾고, 그 근거와 이 방법의 과거 성적을 함께 보여줍니다.</p>
+  <p class="asks">학회 발표 기록에서 내용이 바뀌는 주제를 찾아, 근거와 과거 성적을 같이 보여줍니다.</p>
   <form class="askbox" id="askform" autocomplete="off">
     <input id="q" list="names" value="" placeholder="예: 유리기판 연구를 시작할지 고민 중이야 · 비워 두면 후보 찾기" aria-label="에이전트에게 물어보기">
     <datalist id="names"></datalist>
@@ -339,7 +339,7 @@ async function init(){
     <li><b>발표 제목만 읽는다.</b> 초록과 본문은 읽지 않는다. 주제는 제목의 영어 낱말에서 뽑는다.</li>
     <li><b>전파와 관계</b>는 패키징 학회 다섯 곳의 기록으로 그린다.</li>
     <li><b>산업 사건</b>은 출처를 열어 확인한 것만 적은 목록이다. 열 개 주제에 26건이 있고, 나머지 주제에는 아직 없다.</li>
-    <li><b>과거 성적은 높지 않다.</b> ${s.cutoff}년에 같은 방법으로 고른 ${s.lit}개 중 ${s.lit_grew}개가 성장했다. 맞히는 도구가 아니다.</li>
+    <li>${META.learned?`<b>과거 성적:</b> 배운 점수 위 20% 중 ${Math.round(100*META.learned.time.top[0]/META.learned.time.top[1])}%가 성장했다(아무렇게나 고르면 ${Math.round(100*META.learned.time.base[0]/META.learned.time.base[1])}%). 맞히는 도구가 아니다.`:`<b>과거 성적은 높지 않다.</b> ${s.cutoff}년에 같은 방법으로 고른 ${s.lit}개 중 ${s.lit_grew}개가 성장했다. 맞히는 도구가 아니다.`}</li>
     <li><b>검증하지 않은 것</b>: 분야를 건너는 신호, 공백 지도의 다음 후보. 화면에 그렇게 표시한다.</li></ul>`}
   $('#src').textContent=`${META.meta.name} · ${META.meta.years} · ${META.n_papers.toLocaleString()}편 · OpenAlex에서 ${META.meta.collected_at.slice(0,16).replace('T',' ')} (UTC) 수집 · ${LLM.llm?'LLM '+LLM.model:'LLM 없음 (정해진 순서로 실행)'}`;
 }
