@@ -50,7 +50,10 @@ def terms(title):
 
 # 여러 학회를 합쳐 한 분야로 볼 때 쓰는 묶음
 GROUPS = {"pkg": {"name": "반도체 패키징 학회 5곳 (ECTC · EPTC · ICEPT · ESTC · ITherm)", "field": "반도체 패키징",
-                  "members": ["ectc", "eptc", "icept", "estc", "itherm"]}}
+                  "members": ["ectc", "eptc", "icept", "estc", "itherm"]},
+          # 검증용: ECTC를 뺀 네 곳 (ECTC에서 고른 지표를 따로 확인하려고)
+          "pkg4": {"name": "패키징 학회 네 곳 (EPTC · ICEPT · ESTC · ITherm, ECTC 제외)", "field": "반도체 패키징",
+                   "members": ["eptc", "icept", "estc", "itherm"]}}
 
 
 def load(key):
