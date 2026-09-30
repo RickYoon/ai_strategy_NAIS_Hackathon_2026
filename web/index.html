@@ -553,7 +553,7 @@ function verCard(bt,c){
       앞선 해일수록 비교할 과거 기록이 1~2년뿐이었다. 그래서 이 방법은 맞히는 도구가 아니다. 후보와 이 성적을 같이 보고 연구자가 판단한다.</p></details>${META.learned?'</details>':''}</div>`}
 
 function kpi(l,v,s,col){return `<div class="kpi"><div class="kl">${l}</div><div class="kv" ${col?`style="color:${col}"`:''}>${v}</div><div class="ks">${s||''}</div></div>`}
-function render(c){$('#stepsd').open=false;
+function render(c){
   const show=REVEAL?2026:c,j=T.judge[c],ps=people(c),bt=META.score.find(b=>b.cutoff==c)||META.score[META.score.length-1];
   const ev=T.events.filter(e=>Number(e.date.slice(0,4))<=show),lit=j&&j.lit,docs=upto(c),si=META.years.indexOf(show);
   CUR={c,show};LOADED={};
@@ -861,7 +861,7 @@ async function run(){document.body.classList.remove('home');
     const view=AG.view||'topic';
     if(AG.error||(view=='topic'&&!AG.topic)){planAdd(`에이전트 실패: ${AG.error||'주제를 고르지 못함'} — 정해진 순서로 실행`,'bad');AG=null}
     else{busy('도구를 부른 순서');
-      for(const s of AG.trace||[]){planAdd(`<b>${NAMES[s.tool]||s.tool}</b> ${Object.values(s.input||{}).join(', ')}`,'',TCOL[s.tool]);await sleep(180);if(my!==SEQ)return}
+      for(const s of AG.trace||[]){if(['read_topic','industry_events','find_people','verify_signal'].includes(s.tool))continue;planAdd(`<b>${NAMES[s.tool]||s.tool}</b> ${Object.values(s.input||{}).join(', ')}`,'',TCOL[s.tool]);await sleep(180);if(my!==SEQ)return}
       if(view=='find'){await sleep(250);return find(true)}
       if(view=='cross'){await sleep(250);return cross(true)}
       q=AG.topic.toLowerCase()}
