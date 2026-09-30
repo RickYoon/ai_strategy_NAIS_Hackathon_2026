@@ -246,6 +246,8 @@ body.dataview .ask{display:none}body.browse aside.log{display:none}body.browse m
 .gpanel{border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:120px;position:sticky;top:16px}.gp-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}.gp-h b{font-size:15px}.gp-list{margin-top:8px;max-height:560px;overflow:auto}.gp-row{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:7px;font-size:13px;cursor:pointer}.gp-row:hover{background:var(--panel)}.gp-row i{width:9px;height:9px;border-radius:5px;flex:none}.gp-row span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gp-row b{color:var(--sub);font-weight:600}
 @media(max-width:1100px){.gwrap{grid-template-columns:1fr}.gpanel{position:static}}
 #vslot .seg{display:flex!important;width:100%;margin-bottom:8px}#vslot .seg button{flex:1;font-size:12px;padding:6px 6px;white-space:nowrap}
+.card[style*='grid-column'] .plist,.card[style*='grid-column'] ul.papers{columns:2;column-gap:28px}.card[style*='grid-column'] .plist>*,.card[style*='grid-column'] ul.papers>li{break-inside:avoid}
+.card[style*='grid-column'] .sigrow{display:flex;gap:28px;align-items:flex-start}
 .grp{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:10px}.gb{background:var(--panel);border-radius:12px;padding:12px 14px}.gh{font-weight:800;font-size:15px}.gb .chips small{font-weight:600;opacity:.7}
 .why{background:var(--panel);border-radius:12px;padding:14px 16px;margin:6px 0 14px}
 .wh,.wr{display:grid;grid-template-columns:minmax(150px,1.3fr) 92px 1.4fr 44px;gap:10px;align-items:center}
@@ -575,7 +577,7 @@ function render(c){
   const ev=T.events.filter(e=>Number(e.date.slice(0,4))<=show),lit=j&&j.lit,docs=upto(c),si=META.years.indexOf(show);
   CUR={c,show};LOADED={};
   const sig=j&&j.n_before?`<div class="big" style="color:${lit?'var(--pri)':'var(--sub)'}">${pct(j.p_before)} → ${pct(j.p_recent)}</div>
-     <div class="note" style="margin-top:4px">양산 문제를 다룬 제목의 비중 · ${2018}~${c-3}년 ${j.k_before}/${j.n_before}편 → ${c-2}~${c}년 ${j.k_recent}/${j.n_recent}편<br>10%p 넘게 오르면 신호가 켜졌다고 본다</div>`
+     <div class="note" style="margin-top:4px">양산 문제를 다룬 제목의 비중 · ${2018}~${c-3}년 ${j.k_before}/${j.n_before}편 → ${c-2}~${c}년 ${j.k_recent}/${j.n_recent}편<br>10%p 넘게 오르면 이 방법이 고른다</div>`
      :`<div class="note">${j?j.reason||'':'이 기준 연도에는 기록이 부족하다'}</div>`;
   const recent=docs.filter(p=>p.p&&p.y>=c-2).slice(-5).reverse();
   $('#out').innerHTML=`
@@ -598,9 +600,9 @@ function render(c){
   <div class="pane" data-pane="ev">
     ${upcard(c,show)}
     <div class="grid">
-      <div class="card"><h2>읽기 에이전트 · 내용이 바뀌었나</h2>${sig}
+      <div class="card" style="grid-column:1/-1"><h2>읽기 에이전트 · 내용이 바뀌었나</h2>${sig}
         <div class="lbl" style="margin-top:16px">최근 3년에 양산 문제를 다룬 발표</div>
-        ${recent.map(p=>`<div class="row p">${p.y} · ${ttl(p)}</div>`).join('')||'<div class="note">없다</div>'}</div>
+        <div class="plist">${recent.map(p=>`<div class="row p">${p.y} · ${ttl(p)}</div>`).join('')||'<div class="note">없다</div>'}</div></div>
       ${verCard(bt,c)}
     </div>
     <div class="card"><div class="ch"><h2>근거 원문 — ${c}년까지 ${docs.length}편<small>주황 = 양산 문제를 다룬 제목 · 제목을 누르면 원문으로 간다</small></h2>
