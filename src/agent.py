@@ -63,7 +63,7 @@ SYSTEM = """너는 연구 방향을 정하는 사람을 돕는 에이전트다. 
    - "cross": 다른 분야(예: AI, 소프트웨어)가 이 분야에 주는 영향을 묻는다 → cross_field("hbm")과 read_topic("hbm")을 부른다. 이 연결은 검증 전 가설이라고 반드시 말한다.
    - "topic": 특정 주제를 말한다 → search_topics로 주제 이름을 찾는다. 한글 주제는 영어 낱말 하나로 바꿔 찾는다(예: 유리기판 → glass). 찾은 것 가운데 발표가 가장 많은 넓은 주제 하나를 고르고, read_topic, industry_events, find_people, verify_signal을 부른다. 사용자가 전파 · 관계 · 협력 · 누가 하는지를 물으면 track_spread나 find_relations도 부른다.
 4. 같은 도구를 같은 입력으로 두 번 부르지 않는다. 결과가 없으면 다른 낱말로 한 번 더 찾는다.
-5. "성장한다", "유망하다"고 단정하지 않는다. 판정은 연구자가 한다. 산업 사건 목록이 비어 있으면 "산업 사건이 없다"고 하지 말고 "아직 적어 두지 않았다"고 말한다. 화면에 쓰는 말은 "신호가 켜진 활발한 주제" 대신 "이 방법이 고른 주제", "신호가 꺼진 주제" 대신 "고르지 않은 주제"를 쓴다.
+5. "성장한다", "유망하다"고 단정하지 않는다. 판정은 연구자가 한다. 산업 사건 목록이 비어 있으면 "산업 사건이 없다"고 하지 말고 "아직 적어 두지 않았다"고 말한다. "커졌다" 대신 "성장했다"를 쓴다. 과거 성적은 배운 점수(learned_agent)의 결과를 먼저 말한다. 화면에 쓰는 말은 "신호가 켜진 활발한 주제" 대신 "이 방법이 고른 주제", "신호가 꺼진 주제" 대신 "고르지 않은 주제"를 쓴다.
 6. 마지막에는 아래 JSON만 출력한다. "topic"에는 도구가 돌려준 주제 이름을 그대로 쓴다("find" · "cross"이면 null).
 {{"view": "topic 또는 find 또는 cross", "topic": "주제 이름 또는 null", "sentences": [{{"text": "한국어 한 문장", "from": "근거가 된 도구 이름"}}], "caution": "이 근거의 한계 한 문장"}}
 문장은 네 개에서 여섯 개. 한 문장에 사실 하나. 연도별 숫자를 늘어놓지 않는다. 과거 성적은 가장 최근 기준 연도의 것을 말하고, 신호가 없던 주제의 성적과 나란히 말한다."""
@@ -158,6 +158,16 @@ def label_topics(names):
         except (AttributeError, json.JSONDecodeError):
             pass
     return have
+
+
+def learned_note():
+    f = ROOT / "data" / "derived" / "learn.json"
+    if not f.exists():
+        return None
+    r = json.loads(f.read_text(encoding="utf-8"))
+    return {"learned_agent": "과거에 성장한 주제의 특징 16가지를 배운 점수로 줄 세웠을 때, 점수 위 20% 가운데 3년 뒤 성장한 비율",
+            "back_to_2023": f"{r[0]['top20'][1]}개 중 {r[0]['top20'][0]}개 (아무렇게나 고르면 {r[0]['base'][1]}개 중 {r[0]['base'][0]}개)",
+            "unseen_conferences": f"{r[1]['top20'][1]}개 중 {r[1]['top20'][0]}개 (아무렇게나 고르면 {r[1]['base'][1]}개 중 {r[1]['base'][0]}개)"}
 
 
 def scorecard(data):
@@ -257,7 +267,7 @@ class Toolbox:
     def verify_signal(self):
         return [{"cutoff": b["cutoff"], "opened": b["opened"], "active_topics_signal_on": b["lit"], "of_which_grew": b["lit_grew"],
                  "active_topics_signal_off": b["unlit"], "of_which_grew_off": b["unlit_grew"]}
-                for b in scorecard(self.d) if b["cutoff"] <= self.c]
+                for b in scorecard(self.d) if b["cutoff"] <= self.c] + ([learned_note()] if learned_note() else [])
 
     def track_spread(self, topic):
         f = self.extra.get("spread")

@@ -151,6 +151,34 @@ def model_scores(venue, d, topics, c, vy):
     return out
 
 
+def learned_summary():
+    """src/learn.py 가 저장한 배운 모델의 시험 결과 (배우지 않은 해 · 학회)."""
+    f = ROOT / "data" / "derived" / "learn.json"
+    if not f.exists():
+        return None
+    r = json.loads(f.read_text(encoding="utf-8"))
+    pick = lambda i: {"top": r[i]["top20"], "base": r[i]["base"]}
+    return {"time": pick(0), "venue": pick(1)}
+
+
+def topic_rank(venue, d, topic, c):
+    """지금 시점에서 이 주제의 배운 점수 순위 (후보 가운데, 전체 활발한 주제 가운데)."""
+    if c != d["years"][-1]:
+        return None
+    vy = combo.__dict__.get("_vy") or combo.__dict__.setdefault("_vy", combo.venue_years())
+    cand = agent.candidates(d, c)
+    labels = json.loads(agent.LABELS.read_text(encoding="utf-8")) if agent.LABELS.exists() else {}
+    act = [x["topic"] for x in cand if x["active"] and labels.get(x["topic"], {"keep": True}).get("keep", True)]
+    names = list(dict.fromkeys(act + [topic]))
+    ms = model_scores(venue, d, names, c, vy)
+    if topic not in ms:
+        return None
+    ranked = sorted([k for k in act if k in ms], key=lambda k: -ms[k])
+    return {"score": round(ms[topic], 3), "is_candidate": topic in act,
+            "rank": ranked.index(topic) + 1 if topic in ranked else None, "of": len(ranked),
+            "beats": sum(1 for k in ranked if ms[k] < ms[topic])}
+
+
 def combo_result(venue):
     """지표를 겹친 개수별 과거 성적 (src/combo.py 가 계산해 둔 것)."""
     f = ROOT / "data" / "derived" / "combo.json"
@@ -181,13 +209,19 @@ def handle(path, q, derived):
     if path == "/api/meta":
         top = sorted(((t, v["n"]) for t, v in d["topics"].items()), key=lambda x: -x[1])
         return {k: d[k] for k in ("meta", "years", "total", "n_papers", "n_inst", "n_auth", "n_topics", "rules", "backtest")} | {
-            "topic_names": [t for t, _ in top], "score": agent.scorecard(d)}, 200
+            "topic_names": [t for t, _ in top], "score": agent.scorecard(d), "learned": learned_summary()}, 200
     if path == "/api/topic":
         name = q.get("q", "").strip().lower()
         if name not in d["topics"]:
             return {"error": f"'{name}' 주제가 없다 (발표 {d['rules']['min_docs']}편 미만이거나 제목에 없는 말)"}, 404
         lab = json.loads(agent.LABELS.read_text(encoding="utf-8")).get(name, {}) if agent.LABELS.exists() else {}
-        return {"topic": name, "ko": lab.get("ko"), "desc": lab.get("desc"), **d["topics"][name], "events": events().get(name, []), "upstream": upstream(name)}, 200
+        rk = None
+        try:
+            rk = topic_rank(q.get("venue", "ectc"), d, name, d["years"][-1])
+        except Exception:
+            pass
+        return {"topic": name, "ko": lab.get("ko"), "desc": lab.get("desc"), **d["topics"][name], "events": events().get(name, []),
+                "upstream": upstream(name), "rank": rk}, 200
     if path == "/api/who":
         kind, name = q.get("kind", "inst"), q.get("name", "")
         w = d.get("who", {}).get(kind, {}).get(name)
