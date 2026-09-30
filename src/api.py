@@ -28,6 +28,77 @@ def upstream(topic):
     return None
 
 
+SPREAD_VENUES = ["ectc", "eptc", "icept", "estc", "itherm"]
+SPREAD_LINE = 2.0  # 발표 비중이 이 %를 처음 넘은 해를 "자리 잡은 해"로 본다
+
+
+def venue_titles(derived, v):
+    """학회별 (연도, 제목의 주제어 집합). 한 번 읽으면 서버가 살아 있는 동안 들고 있는다."""
+    import analyze
+    cache = derived.__dict__.setdefault("_titles", {})
+    f = ROOT / "data" / "raw" / f"{v}.jsonl"
+    if not f.exists():
+        return None
+    m = f.stat().st_mtime
+    if v not in cache or cache[v][0] != m:
+        rows = [json.loads(l) for l in open(f, encoding="utf-8")]
+        meta = json.loads((ROOT / "data" / "raw" / f"{v}.meta.json").read_text(encoding="utf-8"))
+        cache[v] = (m, meta["name"], [(r["year"], analyze.terms(r["title"])) for r in rows if r["year"]])
+    return cache[v][1], cache[v][2]
+
+
+def spread(topic, cutoff, derived):
+    """전파: 같은 주제가 학회마다 언제 나타나 자리 잡았나. 학회를 합치지 않고 따로 센다."""
+    years = list(range(2018, 2027))
+    out = []
+    for v in SPREAD_VENUES:
+        got = venue_titles(derived, v)
+        if not got:
+            continue
+        name, rows = got
+        tot, n = {y: 0 for y in years}, {y: 0 for y in years}
+        for y, ts in rows:
+            if y in tot:
+                tot[y] += 1
+                n[y] += topic in ts
+        share = [round(n[y] / tot[y] * 100, 1) if tot[y] and y <= cutoff else None for y in years]
+        seen = [y for y in years if y <= cutoff and n[y]]
+        out.append({"venue": v, "name": name, "papers": sum(n[y] for y in years if y <= cutoff), "total": sum(tot[y] for y in years if y <= cutoff),
+                    "share": share, "first_year": seen[0] if seen else None,
+                    "settled": next((y for y, s in zip(years, share) if s is not None and s >= SPREAD_LINE), None)})
+    out.sort(key=lambda x: (x["settled"] or 9999, -x["papers"]))
+    return {"topic": topic, "cutoff": cutoff, "years": years, "line": SPREAD_LINE, "venues": out}
+
+
+def ontology(topic, cutoff, d, derived):
+    """온톨로지 조회: 한 주제에 이어진 것들을 종류별로 모은다. 전부 발표 기록에서 센 관계다."""
+    import analyze
+    from collections import Counter
+    t = d["topics"].get(topic)
+    if not t:
+        return {"error": "없는 주제"}
+    labels = json.loads(agent.LABELS.read_text(encoding="utf-8")) if agent.LABELS.exists() else {}
+    ps = [p for p in t["papers"] if p["y"] <= cutoff]
+    inst, auth, co = Counter(), Counter(), Counter()
+    words = set(topic.split())
+    for p in ps:
+        inst.update(set(p["inst"]))
+        auth.update(set(p["auth"]))
+        for term in analyze.terms(p["t"]):
+            if term != topic and term in d["topics"] and not (set(term.split()) & words) and labels.get(term, {"keep": False}).get("keep"):
+                co[term] += 1
+    sp = spread(topic, cutoff, derived)
+    ev = [e for e in events().get(topic, []) if int(e["date"][:4]) <= cutoff]
+    return {"topic": topic, "ko": labels.get(topic, {}).get("ko"), "papers": len(ps),
+            "schema": ["주제 —(다룬다)— 발표", "발표 —(쓴 곳)— 기관", "발표 —(쓴 사람)— 저자", "발표 —(실린 곳)— 학회",
+                       "주제 —(함께 나온다)— 주제", "주제 —(같은 시기)— 산업 사건"],
+            "related": [{"name": k, "ko": labels.get(k, {}).get("ko") or k, "n": n} for k, n in co.most_common(8)],
+            "inst": [{"name": k, "n": n} for k, n in inst.most_common(7)],
+            "auth": [{"name": k, "n": n} for k, n in auth.most_common(7)],
+            "venues": [{"name": v["venue"].upper(), "n": v["papers"], "settled": v["settled"]} for v in sp["venues"] if v["papers"]],
+            "events": ev}
+
+
 def handle(path, q, derived):
     importlib.reload(agent)
     importlib.reload(gaps)
@@ -103,6 +174,10 @@ def handle(path, q, derived):
                 "other": other, "here": here, "venue": d["meta"]["name"], "collected_at": raw["collected_at"]}, 200
     if path == "/api/draft":
         return draft.write(q.get("q", "").strip().lower(), int(q.get("c", 2026)), d, events(), upstream), 200
+    if path == "/api/spread":
+        return spread(q.get("q", "").strip().lower(), int(q.get("c", 2026)), derived), 200
+    if path == "/api/onto":
+        return ontology(q.get("q", "").strip().lower(), int(q.get("c", 2026)), d, derived), 200
     if path == "/api/has_llm":
         return {"llm": bool(agent.api_key()), "model": agent.MODEL}, 200
     return {"error": "없는 주소"}, 404

@@ -173,6 +173,8 @@ function render(c){
       <div style="max-height:300px;overflow:auto"><table>${upto(c).slice().reverse().map(p=>`<tr><td>${p.y}</td><td class="${p.p?'p':''}">${p.doi?`<a href="${p.doi}" target="_blank" rel="noopener" ${p.p?'style="color:inherit"':''}>${p.t}</a>`:p.t}</td></tr>`).join('')}</table></div></div>
   </div>
   <div id="who"></div>
+  <div class="card" id="onto"><h2>온톨로지 조회 — 이 주제에 이어진 기관 · 저자 · 학회 · 함께 나오는 주제 (선이 굵을수록 발표가 많다 · 누르면 그쪽으로 간다)</h2><div id="ontoout" class="note">불러오는 중…</div></div>
+  <div class="card" id="spread"><h2>전파 — 이 주제가 학회마다 언제 나타나 자리 잡았나 (학회를 합치지 않고 따로 센다)</h2><div id="spreadout" class="note">불러오는 중…</div></div>
   <div class="card" id="draft" style="border-color:var(--ink)"><div class="head"><h2 style="margin:0">기획서 '연구개발 동향' 절 초안 — 과거 발표 기록을 분석해 새 문서를 쓴다</h2>
     <button id="draftbtn" style="padding:5px 12px;font-size:13px">초안 쓰기 (15~25초)</button></div>
     <div class="note">재료(흐름 · 신호 · 산업 사건 · 기관 · 과거 성적 · 근거 논문)는 코드가 만든다. LLM은 문장만 쓰고, 문장마다 근거를 단다. 재료에 없는 숫자가 든 문장은 버린다.</div><div id="draftout"></div></div>
@@ -272,11 +274,7 @@ async function find(){
   try{FIND=await (await fetch('/api/find?venue=ectc&c='+c)).json()}catch(e){FIND={error:String(e)}}
   if(FIND.error){$('#out').innerHTML=`<div class="err">${FIND.error}</div>`;return}
   renderFind()}
-function wire(c,show){
-  $('#bib').onclick=()=>{const esc=s=>String(s).replace(/[{}]/g,'');
-    const txt=upto(c).map((p,i)=>{const fa=(p.auth[0]||'anon').split(' ').pop().toLowerCase().replace(/[^a-z]/g,'');
-      return `@inproceedings{${fa}${p.y}_${i},\n  title = {${esc(p.t)}},\n  author = {${p.auth.map(esc).join(' and ')}},\n  year = {${p.y}},\n  booktitle = {${esc(META.meta.name)}},${p.doi?`\n  doi = {${p.doi.replace('https://doi.org/','')}},`:''}\n}`}).join('\n\n');
-    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download=`${T.topic.replace(/\s+/g,'_')}_until_${c}.bib`;a.click()};
+function wireWho(show){
   document.querySelectorAll('[data-who]').forEach(a=>a.onclick=async e=>{e.preventDefault();
     const r=await (await fetch(`/api/who?venue=ectc&kind=${a.dataset.who}&name=`+encodeURIComponent(a.dataset.name))).json();
     if(r.error){$('#who').innerHTML=`<div class="card"><span class="note">${a.dataset.name}: ${r.error}</span></div>`;return}
@@ -285,7 +283,54 @@ function wire(c,show){
       <table><tr><th>연도</th><th>발표</th><th>많이 나온 주제어</th><th>제목</th></tr>${ys.map(y=>`<tr><td>${y}</td><td>${r.years[y].n}</td>
       <td><b>${r.years[y].terms.join(' · ')}</b></td><td><details><summary class="note">제목 ${r.years[y].n}편 보기</summary>${r.years[y].papers.map(p=>`<div style="padding:2px 0">${p.doi?`<a href="${p.doi}" target="_blank" rel="noopener">${p.t}</a>`:p.t}</div>`).join('')}</details></td></tr>`).join('')}</table>
       <div class="note">이름은 공개 기록의 표기 기준이다. 같은 이름의 다른 사람이 섞일 수 있다.</div></div>`;
-    $('#who').scrollIntoView({behavior:'smooth',block:'nearest'})});
+    $('#who').scrollIntoView({behavior:'smooth',block:'nearest'})});}
+function wire(c,show){
+  $('#bib').onclick=()=>{const esc=s=>String(s).replace(/[{}]/g,'');
+    const txt=upto(c).map((p,i)=>{const fa=(p.auth[0]||'anon').split(' ').pop().toLowerCase().replace(/[^a-z]/g,'');
+      return `@inproceedings{${fa}${p.y}_${i},\n  title = {${esc(p.t)}},\n  author = {${p.auth.map(esc).join(' and ')}},\n  year = {${p.y}},\n  booktitle = {${esc(META.meta.name)}},${p.doi?`\n  doi = {${p.doi.replace('https://doi.org/','')}},`:''}\n}`}).join('\n\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download=`${T.topic.replace(/\s+/g,'_')}_until_${c}.bib`;a.click()};
+  wireWho(show);
+  fetch(`/api/spread?c=${show}&q=`+encodeURIComponent(T.topic)).then(r=>r.json()).then(g=>{
+    if(g.error||!$('#spreadout')){return}
+    const W=760,H=240,Y=g.years,x=i=>70+i*(W-230)/(Y.length-1),mx=Math.max(g.line*1.5,...g.venues.flatMap(v=>v.share.filter(s=>s!==null))),y=s=>H-36-s/mx*(H-70);
+    const COL={ectc:'#12293f',eptc:'#a15c12',icept:'#12707f',estc:'#6b7885',itherm:'#a82c38'};
+    let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px"><line x1="50" y1="${H-36}" x2="${W-150}" y2="${H-36}" stroke="#dfe5ea" stroke-width="2"/>
+      <line x1="50" y1="${y(g.line)}" x2="${W-150}" y2="${y(g.line)}" stroke="#9aa5ae" stroke-dasharray="4 4"/><text x="52" y="${y(g.line)-5}" font-size="11" fill="#6b7885">${g.line}% 선</text>`;
+    const lab=[];
+    g.venues.forEach(v=>{const pts=v.share.map((sh,i)=>sh===null?null:[x(i),y(sh)]).filter(Boolean);if(!pts.length)return;
+      s+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${COL[v.venue]}" stroke-width="${v.venue=='ectc'?3.5:2.2}" stroke-linejoin="round"/>`;
+      if(v.settled){const i=Y.indexOf(v.settled);s+=`<circle cx="${x(i)}" cy="${y(v.share[i])}" r="6" fill="#fff" stroke="${COL[v.venue]}" stroke-width="3"/>`}
+      lab.push({x:pts[pts.length-1][0]+8,y:pts[pts.length-1][1]+4,t:v.venue.toUpperCase(),c:COL[v.venue]})});
+    lab.sort((a,b)=>a.y-b.y);for(let i=1;i<lab.length;i++)if(lab[i].y-lab[i-1].y<14)lab[i].y=lab[i-1].y+14;
+    lab.forEach(l=>{s+=`<text x="${l.x}" y="${l.y}" font-size="12" font-weight="800" fill="${l.c}">${l.t}</text>`});
+    Y.forEach((yr,i)=>{s+=`<text x="${x(i)}" y="${H-16}" text-anchor="middle" font-size="12" fill="#6b7885">${yr}</text>`});
+    s+='</svg>';
+    const set=g.venues.filter(v=>v.settled);
+    $('#spreadout').innerHTML=s+`<table><tr><th>학회</th><th>${g.cutoff}년까지 발표</th><th>첫 발표</th><th>비중이 ${g.line}%를 처음 넘은 해 (동그라미)</th></tr>
+      ${g.venues.map(v=>`<tr><td><b style="color:${COL[v.venue]}">${v.venue.toUpperCase()}</b> <span class="note">${v.name.replace(/^[A-Za-z]+ /,'')}</span></td><td>${v.papers}편 / ${v.total.toLocaleString()}편</td><td>${v.first_year||'없음'}</td><td><b>${v.settled||'아직 넘지 않음'}</b></td></tr>`).join('')}</table>
+      <div class="note" style="margin-top:6px">${set.length>=2?`가장 먼저 넘은 곳은 ${set[0].venue.toUpperCase()}(${set[0].settled}년), 가장 늦은 곳은 ${set[set.length-1].venue.toUpperCase()}(${set[set.length-1].settled}년)이다. `:''}학회마다 규모와 성격이 다르다. 격년으로 열리는 학회는 선이 끊겨 있다. 비중이 작은 주제는 한두 편에 흔들린다.</div>`});
+  fetch(`/api/onto?c=${show}&q=`+encodeURIComponent(T.topic)).then(r=>r.json()).then(g=>{
+    if(g.error||!$('#ontoout'))return;
+    const W=900,H=470,cx=W/2,cy=H/2,esc=s=>String(s).replace(/"/g,'&quot;');
+    const groups=[{k:'inst',col:'#12293f',a0:132,a1:228,rx:255,ry:190,items:g.inst},{k:'auth',col:'#12707f',a0:-48,a1:48,rx:255,ry:190,items:g.auth},
+      {k:'related',col:'#1d6b4a',a0:22.5,a1:337.5,rx:128,ry:100,items:g.related},
+      {k:'venue',col:'#a15c12',a0:62,a1:118,rx:300,ry:172,stack:-1,items:g.venues},{k:'event',col:'#a82c38',a0:244,a1:296,rx:330,ry:165,stack:1,items:g.events.map(e=>({name:e.date+' '+e.text.split(',')[0],n:1}))}];
+    const mx=Math.max(1,...groups.flatMap(G=>G.items.map(i=>i.n||1)));let lines='',nodes='';
+    groups.forEach(G=>{const n=G.items.length;G.items.forEach((it,i)=>{const a=(G.a0+(n>1?i*(G.a1-G.a0)/(n-1):(G.a1-G.a0)/2))*Math.PI/180,px=cx+G.rx*Math.cos(a),py=cy-G.ry*Math.sin(a);
+      lines+=`<line x1="${cx}" y1="${cy}" x2="${px}" y2="${py}" stroke="${G.col}" stroke-opacity=".3" stroke-width="${1+5*(it.n||1)/mx}"/>`;
+      const label=(it.ko||it.name),short=label.length>26?label.slice(0,25)+'…':label,left=px<cx-5;
+      const attr=G.k=='inst'||G.k=='auth'?`data-who="${G.k}" data-name="${esc(it.name)}"`:G.k=='related'?`data-go="${esc(it.name)}"`:'';
+      const tx=G.stack?px:px+(left?-12:12),ty=G.stack?py+G.stack*(14+(i%2)*14)+(G.stack>0?6:0):py+4,anc=G.stack?'middle':(left?'end':'start');
+      nodes+=`<g ${attr} style="${attr?'cursor:pointer':''}"><circle cx="${px}" cy="${py}" r="${G.k=='related'?9:7}" fill="${G.col}"/>
+        <text x="${tx}" y="${ty}" text-anchor="${anc}" font-size="12.5" font-weight="${G.k=='related'?800:500}" fill="#12293f" paint-order="stroke" stroke="#fff" stroke-width="3">${short}${it.n&&G.k!='event'?` <tspan fill="#6b7885" font-size="11">${it.n}${it.settled?' · '+it.settled+'년':''}</tspan>`:''}</text></g>`})});
+    const leg=[['기관','#12293f'],['저자','#12707f'],['함께 나오는 주제','#1d6b4a'],['학회 (숫자 뒤 연도 = 2% 넘은 해)','#a15c12'],['산업 사건','#a82c38']];
+    $('#ontoout').innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px">${lines}<circle cx="${cx}" cy="${cy}" r="46" fill="#12293f"/>
+      <text x="${cx}" y="${cy-2}" text-anchor="middle" font-size="15" font-weight="800" fill="#fff">${g.ko||g.topic}</text><text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="11" fill="#cfd6dc">발표 ${g.papers}편</text>${nodes}</svg>
+      <div style="margin:4px 0 8px">${leg.map(([n,c])=>`<span style="display:inline-block;margin-right:14px;font-size:12px"><span style="display:inline-block;width:10px;height:10px;border-radius:5px;background:${c};margin-right:5px"></span>${n}</span>`).join('')}</div>
+      <details><summary class="note">이 그림의 뼈대 (어떤 것들이 어떤 관계로 이어지나)</summary><div class="chips" style="margin-top:6px">${g.schema.map(x=>`<span>${x}</span>`).join('')}</div>
+      <div class="note">관계는 전부 발표 기록에서 센 것이다. "함께 나온다" = 같은 제목에 같이 나온 횟수. LLM이 만든 관계는 없다.</div></details>`;
+    wireWho(show);
+    document.querySelectorAll('#ontoout [data-go]').forEach(a=>a.onclick=()=>{$('#q').value=a.dataset.go;window.scrollTo(0,0);run()})});
   $('#draftbtn').onclick=async()=>{$('#draftout').innerHTML='<p class="note">쓰는 중…</p>';
     let g;try{g=await (await fetch(`/api/draft?venue=ectc&c=${c}&q=`+encodeURIComponent(T.topic))).json()}catch(e){g={error:String(e)}}
     if(g.error){$('#draftout').innerHTML=`<p class="err">${g.error}</p>`;return}
