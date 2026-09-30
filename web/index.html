@@ -246,11 +246,11 @@ body.dataview .ask{display:none}body.browse aside.log{display:none}body.browse m
 .gpanel{border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:120px;position:sticky;top:16px}.gp-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}.gp-h b{font-size:15px}.gp-list{margin-top:8px;max-height:560px;overflow:auto}.gp-row{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:7px;font-size:13px;cursor:pointer}.gp-row:hover{background:var(--panel)}.gp-row i{width:9px;height:9px;border-radius:5px;flex:none}.gp-row span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gp-row b{color:var(--sub);font-weight:600}
 @media(max-width:1100px){.gwrap{grid-template-columns:1fr}.gpanel{position:static}}
 #vslot .seg{display:flex!important;width:100%;margin-bottom:8px}#vslot .seg button{flex:1;font-size:12px;padding:6px 6px;white-space:nowrap}
-.card[style*='grid-column'] .plist,.card[style*='grid-column'] ul.papers{columns:2;column-gap:28px}.card[style*='grid-column'] .plist>*,.card[style*='grid-column'] ul.papers>li{break-inside:avoid}
+.plist,.card[style*='grid-column'] ul.papers{columns:2;column-gap:28px}.plist>*,.card[style*='grid-column'] ul.papers>li{break-inside:avoid}
 .card[style*='grid-column'] .sigrow{display:flex;gap:28px;align-items:flex-start}
 .wsteps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}.wstep{display:flex;gap:10px;background:var(--panel);border-radius:10px;padding:10px 12px}.wstep>b{width:22px;height:22px;border-radius:11px;background:var(--pri);color:var(--card);font-size:12px;display:grid;place-items:center;flex:none}.wstep .wt{font-weight:600;font-size:13.5px;color:var(--ink)}
 mark{background:rgba(227,169,76,.28);color:inherit;border-radius:3px;padding:0 2px}
-.mlist{margin-top:8px}.mrow{display:grid;grid-template-columns:76px 1fr auto;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}.mrow:last-child{border-bottom:0}.md{color:var(--amb);font-weight:700}.mt em{color:var(--sub);font-style:normal}.mn{white-space:nowrap;color:var(--sub);font-size:12.5px}
+.mlist{margin-top:8px}.mrow{display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}.mrow:last-child{border-bottom:0}.md{color:var(--amb);font-weight:700}.mt em{color:var(--sub);font-style:normal}.mn{white-space:nowrap;color:var(--sub);font-size:12.5px}
 .srow{display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}.srow:last-child{border-bottom:0}.srow>span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.srow b{white-space:nowrap}.srow small{color:var(--mute);white-space:nowrap}.newtag{font-style:normal;font-size:11px;color:var(--grn);font-weight:700;margin-left:4px}
 @media(max-width:1100px){.wsteps{grid-template-columns:1fr 1fr}}
 .grp{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:10px}.gb{background:var(--panel);border-radius:12px;padding:12px 14px}.gh{font-weight:800;font-size:15px}.gb .chips small{font-weight:600;opacity:.7}
@@ -421,7 +421,7 @@ html[data-theme=dark] .pill.on{background:var(--pribg);color:var(--pri)}
 <main>
   <aside class="log"><details id="logd" open>
     <summary><h2>어떻게 찾았나</h2><span>에이전트가 한 일</span></summary>
-    <div class="orch"><b>총괄 에이전트</b> LLM · 질문을 읽고 아래 에이전트를 골라 부른다</div><div id="plan"></div><details id="stepsd" open><summary class="lt">에이전트 넷 · 숫자는 각자의 코드가 계산</summary>
+    <div class="orch"><b>총괄 에이전트</b> LLM · 질문을 읽고 아래 에이전트를 골라 부른다</div><div id="plan"></div><details id="stepsd" open><summary class="lt">에이전트 넷 · 숫자는 각자의 코드가 계산 · 누르면 근거로</summary>
     <div class="step s1" id="s1" data-n="01"><b>읽기 에이전트</b><span></span></div>
     <div class="step s2" id="s2" data-n="02"><b>대조 에이전트</b><span></span></div>
     <div class="step s3" id="s3" data-n="03"><b>탐색 에이전트</b><span></span></div>
@@ -560,14 +560,14 @@ function whyCard(R){
 
 /* 근거 탭 — 에이전트 넷이 각각 한 일 */
 const PWORDS=[['reliab','신뢰성'],['failure','고장'],['fatigue','피로'],['stress','응력'],['warpage','휨'],['crack','균열'],['void','보이드'],['delaminat','박리'],['defect','결함'],['degrad','열화'],['lifetime','수명'],['yield','수율'],['thermal cycl','열 사이클'],['electromigration','일렉트로마이그레이션'],['moisture','습기'],['drop test','낙하 시험'],['aging','노화']];
-const PRX=new RegExp('('+PWORDS.map(w=>w[0].replace(' ','\\\\s+')).join('|')+')[a-z]*','ig');
+const PRX=new RegExp('\\b('+PWORDS.map(w=>w[0].replace(' ','\\s+')).join('|')+')[a-z]*','ig');
 function hl(t){return t.replace(PRX,m=>`<mark>${m}</mark>`)}
 function readCard(c,show,j,sig){
   const docs=upto(c),bef=docs.filter(p=>p.y<=c-3),rec=docs.filter(p=>p.y>=c-2),hit=rec.filter(p=>p.p);
   const cnt={};for(const p of rec){for(const m of (p.t.match(PRX)||[]))for(const [k,ko] of PWORDS)if(m.toLowerCase().startsWith(k.split(' ')[0])){cnt[ko]=(cnt[ko]||0)+1;break}}
   const words=Object.entries(cnt).sort((a,b)=>b[1]-a[1]),wstr=words.length?words.map(([k,n])=>k+' '+n).join(' · '):'없다',pick=j&&j.lit?'골랐다':'고르지 않았다';
   const step=(n,t,d)=>`<div class="wstep"><b>${n}</b><div><div class="wt">${t}</div><div class="note">${d}</div></div></div>`;
-  return `<div class="card" style="grid-column:1/-1"><h2>읽기 에이전트 · 내용이 바뀌었나<small>제목만 읽는다 · 양산 문제 낱말 17개가 제목에 있으면 "양산 문제를 다룬 발표"로 센다</small></h2>
+  return `<div class="card" id="c-read"><h2>읽기 에이전트 · 내용이 바뀌었나<small>제목만 읽는다 · 양산 문제 낱말 17개가 제목에 있으면 "양산 문제를 다룬 발표"로 센다</small></h2>
     <div class="wsteps">
       ${step('1','발표 '+META.n_papers.toLocaleString()+'편의 제목을 읽었다',META.meta.name+' · '+META.years[0]+'~'+c)}
       ${step('2','"'+T.topic+'"가 든 발표 '+docs.length+'편','그 전('+META.years[0]+'~'+(c-3)+') '+bef.length+'편 · 최근 3년('+(c-2)+'~'+c+') '+rec.length+'편')}
@@ -580,7 +580,7 @@ function readCard(c,show,j,sig){
 function matchCard(c,show,ev){
   const S=T.series&&T.series.papers,Y=META.years,at=y=>{const i=Y.indexOf(y);return S&&i>=0?S[i]:null};
   const rows=ev.map(e=>{const y=Number(e.date.slice(0,4));const a=at(y),b=at(y+1);return `<div class="mrow"><div class="md">${e.date}</div><div class="mt">${e.text} <em>(${e.url?`<a href="${e.url}" target="_blank" rel="noopener">${e.source}</a>`:e.source})</em></div><div class="mn">${a==null?'':`그해 ${a}편`}${b==null?'':` → 다음 해 ${b}편`}</div></div>`}).join('');
-  return `<div class="card"><h2>대조 에이전트 · 산업은 언제 움직였나<small>사람이 출처를 열어 확인해 적은 사건만 · 발표 그림의 같은 시간축에 놓는다</small></h2>
+  return `<div class="card" id="c-match"><h2>대조 에이전트 · 산업은 언제 움직였나<small>사람이 출처를 열어 확인해 적은 사건만 · 발표 그림의 같은 시간축에 놓는다</small></h2>
     ${ev.length?`<div class="mlist">${rows}</div><div class="note" style="margin-top:8px">사건 ${ev.length}건 · 오른쪽 숫자 = 그해와 다음 해 이 주제 발표 수 (앞뒤 관계를 눈으로 본다 · 인과가 아니다)</div>`
       :`<div class="note">이 주제의 산업 사건은 아직 적어 두지 않았다. 사건 목록은 사람이 출처를 확인해 적는다 — 없다는 뜻이 아니다. 지금 목록: 주제 10개 · 26건.</div>`}</div>`}
 function seekCard(c,ps){
@@ -588,7 +588,7 @@ function seekCard(c,ps){
   for(const p of docs){for(const n of p.inst){first[n]=Math.min(first[n]||9999,p.y);if(p.y>=c-2)rc[n]=(rc[n]||0)+1}for(const n of p.auth){fa[n]=Math.min(fa[n]||9999,p.y);if(p.y>=c-2)ra[n]=(ra[n]||0)+1}}
   const insts=Object.entries(rc).sort((a,b)=>b[1]-a[1]),newI=insts.filter(([n])=>first[n]>=c-2),auths=Object.entries(ra).sort((a,b)=>b[1]-a[1]);
   const row=(n,k,f)=>`<div class="srow"><span>${n}${f>=c-2?' <em class="newtag">새로</em>':''}</span><b>${k}편</b><small>${f}년부터</small></div>`;
-  return `<div class="card"><h2>탐색 에이전트 · 누가 하고 있나<small>최근 3년(${c-2}~${c}) 발표 기준 · "새로" = 이 주제로 처음 발표한 곳</small></h2>
+  return `<div class="card" id="c-seek"><h2>탐색 에이전트 · 누가 하고 있나<small>최근 3년(${c-2}~${c}) 발표 기준 · "새로" = 이 주제로 처음 발표한 곳</small></h2>
     <div class="two" style="gap:16px">
       <div><div class="lbl">기관 ${insts.length}곳 중 상위 · 새로 들어온 곳 ${newI.length}곳</div>${insts.slice(0,6).map(([n,k])=>row(n,k,first[n])).join('')||'<div class="note">없다</div>'}</div>
       <div><div class="lbl">저자 ${auths.length}명 중 상위</div>${auths.slice(0,6).map(([n,k])=>row(n,k,fa[n])).join('')||'<div class="note">없다</div>'}</div>
@@ -598,7 +598,7 @@ function seekCard(c,ps){
 function verCard(bt,c){
   const r=(a,b)=>b?Math.round(a/b*100):0,dots=(k,n)=>`<div class="dots">${Array.from({length:n},(_,i)=>`<i class="${i<k?'g':''}"></i>`).join('')}</div>`;
   const others=META.score.filter(s=>s.cutoff!=bt.cutoff),won=bt.lit_topics.filter(x=>x.grew),lost=bt.lit_topics.filter(x=>!x.grew);
-  return `<div class="card" style="grid-column:1/-1"><h2>검증 에이전트 · 이 방법을 믿어도 되나<small>${bt.cutoff}년으로 돌아가 같은 방법을 돌려 봤다 · 성장했는지는 3년 뒤(${bt.opened}) 기록으로 확인</small></h2>
+  return `<div class="card" id="c-verify"><h2>검증 에이전트 · 이 방법을 믿어도 되나<small>${bt.cutoff}년으로 돌아가 같은 방법을 돌려 봤다 · 성장했는지는 3년 뒤(${bt.opened}) 기록으로 확인</small></h2>
     ${T&&T.rank&&T.rank.parts?whyCard(T.rank):''}
     ${META.learned?`<details class="fine"><summary>참고 · 양산 문제 비중 하나로만 ${bt.cutoff}년에 골랐을 때 — ${bt.lit}개 중 ${bt.lit_grew}개 성장</summary>`:''}
     ${bt.cutoff!=c?`<div class="now1">지금 후보가 맞을지는 3년 뒤에야 안다. 그래서 가장 가까운 과거(${bt.cutoff}년)의 성적을 보여준다.</div>`:''}
@@ -641,7 +641,7 @@ function render(c){
 
   <div class="pane" data-pane="ev">
     ${upcard(c,show)}
-    <div class="grid">
+    <div class="grid" style="grid-template-columns:1fr">
       ${readCard(c,show,j,sig)}
       ${matchCard(c,show,ev)}
       ${seekCard(c,ps)}
@@ -934,10 +934,11 @@ async function run(){document.body.classList.remove('home');
   const say=async(id,txt)=>{const e=$(id);e.classList.add('on');e.querySelector('span').innerHTML=txt;
     const b=$('#busylist');if(b)b.insertAdjacentHTML('beforeend',`<div class="pl"><i class="dot" style="background:${{s1:C.ink,s2:C.amb,s3:C.pri,s4:C.grn}[id.slice(1)]}"></i><b>${e.dataset.n} ${e.querySelector('b').textContent}</b> ${txt}</div>`);await sleep(450)};
   busy('읽는 중…');
-  await say('#s1',`발표 ${META.n_papers.toLocaleString()}편의 제목을 읽었다. "${q}"가 들어간 발표는 ${c}년까지 ${upto(c).length}편.${j&&j.n_before?` 양산 문제 비중 ${pct(j.p_before)} → ${pct(j.p_recent)}.`:''}`);
-  await say('#s2',T.events.length?`적어 둔 산업 사건 ${T.events.filter(e=>Number(e.date.slice(0,4))<=c).length}건을 같은 시간축에 놓았다.`:'이 주제의 산업 사건은 아직 적어 두지 않았다 (사건 목록은 사람이 출처를 확인해 적는다 · 없다는 뜻이 아니다).');
-  await say('#s3',`${c}년까지 이 주제를 발표한 기관 ${ps.inst.length}곳, 저자 ${ps.auth.length}명을 찾았다.`);
-  await say('#s4',META.learned?`${META.learned?`3년 전(2023년)으로 돌아가 배운 점수로 고른 위 20% 중 ${Math.round(100*META.learned.time.top[0]/META.learned.time.top[1])}%가 3년 뒤 성장했다 (아무렇게나 고르면 ${Math.round(100*META.learned.time.base[0]/META.learned.time.base[1])}%).`:''}`:`${bt.cutoff}년으로 돌아가 같은 방법을 돌렸다. 그때 고른 후보 ${bt.lit}개 중 ${bt.lit_grew}개가 3년 뒤 성장했다.`);
+  await say('#s1',`"${q}" ${upto(c).length}편${j&&j.n_before?` · 양산 문제 ${pct(j.p_before)} → ${pct(j.p_recent)}`:''}`);
+  await say('#s2',T.events.length?`산업 사건 ${T.events.filter(e=>Number(e.date.slice(0,4))<=c).length}건`:'산업 사건 아직 없음 (사람이 적는다)');
+  await say('#s3',`기관 ${ps.inst.length}곳 · 저자 ${ps.auth.length}명`);
+  await say('#s4',META.learned?`2023년 위 20% 중 ${Math.round(100*META.learned.time.top[0]/META.learned.time.top[1])}% 성장 (아무렇게나 ${Math.round(100*META.learned.time.base[0]/META.learned.time.base[1])}%)`:`${bt.cutoff}년 후보 ${bt.lit}개 중 ${bt.lit_grew}개 성장`);
+  $$('.step').forEach(e=>{e.style.cursor='pointer';e.onclick=()=>{tab('ev');const t=$('#c-'+{s1:'read',s2:'match',s3:'seek',s4:'verify'}[e.id]);if(t)t.scrollIntoView({behavior:'smooth',block:'start'})}});
   if(my!==SEQ)return;
   render(c)}
 
