@@ -290,7 +290,8 @@ def combo_result(venue):
 
 import os
 LLM_CAP = int(os.environ.get("NAIS_LLM_CAP", "60"))  # 서버를 한 번 띄운 동안 LLM을 부를 수 있는 횟수 (공개 시연 비용 상한)
-LLM_USED = {"n": 0}
+import builtins
+LLM_USED = builtins.__dict__.setdefault("_nais_llm_used", {"n": 0})  # 서버가 요청마다 이 모듈을 다시 읽으므로 사용량은 밖에 둔다
 
 
 def llm_budget():

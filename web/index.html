@@ -345,7 +345,7 @@ body{padding-left:248px}
 #theme{background:transparent;border:1px solid var(--line);color:var(--sub);padding:6px 10px;font-size:12.5px;font-weight:600;border-radius:9px}
 footer{display:none}
 .log{top:16px!important}#banner{top:0!important}
-@media(max-width:900px){.side{position:static;width:auto;border-right:0;border-bottom:1px solid var(--line)}.hist,.slbl,.sfoot .note,.side .sub1{display:none}.snav{flex-direction:row;flex-wrap:wrap}.snav button{width:auto}body{padding-left:0}}
+@media(max-width:900px){#theme,#datav,.sfoot .slbl{display:none!important}.side .brand h1{font-size:15px}.side{padding:10px 12px!important;position:static;width:auto;border-right:0;border-bottom:1px solid var(--line)}.hist,.slbl,.sfoot .note,.side .sub1{display:none}.snav{flex-direction:row;flex-wrap:wrap}.snav button{width:auto}body{padding-left:0}}
 
 /* 양산 서비스처럼: 강조색은 선택 · 버튼에만, 숫자는 흰색, 굵기 낮춤, 칩 테두리 없음, 점 격자 옅게 */
 html[data-theme=dark] body{background:radial-gradient(circle,rgba(255,255,255,.045) 1px,transparent 1.2px) 0 0/24px 24px,var(--bg);font-feature-settings:"tnum" 1}
@@ -557,7 +557,7 @@ function whyCard(R){
     <details class="fine"><summary>나머지 지표 ${rest.length}개</summary>${rest.map(row).join('')}</details>
     ${it[0].part>0&&it[0].part>=up/2?`<div class="now1" style="margin-top:10px">올린 점수의 ${Math.round(100*it[0].part/up)}%가 "${it[0].name}" 하나에서 나왔다 (${fv(it[0].name,it[0].value)}). 그 전 기록이 적은 주제는 이 값이 크게 튄다. 원문을 열어 확인할 것.</div>`:''}
     <div class="lbl" style="margin-top:14px">같은 방식으로 ${P.cutoff}년에 위 20%로 꼽혔던 주제 ${P.picks.length}개 — 3년 뒤 <b style="color:var(--grn)">${g.length}개 성장</b> (그해 전체는 ${P.of}개 중 ${P.base_grew}개)</div>
-    <div class="chips">${P.picks.map(x=>`<span class="${x.grew?'ok':'gr'}">${x.grew?'✓ ':''}${x.ko}</span>`).join('')}</div>
+    <div class="chips">${P.picks.map(x=>`<span data-go="${attr(x.topic)}" style="cursor:pointer" class="${x.grew?'ok':'gr'}">${x.grew?'✓ ':''}${x.ko}</span>`).join('')}</div>
     <div class="note" style="margin-top:6px">${P.cutoff}년 뒤 기록을 가리고, 그 전 기록으로만 배운 모델이다. 배운 적 없는 다른 학회에서는 위 20%의 ${META.learned?Math.round(100*META.learned.venue.top[0]/META.learned.venue.top[1]):''}%가 성장했다 (아무렇게나 ${META.learned?Math.round(100*META.learned.venue.base[0]/META.learned.venue.base[1]):''}%).</div></div>`}
 
 
@@ -593,8 +593,8 @@ function seekCard(c,ps){
   const row=(n,k,f)=>`<div class="srow"><span>${n}${f>=c-2?' <em class="newtag">새로</em>':''}</span><b>${k}편</b><small>${f}년부터</small></div>`;
   return `<div class="card" id="c-seek"><h2>탐색 에이전트 · 누가 하고 있나<small>최근 3년(${c-2}~${c}) 발표 기준 · "새로" = 이 주제로 처음 발표한 곳</small></h2>
     <div class="two" style="gap:16px">
-      <div><div class="lbl">기관 ${insts.length}곳 중 상위 · 새로 들어온 곳 ${newI.length}곳</div>${insts.slice(0,6).map(([n,k])=>row(n,k,first[n])).join('')||'<div class="note">없다</div>'}</div>
-      <div><div class="lbl">저자 ${auths.length}명 중 상위</div>${auths.slice(0,6).map(([n,k])=>row(n,k,fa[n])).join('')||'<div class="note">없다</div>'}</div>
+      <div><div class="lbl">최근 3년 기관 ${insts.length}곳 중 상위 · 새로 들어온 곳 ${newI.length}곳</div>${insts.slice(0,6).map(([n,k])=>row(n,k,first[n])).join('')||'<div class="note">없다</div>'}</div>
+      <div><div class="lbl">최근 3년 저자 ${auths.length}명 중 상위</div>${auths.slice(0,6).map(([n,k])=>row(n,k,fa[n])).join('')||'<div class="note">없다</div>'}</div>
     </div>
     <div class="note" style="margin-top:8px">전체 목록과 기관별 흐름은 "사람과 기관" 탭 · 기관 — 저자 — 학회 관계는 "관계" 탭</div></div>`}
 /* 04 검증한다 — 이 방법을 믿어도 되나 */
@@ -632,7 +632,7 @@ function render(c){
       <span class="pill ${lit?'on':''}" style="font-size:13.5px;padding:6px 14px">${lit?'● 이 방법이 고른 주제':'고르지 않은 주제'}</span></div>
     <div class="kpis">
       ${kpi(`발표 비중 · ${show}년`,(T.share[si]*100).toFixed(1)+'%','학회 발표 중 이 주제가 차지하는 몫')}
-      ${kpi('양산 문제를 다룬 비중',j&&j.n_before?`${pct(j.p_before)} → ${pct(j.p_recent)}`:'—',j&&j.n_before?`${c-2}~${c}년 · 10%p 넘게 오르면 신호`:(j?j.reason||'':'기록이 부족하다'),lit?'':'var(--sub)')}
+      ${kpi('양산 문제를 다룬 비중',j&&j.n_before?`${pct(j.p_before)} → ${pct(j.p_recent)}`:'—',j&&j.n_before?`${c-2}~${c}년 · 10%p 넘게 오르면 고른다`:(j?j.reason||'':'기록이 부족하다'),lit?'':'var(--sub)')}
       ${kpi(`${c}년까지 발표한 곳`,`${ps.inst.length}곳 · ${ps.auth.length}명`,`근거 원문 ${docs.length}편`)}
       ${T.rank&&T.rank.rank&&c==NOW?kpi('에이전트의 배운 점수',`후보 ${T.rank.of}개 중 ${T.rank.rank}위`,META.learned?`이 점수 위 20%는 과거에 ${Math.round(META.learned.time.top[0]/META.learned.time.top[1]*100)}%가 성장 (아무렇게나 ${Math.round(META.learned.time.base[0]/META.learned.time.base[1]*100)}%)`:''):kpi('이 방법의 과거 성적',META.learned?`${Math.round(META.learned.time.top[0]/META.learned.time.top[1]*100)}% 대 ${Math.round(META.learned.time.base[0]/META.learned.time.base[1]*100)}%`:`${bt.lit}개 중 ${bt.lit_grew}개`,META.learned?'배운 점수 위 20% 중 3년 뒤 성장 · 아무렇게나 고르면':'')}
     </div>
@@ -683,9 +683,10 @@ function render(c){
   <div class="pane" data-pane="draft">
     <div class="card" id="draft"><div class="ch"><h2>기획서 '연구개발 동향' 절 초안<small>과거 발표 기록을 분석해 새 문서를 쓴다</small></h2>
       <button id="draftbtn" class="sm">초안 쓰기 (15~25초)</button></div>
-      <div class="note">재료(흐름 · 신호 · 산업 사건 · 기관 · 과거 성적 · 근거 논문)는 코드가 만든다. LLM은 문장만 쓰고, 문장마다 근거를 단다. 재료에 없는 숫자가 든 문장은 버린다.</div><div id="draftout"></div></div>
+      <div class="note">재료(흐름 · 양산 문제 비중 · 산업 사건 · 기관 · 과거 성적 · 근거 논문)는 코드가 만든다. LLM은 문장만 쓰고, 문장마다 근거를 단다. 재료에 없는 숫자가 든 문장은 버린다.</div><div id="draftout"></div></div>
   </div>`;
-  wire(c,show);tab(TAB);bindChartTabs()}
+  wire(c,show);tab(TAB);bindChartTabs();
+  $$('#c-verify [data-go]').forEach(a=>a.onclick=()=>{$('#q').value=a.dataset.go;window.scrollTo(0,0);run()})}
 
 function tab(id){TAB=id;
   $$('.tabs button').forEach(b=>{const on=b.dataset.tab==id;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});
@@ -749,7 +750,8 @@ async function cross(keep){document.body.classList.remove('home');const my=++SEQ
 function area(v,col){const mx=Math.max(...v,0.0001),w=320,h=104,pt=v.map((x,i)=>[4+i*(w-8)/Math.max(1,v.length-1),h-4-x/mx*(h-14)]);
   return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:104px"><line x1="0" y1="${h-3}" x2="${w}" y2="${h-3}" stroke="${C.line}" vector-effect="non-scaling-stroke"/><path d="M${pt[0][0]},${h-3} L${pt.map(p=>p.join(',')).join(' L')} L${pt[pt.length-1][0]},${h-3} Z" fill="${col}" opacity=".1"/><polyline points="${pt.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>`}
 function renderFind(){
-  const f=FIND,c=f.cutoff,act=f.candidates.filter(x=>x.active),rest=f.candidates.filter(x=>!x.active);
+  const dd=a=>{const seen={};return a.filter(x=>{const k=x.ko||x.topic;if(seen[k])return false;seen[k]=1;return true})};  // 단수 · 복수처럼 한글 이름이 같은 주제는 하나만
+  const f=FIND,c=f.cutoff,act=dd(f.candidates.filter(x=>x.active)),rest=dd(f.candidates.filter(x=>!x.active).filter(x=>!f.candidates.some(y=>y.active&&(y.ko||y.topic)==(x.ko||x.topic))));
   const canOpen=act.some(x=>x.grew!==null&&x.grew!==undefined);
   const card=x=>{const rise=Math.round(x.problem_recent_percent-x.problem_before_percent);
     return `<div class="tc" data-go="${attr(x.topic)}" tabindex="0" role="button" aria-label="${attr(x.ko||x.topic)} 근거 보기">
@@ -766,7 +768,7 @@ function renderFind(){
   $('#out').innerHTML=`<div class="hero"><h2>${c==NOW?'지금':c+'년으로 돌아가면,'} 후보 주제 <em>${act.length}개</em>${REVEAL&&canOpen?` — 그중 <em class="g">${hit}개</em>가 실제로 성장했다`:''}</h2>
     <p>발표 ${META.n_papers.toLocaleString()}편을 읽고, 이미 활발한 주제 가운데 <b>내용이 양산 문제 쪽으로 옮겨 간 것</b>을 고르고, 에이전트가 과거 기록에서 배운 점수 순으로 놓았다. ${c==NOW?'':'그 해까지의 기록만 본다. '}카드를 누르면 근거 한 장이 나온다.</p></div>${agCard()}
     ${c==NOW&&f.past?`<div class="card" style="padding:16px 20px"><div class="strip">
-      <div class="st" style="flex-basis:100%"><b>이 후보를 얼마나 믿어야 하나 — ${META.learned?`배운 점수 위 20% 중 ${Math.round(100*META.learned.time.top[0]/META.learned.time.top[1])}%가 3년 뒤 성장했다 (아무렇게나 고르면 ${Math.round(100*META.learned.time.base[0]/META.learned.time.base[1])}%)`:`3년 전에 같은 방법으로 고른 후보 ${f.past.items.length}개 중 ${f.past.items.filter(x=>x.grew).length}개만 성장했다`}</b><span class="note">${f.past.cutoff}년 뒤 기록을 가리고 돌린 결과 · 맞히는 도구가 아니다</span></div></div>
+      <div class="st" style="flex-basis:100%"><b>이 후보를 얼마나 믿어야 하나${VENUE!='ectc'?' (ECTC로 시험한 결과)':''} — ${META.learned?`배운 점수 위 20% 중 ${Math.round(100*META.learned.time.top[0]/META.learned.time.top[1])}%가 3년 뒤 성장했다 (아무렇게나 고르면 ${Math.round(100*META.learned.time.base[0]/META.learned.time.base[1])}%)`:`3년 전에 같은 방법으로 고른 후보 ${f.past.items.length}개 중 ${f.past.items.filter(x=>x.grew).length}개만 성장했다`}</b><span class="note">${f.past.cutoff}년 뒤 기록을 가리고 돌린 결과 · 맞히는 도구가 아니다</span></div></div>
       <details class="fine"><summary>참고 · 양산 문제 비중 하나로만 ${f.past.cutoff}년에 골랐을 때 — ${f.past.items.length}개 중 ${f.past.items.filter(x=>x.grew).length}개 성장</summary><div class="strip" style="margin-top:10px">
       ${f.past.items.filter(x=>x.grew).map(x=>`<div class="tile"><span>성장 · ${x.ko}</span><b>${x.then}% → ${x.after}%</b></div>`).join('')}
       <div class="tile"><span>성장하지 않은 후보</span><b>${f.past.items.filter(x=>!x.grew).length}개</b></div>
@@ -780,7 +782,7 @@ function renderFind(){
     <div class="card" style="margin-top:18px"><p class="note">${f.labeled?`제목에서 뽑은 낱말 중 일반 낱말 ${f.removed}개는 LLM이 걸러냈다.`:'LLM이 없어 일반 낱말이 섞여 있다.'}
     ${canOpen?(REVEAL?'':'<b>"가린 것 열기"</b>를 누르면 이 후보들이 3년 뒤 실제로 성장했는지 카드마다 나온다.'):`이 후보들이 맞을지는 3년 뒤에야 안다. 그래서 3년 전으로 돌아가 채점한 결과(위 상자)를 같이 준다. 주제를 열면 그때 꼽힌 주제와 맞은 것 · 틀린 것이 이름으로 나온다.`}</p>
 
-    <details class="more"><summary>아직 활발하지 않은 주제 중 신호가 켜진 것 ${rest.length}개</summary><div class="cards" style="margin-top:12px">${rest.map(card).join('')}</div></details></div>`;
+    <details class="more"><summary>아직 발표가 적지만 양산 문제 비중이 오른 주제 ${rest.length}개</summary><div class="cards" style="margin-top:12px">${rest.map(card).join('')}</div></details></div>`;
   document.querySelectorAll('[data-sort]').forEach(b=>b.onclick=()=>{SORT=b.dataset.sort;renderFind()});
   const st=(id,txt)=>{const e=$(id);e.classList.add('on');e.querySelector('span').innerHTML=txt};
   st('#s1',`발표 ${META.n_papers.toLocaleString()}편의 제목에서 주제 ${f.n_topics}개를 뽑았다. 그중 양산 문제 비중이 10%p 넘게 오른 활발한 주제 ${act.length}개를 골랐다.`);
@@ -1057,7 +1059,7 @@ function drawGraph(G){
 
 $('#datav').onclick=()=>dataView();
 {const v=$('#vseg');if(v&&$('#vslot')){$('#vslot').appendChild(v);$('.filter').style.display='none'}}
-$('#find').onclick=()=>find();
+$('#find').onclick=()=>{if(Number($('#c').value)!=NOW){$('#c').value=NOW;sync()}find()};
 $('#newq').onclick=()=>{location.href=location.pathname+(VENUE!='ectc'?'?venue='+VENUE:'')};
 $('#spast').onclick=()=>{document.body.classList.remove('home');T=null;setView('find');goto(2023)};
 function histLoad(){try{return JSON.parse(localStorage.getItem('hist')||'[]')}catch(e){return []}}
