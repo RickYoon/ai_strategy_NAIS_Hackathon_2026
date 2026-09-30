@@ -16,15 +16,26 @@ MODEL = os.environ.get("NAIS_MODEL", "claude-sonnet-5-5")
 MAX_TURNS = 8
 
 
-def api_key():
-    k = os.environ.get("ANTHROPIC_API_KEY")
+def key_info():
+    """키가 어디서 왔고 모양이 맞는지. 키 자체는 돌려주지 않는다."""
+    env = (os.environ.get("ANTHROPIC_API_KEY") or "").strip().strip('"').strip("'")
     f = Path.home() / ".config" / "anthropic" / "key"
-    if not k and f.exists():
-        k = f.read_text().strip()
-    return k
+    filed = f.read_text().strip() if f.exists() else ""
+    for src, k in (("환경 변수", env), ("파일", filed)):
+        if k:
+            return {"source": src, "length": len(k), "starts_with_sk_ant": k.startswith("sk-ant-"),
+                    "has_space": " " in k, "_key": k}
+    return {"source": None, "_key": None}
+
+
+def api_key():
+    i = key_info()
+    return i["_key"] if i.get("starts_with_sk_ant") and not i.get("has_space") else None
 
 
 TOOLS = [
+    {"name": "find_candidates", "description": "사용자가 주제를 정하지 않고 '무엇을 하면 좋을지' 물을 때 쓴다. 기준 연도에 내용 신호가 켜진 활발한 주제 목록을 돌려준다.",
+     "input_schema": {"type": "object", "properties": {}}},
     {"name": "search_topics", "description": "학회 발표 제목에서 뽑은 주제 이름을 찾는다. 영어 낱말 하나를 넣는다. 기준 연도까지의 발표 수와 함께 돌려준다.",
      "input_schema": {"type": "object", "properties": {"keyword": {"type": "string"}}, "required": ["keyword"]}},
     {"name": "read_topic", "description": "주제의 연도별 발표 비중과, 양산 문제를 다룬 제목의 비중이 어떻게 바뀌었는지(내용 신호)를 돌려준다.",
@@ -43,12 +54,62 @@ SYSTEM = """너는 연구 기획자를 돕는 에이전트다. 사용자가 연�
 규칙:
 1. 지금은 {cutoff}년이라고 가정한다. 그 뒤의 일은 모른다. 네가 원래 알고 있는 지식으로 미래를 말하지 않는다.
 2. 숫자는 도구 결과에 있는 것만 그대로 쓴다. 계산해서 새 숫자를 만들지 않는다.
-3. 먼저 search_topics로 사용자의 말에 맞는 주제 이름을 찾는다. 한글 주제는 영어 낱말로 바꿔 찾는다. 결과가 없으면 다른 낱말로 다시 찾는다.
-4. 그다음 read_topic, industry_events, find_people, verify_signal을 쓴다. cross_field는 있으면 쓴다.
-5. "성장한다", "유망하다"고 단정하지 않는다. 판정은 연구자가 한다.
-6. 마지막에는 아래 JSON만 출력한다.
+3. 사용자가 주제를 말하지 않고 추천을 바라면 find_candidates를 먼저 부르고 그중 하나를 고른다. 주제를 말했으면 search_topics로 사용자의 말에 맞는 주제 이름을 찾는다. 한글 주제는 영어 낱말 하나로 바꿔 찾는다(예: 유리기판 → glass). 결과가 없으면 다른 낱말로 다시 찾는다.
+4. 찾은 것 가운데 발표가 가장 많은 넓은 주제 하나를 고른다. 좁은 주제(발표 10편 안팎)는 고르지 않는다.
+5. 고른 주제로 read_topic, industry_events, find_people, verify_signal, cross_field를 부른다. 같은 도구를 같은 입력으로 두 번 부르지 않는다.
+6. "성장한다", "유망하다"고 단정하지 않는다. 판정은 연구자가 한다.
+7. 마지막에는 아래 JSON만 출력한다. "topic"에는 search_topics가 돌려준 이름을 그대로 쓴다.
 {{"topic": "고른 주제 이름", "sentences": [{{"text": "한국어 한 문장", "from": "근거가 된 도구 이름"}}], "caution": "이 근거의 한계 한 문장"}}
-문장은 4~6개. 한 문장에 사실 하나."""
+문장은 다섯 개, 이 순서로 쓴다: 발표 비중의 흐름 / 내용 신호 / 산업 사건 / 발표한 기관과 사람 / 이 신호의 과거 성적.
+연도별 숫자를 늘어놓지 않는다. 처음과 끝, 가장 낮은 해만 말한다. 과거 성적은 가장 최근 기준 연도의 것을 말하고, 신호가 없던 주제의 성적과 나란히 말한다. 한 문장에 사실 하나."""
+
+
+def candidates(data, cutoff):
+    """기준 연도에 내용 신호가 켜진 주제 목록. 전부 코드가 계산한다."""
+    yrs = data["years"]
+    idx = [i for i, y in enumerate(yrs) if cutoff - 2 <= y <= cutoff]
+    tot = sum(data["total"][i] for i in idx) or 1
+    elig = []
+    for name, t in data["topics"].items():
+        j = t["judge"].get(str(cutoff))
+        if j:
+            elig.append((name, t, j, sum(t["count"][i] for i in idx) / tot))
+    elig.sort(key=lambda x: -x[3])
+    hot = {n for n, *_ in elig[:int(len(elig) * 0.25)]}
+    out = []
+    for name, t, j, sh in elig:
+        if j.get("lit"):
+            out.append({"topic": name, "active": name in hot, "share_recent_percent": round(sh * 100, 1),
+                        "problem_before_percent": round(j["p_before"] * 100), "problem_recent_percent": round(j["p_recent"] * 100),
+                        "papers_recent": j["n_recent"], "share": [t["share"][i] for i, y in enumerate(yrs) if y <= cutoff]})
+    out.sort(key=lambda x: (-x["active"], -(x["problem_recent_percent"] - x["problem_before_percent"])))
+    return out
+
+
+LABELS = ROOT / "data" / "derived" / "topic_labels.json"
+
+
+def label_topics(names):
+    """제목에서 뽑은 낱말 중 기술 주제가 아닌 일반 낱말을 LLM이 가려내고 한글 이름을 붙인다. 한 번 한 것은 남겨 둔다."""
+    have = json.loads(LABELS.read_text(encoding="utf-8")) if LABELS.exists() else {}
+    todo = [n for n in names if n not in have]
+    key = api_key()
+    if todo and key:
+        import anthropic
+        r = anthropic.Anthropic(api_key=key).messages.create(model=MODEL, max_tokens=6000, messages=[{"role": "user", "content":
+            "아래는 반도체 패키징 · 전자부품 학회 발표 제목에서 뽑은 낱말이다. 각 낱말이 구체적인 기술 주제이면 keep=true, "
+            "일반 낱말(예: challenges, demonstration, optimization, impact, system)이면 keep=false로 한다. "
+            "keep=true이면 한국어 이름을 붙인다. 아래 JSON만 출력한다.\n"
+            '{"낱말": {"keep": true, "ko": "한국어 이름"}}\n\n' + "\n".join(todo)}])
+        m = re.search(r"\{.*\}", "".join(b.text for b in r.content if b.type == "text"), re.S)
+        try:
+            got = json.loads(m.group(0))
+            have.update({k: v for k, v in got.items() if k in todo and isinstance(v, dict)})
+            LABELS.parent.mkdir(parents=True, exist_ok=True)
+            LABELS.write_text(json.dumps(have, ensure_ascii=False, indent=1), encoding="utf-8")
+        except (AttributeError, json.JSONDecodeError):
+            pass
+    return have
 
 
 class Toolbox:
@@ -57,6 +118,10 @@ class Toolbox:
     def __init__(self, data, events, upstream, cutoff):
         self.d, self.ev, self.up, self.c = data, events, upstream, cutoff
         self.yi = [i for i, y in enumerate(data["years"]) if y <= cutoff]
+
+    def find_candidates(self):
+        c = candidates(self.d, self.c)
+        return [{k: v for k, v in x.items() if k != "share"} for x in c if x["active"]][:12]
 
     def search_topics(self, keyword):
         k = keyword.strip().lower()
@@ -116,11 +181,12 @@ class Toolbox:
 def check(sentences, tool_results):
     """문장에 나온 숫자가 도구 결과에 실제로 있는지 본다. 없으면 버린다."""
     blob = json.dumps(tool_results, ensure_ascii=False)
-    have = set(re.findall(r"\d+(?:\.\d+)?", blob.replace(",", "")))
+    norm = lambda n: (n.lstrip("0") or "0") if "." not in n else n.rstrip("0").rstrip(".")
+    have = {norm(n) for n in re.findall(r"\d+(?:\.\d+)?", blob.replace(",", ""))}
     kept, dropped = [], []
     for s in sentences:
         nums = re.findall(r"\d+(?:\.\d+)?", s["text"].replace(",", ""))
-        bad = [n for n in nums if n not in have and n.rstrip("0").rstrip(".") not in have]
+        bad = [n for n in nums if norm(n) not in have]
         (dropped if bad else kept).append({**s, **({"missing": bad} if bad else {})})
     return kept, dropped
 
@@ -128,7 +194,7 @@ def check(sentences, tool_results):
 def run(question, cutoff, data, events, upstream):
     key = api_key()
     if not key:
-        return {"error": "LLM 키가 없다 (ANTHROPIC_API_KEY)"}
+        return {"error": "쓸 수 있는 LLM 키가 없다", "key": {k: v for k, v in key_info().items() if k != "_key"}}
     import anthropic
     client = anthropic.Anthropic(api_key=key)
     box = Toolbox(data, events, upstream, cutoff)
@@ -136,7 +202,10 @@ def run(question, cutoff, data, events, upstream):
     trace, results = [], []
     for _ in range(MAX_TURNS):
         r = client.messages.create(model=MODEL, max_tokens=1500, system=SYSTEM.format(cutoff=cutoff), tools=TOOLS, messages=messages)
-        messages.append({"role": "assistant", "content": [b.model_dump() for b in r.content]})
+        messages.append({"role": "assistant", "content": [
+            {"type": "text", "text": b.text} if b.type == "text" else
+            {"type": "tool_use", "id": b.id, "name": b.name, "input": b.input}
+            for b in r.content if b.type in ("text", "tool_use")]})
         calls = [b for b in r.content if b.type == "tool_use"]
         if not calls:
             text = "".join(b.text for b in r.content if b.type == "text")

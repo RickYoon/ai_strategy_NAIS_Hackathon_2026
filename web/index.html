@@ -46,34 +46,39 @@ svg text{font-family:inherit}
 <body>
 <header>
   <h1>앞으로 성장할 연구 주제를 찾아주는 에이전트</h1>
-  <input id="q" list="names" value="glass" placeholder="주제 (영문, 예: glass)">
+  <input id="q" list="names" value="" placeholder="주제를 넣거나, 비워 두고 후보 찾기">
   <datalist id="names"></datalist>
-  <label class="note">기준 연도 <select id="c"></select></label>
-  <button id="run">돌리기</button>
+  <label class="note">시점 <select id="c"></select></label>
+  <button id="find">후보 찾기</button>
+  <button id="run">이 주제 근거 보기</button>
   <button id="open" class="ghost">가린 것 열기 → 2026</button>
   <span class="note" id="src"></span>
 </header>
 <main>
   <section class="log">
     <h2>에이전트가 하는 일</h2>
+    <div id="plan" style="margin-bottom:10px"></div>
     <div class="step s1" id="s1"><b>01 읽는다</b><span></span></div>
     <div class="step s2" id="s2"><b>02 대조한다</b><span></span></div>
     <div class="step s3" id="s3"><b>03 찾는다</b><span></span></div>
     <div class="step s4" id="s4"><b>04 검증한다</b><span></span></div>
     <p class="note">숫자는 전부 코드가 센다. 판정은 연구자가 한다.</p>
   </section>
-  <section id="out"><p class="note">주제를 넣고 "돌리기"를 누른다.</p></section>
+  <section id="out"><p class="note">후보를 찾는 중…</p></section>
 </main>
 <script>
-const $=s=>document.querySelector(s);let META=null,T=null,REVEAL=false;
+const $=s=>document.querySelector(s);let META=null,T=null,REVEAL=false,LLM={llm:false},AG=null;
 const pct=x=>(x*100).toFixed(x<0.1?1:0)+'%';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function init(){
   META=await (await fetch('/api/meta?venue=ectc')).json();
   $('#names').innerHTML=META.topic_names.slice(0,400).map(n=>`<option value="${n}">`).join('');
-  $('#c').innerHTML=META.years.filter(y=>y>=2021).map(y=>`<option ${y==2023?'selected':''}>${y}</option>`).join('');
-  $('#src').textContent=`${META.meta.name} · ${META.meta.years} · ${META.n_papers.toLocaleString()}편 · OpenAlex에서 ${META.meta.collected_at.slice(0,16).replace('T',' ')} (UTC) 수집`;
+  $('#c').innerHTML=META.years.filter(y=>y>=2021).reverse().map(y=>`<option value="${y}" ${y==2026?'selected':''}>${y==2026?'지금 (2026)':y+'년으로 돌아가 검증'}</option>`).join('');
+  $('#c').onchange=()=>{sync();($('#q').value.trim()?run:find)()};sync();
+  LLM=await (await fetch('/api/has_llm')).json();
+  $('#src').textContent=`${META.meta.name} · ${META.meta.years} · ${META.n_papers.toLocaleString()}편 · OpenAlex에서 ${META.meta.collected_at.slice(0,16).replace('T',' ')} (UTC) 수집 · ${LLM.llm?'LLM '+LLM.model:'LLM 없음 (정해진 순서로 실행)'}`;
 }
+const NOW=2026;function sync(){$('#open').style.display=Number($('#c').value)<NOW?'':'none'}
 function upto(c){return T.papers.filter(p=>p.y<=c)}
 function people(c){const I={},A={};for(const p of upto(c)){for(const n of p.inst)I[n]=(I[n]||0)+1;for(const n of p.auth)A[n]=(A[n]||0)+1}
   const top=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]);return{inst:top(I),auth:top(A)}}
@@ -123,22 +128,91 @@ function render(c){
     ${bt.cutoff!=c?'<br><b>'+c+'년 기준은 아직 3년이 지나지 않아 검증할 수 없다. 가장 가까운 '+bt.cutoff+'년 기준을 보여준다.</b>':''}</div>
     <div class="chips" style="margin-top:8px">${bt.lit_topics.filter(x=>x.hot).map(x=>`<span class="${x.grew?'ok':'no'}">${x.grew?'✓':'✗'} ${x.topic}</span>`).join('')}</div>`;
   $('#out').innerHTML=`
-  <div class="card"><div class="head"><span class="t">${T.topic}</span><span class="pill ${lit?'on':''}">${lit?'신호 켜짐':'신호 없음'}</span><span class="note">기준 연도 ${c}년 — 그 해까지의 기록만 본다${REVEAL?' (지금은 2026년까지 열어 둠)':''}</span></div>
+  <div class="card"><div class="head"><span class="t">${T.topic}</span><span class="pill ${lit?'on':''}">${lit?'신호 켜짐':'신호 없음'}</span><span class="note">${c==NOW?'지금까지의 기록':c+'년으로 돌아감 — 그 해까지의 기록만 본다'}${REVEAL?' (지금은 2026년까지 열어 둠)':''}</span></div>
     ${chart(c,show)}
     <div class="note">${ev.map(e=>`<span class="p">●</span> ${e.date} ${e.text} <span style="color:#9aa5ae">(${e.source})</span>`).join(' &nbsp; ')||'이 주제에 적어 둔 산업 사건이 없다'}</div></div>
+  ${AG&&AG.sentences?`<div class="card" style="background:var(--accbg);border-color:var(--acc)"><h2>에이전트의 설명 — 문장마다 근거 도구 표시 · 숫자는 도구 결과와 대조함</h2>
+    ${AG.sentences.map(s=>`<p style="margin:6px 0;font-size:15px;line-height:1.5">${s.text} <span class="note">[${NAMES[s.from]||s.from}]</span></p>`).join('')}
+    <p class="note" style="margin-top:8px"><b>한계</b> ${AG.caution||''}</p>
+    <p class="note">도구 결과에 없는 숫자가 들어 있어 버린 문장: ${AG.dropped.length}개${AG.dropped.map(d=>'<br><s>'+d.text+'</s>').join('')} · ${AG.model}</p></div>`:''}
   ${upcard(c,show)}
   <div class="grid">
     <div class="card"><h2>01 읽는다 — 내용이 바뀌었나</h2>${sig}</div>
     <div class="card"><h2>04 검증한다 — 이 신호는 과거에 얼마나 맞았나</h2>${ver}</div>
     <div class="card"><h2>03 찾는다 — ${c}년까지 이 주제를 발표한 곳</h2><div class="big" style="color:var(--acc)">${ps.inst.length}곳 · ${ps.auth.length}명</div>
-      <table><tr><th>기관</th><th>발표</th></tr>${ps.inst.slice(0,8).map(([n,k])=>`<tr><td>${n}</td><td>${k}</td></tr>`).join('')}</table>
-      <div class="note" style="margin-top:6px">저자: ${ps.auth.slice(0,6).map(([n,k])=>`${n} (${k})`).join(' · ')}</div></div>
-    <div class="card"><h2>근거 원문 — ${c}년까지 ${upto(c).length}편 (주황 = 양산 문제를 다룬 제목)</h2>
+      <table><tr><th>기관</th><th>발표</th></tr>${ps.inst.slice(0,8).map(([n,k])=>`<tr><td><a href="#" data-who="inst" data-name="${n.replace(/"/g,'&quot;')}">${n}</a></td><td>${k}</td></tr>`).join('')}</table>
+      <div class="note" style="margin-top:6px">저자: ${ps.auth.slice(0,6).map(([n,k])=>`<a href="#" data-who="auth" data-name="${n.replace(/"/g,'&quot;')}">${n}</a> (${k})`).join(' · ')}<br>이름을 누르면 그 기관 · 저자가 해마다 무엇을 발표했는지 본다</div></div>
+    <div class="card"><div class="head"><h2 style="margin:0">근거 원문 — ${c}년까지 ${upto(c).length}편 (주황 = 양산 문제를 다룬 제목)</h2>
+      <button class="ghost" id="bib" style="padding:5px 12px;font-size:13px">BibTeX로 내려받기 (Zotero · LaTeX용)</button></div>
       <div style="max-height:300px;overflow:auto"><table>${upto(c).slice().reverse().map(p=>`<tr><td>${p.y}</td><td class="${p.p?'p':''}">${p.doi?`<a href="${p.doi}" target="_blank" rel="noopener" ${p.p?'style="color:inherit"':''}>${p.t}</a>`:p.t}</td></tr>`).join('')}</table></div></div>
-  </div>`}
-async function run(){
-  const q=$('#q').value.trim().toLowerCase(),c=Number($('#c').value);REVEAL=false;
+  </div>
+  <div id="who"></div>
+  <div class="card" id="gap"><div class="head"><h2 style="margin:0">연구 공백 지도 — 어떤 문제를 어떤 방법으로 풀고 있고, 어디가 비었나</h2>
+    <button class="ghost" id="gapbtn" style="padding:5px 12px;font-size:13px">그리기 (LLM이 제목 분류 · 20~40초)</button></div>
+    <div class="note">분류는 LLM이 제목만 보고 한다. 개수는 코드가 센다. 거친 지도이므로 칸을 눌러 원문을 확인한다.</div><div id="gapout"></div></div>`;
+  wire(c,show)}
+const NAMES={search_topics:'주제 찾기',read_topic:'01 읽는다',industry_events:'02 대조한다',find_people:'03 찾는다',verify_signal:'04 검증한다',cross_field:'다른 분야 신호'};
+let FIND=null;
+function spark(v){const mx=Math.max(...v,0.0001),w=90,h=26;return `<svg viewBox="0 0 ${w} ${h}" style="width:${w}px;height:${h}px"><polyline points="${v.map((x,i)=>`${4+i*(w-8)/Math.max(1,v.length-1)},${h-3-x/mx*(h-6)}`).join(' ')}" fill="none" stroke="#12293f" stroke-width="2"/></svg>`}
+function renderFind(){
+  const f=FIND,c=f.cutoff,act=f.candidates.filter(x=>x.active),rest=f.candidates.filter(x=>!x.active);
+  const canOpen=act.some(x=>x.grew!==null&&x.grew!==undefined);
+  const row=x=>`<tr><td><a href="#" data-go="${x.topic}"><b>${x.ko||x.topic}</b></a> <span class="note">${x.ko?x.topic:''}</span></td>
+    <td>${spark(x.share)}</td><td>${x.share_recent_percent}%</td><td><span class="p">${x.problem_before_percent}% → ${x.problem_recent_percent}%</span></td><td>${x.papers_recent}편</td>
+    ${REVEAL&&canOpen?`<td>${x.grew===true?'<b style="color:var(--grn)">✓ 커졌다</b>':x.grew===false?'<span style="color:var(--red)">✗ 그대로</span>':''}</td>`:''}</tr>`;
+  const head=`<tr><th>주제</th><th>발표 비중 흐름</th><th>최근 3년 비중</th><th>양산 문제를 다룬 비중</th><th>최근 3년 발표</th>${REVEAL&&canOpen?'<th>3년 뒤 실제</th>':''}</tr>`;
+  $('#out').innerHTML=`<div class="card"><div class="head"><span class="t">${c==NOW?'지금':c+'년으로 돌아가면,'} 신호가 켜진 주제 ${act.length}개</span><span class="note">${c==NOW?'':'그 해까지의 기록만 본다 · '}이미 활발한 주제 중 내용이 양산 문제 쪽으로 옮겨 간 것</span></div>
+    <table>${head}${act.map(row).join('')}</table>
+    <p class="note" style="margin-top:8px">주제를 누르면 근거 한 장이 나온다. ${f.labeled?`일반 낱말 ${f.removed}개는 LLM이 걸러냈다.`:'LLM이 없어 일반 낱말이 섞여 있다.'}
+    ${canOpen?(REVEAL?'':'"가린 것 열기"를 누르면 이 후보들이 3년 뒤 실제로 커졌는지 나온다.'):`이 후보들이 맞을지는 3년 뒤에야 안다. 그래서 같은 방법을 과거에 돌려 본 성적을 같이 준다: <a href="#" id="goback">2023년으로 돌아가 검증하기</a>`}</p>
+    <details><summary class="note">아직 활발하지 않은 주제 중 신호가 켜진 것 ${rest.length}개</summary><table>${head}${rest.map(row).join('')}</table></details></div>`;
+  const gb=$('#goback');if(gb)gb.onclick=e=>{e.preventDefault();$('#c').value=2023;sync();find()};
+  document.querySelectorAll('[data-go]').forEach(a=>a.onclick=e=>{e.preventDefault();$('#q').value=a.dataset.go;run()})}
+async function find(){
+  const c=Number($('#c').value);REVEAL=false;T=null;AG=null;$('#open').textContent='가린 것 열기 → 2026';$('#plan').innerHTML='';
   document.querySelectorAll('.step').forEach(e=>{e.classList.remove('on');e.querySelector('span').textContent=''});
+  $('#out').innerHTML='<p class="note">후보를 찾는 중… (처음 한 번은 LLM이 낱말을 거르느라 30초쯤 걸린다)</p>';
+  try{FIND=await (await fetch('/api/find?venue=ectc&c='+c)).json()}catch(e){FIND={error:String(e)}}
+  if(FIND.error){$('#out').innerHTML=`<div class="err">${FIND.error}</div>`;return}
+  renderFind()}
+function wire(c,show){
+  $('#bib').onclick=()=>{const esc=s=>String(s).replace(/[{}]/g,'');
+    const txt=upto(c).map((p,i)=>{const fa=(p.auth[0]||'anon').split(' ').pop().toLowerCase().replace(/[^a-z]/g,'');
+      return `@inproceedings{${fa}${p.y}_${i},\n  title = {${esc(p.t)}},\n  author = {${p.auth.map(esc).join(' and ')}},\n  year = {${p.y}},\n  booktitle = {${esc(META.meta.name)}},${p.doi?`\n  doi = {${p.doi.replace('https://doi.org/','')}},`:''}\n}`}).join('\n\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download=`${T.topic.replace(/\s+/g,'_')}_until_${c}.bib`;a.click()};
+  document.querySelectorAll('[data-who]').forEach(a=>a.onclick=async e=>{e.preventDefault();
+    const r=await (await fetch(`/api/who?venue=ectc&kind=${a.dataset.who}&name=`+encodeURIComponent(a.dataset.name))).json();
+    if(r.error){$('#who').innerHTML=`<div class="card"><span class="note">${a.dataset.name}: ${r.error}</span></div>`;return}
+    const ys=Object.keys(r.years).filter(y=>Number(y)<=show);
+    $('#who').innerHTML=`<div class="card"><h2>${r.name} — 해마다 무엇을 발표했나 (${show}년까지 · 이 학회 전체 발표 기준)</h2>
+      <table><tr><th>연도</th><th>발표</th><th>많이 나온 주제어</th><th>제목</th></tr>${ys.map(y=>`<tr><td>${y}</td><td>${r.years[y].n}</td>
+      <td><b>${r.years[y].terms.join(' · ')}</b></td><td><details><summary class="note">제목 ${r.years[y].n}편 보기</summary>${r.years[y].papers.map(p=>`<div style="padding:2px 0">${p.doi?`<a href="${p.doi}" target="_blank" rel="noopener">${p.t}</a>`:p.t}</div>`).join('')}</details></td></tr>`).join('')}</table>
+      <div class="note">이름은 공개 기록의 표기 기준이다. 같은 이름의 다른 사람이 섞일 수 있다.</div></div>`;
+    $('#who').scrollIntoView({behavior:'smooth',block:'nearest'})});
+  $('#gapbtn').onclick=async()=>{$('#gapout').innerHTML='<p class="note">분류하는 중…</p>';
+    let g;try{g=await (await fetch(`/api/gap?venue=ectc&c=${c}&q=`+encodeURIComponent(T.topic))).json()}catch(e){g={error:String(e)}}
+    if(g.error){$('#gapout').innerHTML=`<p class="err">${g.error}</p>`;return}
+    const mx=Math.max(1,...Object.values(g.cells).map(x=>x.n));
+    $('#gapout').innerHTML=`<table style="margin-top:8px"><tr><th>문제 ＼ 방법</th>${g.methods.map(m=>`<th>${m}</th>`).join('')}</tr>
+      ${g.problems.map(p=>`<tr><td><b>${p}</b></td>${g.methods.map(m=>{const x=g.cells[p+'|'+m];
+        return x?`<td data-cell="${p}|${m}" style="cursor:pointer;text-align:center;background:rgba(18,112,127,${0.12+0.6*x.n/mx});font-weight:800">${x.n}${x.recent?` <span style="color:#a15c12;font-size:11px">최근 ${x.recent}</span>`:''}</td>`
+                :`<td style="text-align:center;color:#a82c38;background:#fbf3f3">빈 칸</td>`}).join('')}</tr>`).join('')}</table>
+      <div class="note" style="margin-top:6px">${g.cutoff}년까지 ${g.total}편 중 ${g.classified}편 분류, ${g.unknown}편은 제목만으로 알 수 없음 · "최근" = ${g.cutoff-2}~${g.cutoff}년 · ${g.model}<br>
+      빈 칸이 곧 좋은 주제라는 뜻은 아니다. 아무도 안 한 이유가 있을 수 있다. 파볼 만한지는 위의 근거와 같이 본다.</div><div id="cellout"></div>`;
+    document.querySelectorAll('[data-cell]').forEach(td=>td.onclick=()=>{const x=g.cells[td.dataset.cell];
+      $('#cellout').innerHTML=`<p style="margin:10px 0 4px"><b>${td.dataset.cell.replace('|',' × ')}</b></p>`+x.papers.map(p=>`<div style="font-size:13px;padding:2px 0">${p.y} · ${p.doi?`<a href="${p.doi}" target="_blank" rel="noopener">${p.t}</a>`:p.t}</div>`).join('')})}}
+async function run(){
+  if(!$('#q').value.trim())return find();
+  let q=$('#q').value.trim().toLowerCase();const c=Number($('#c').value);REVEAL=false;AG=null;$('#open').textContent='가린 것 열기 → 2026';
+  document.querySelectorAll('.step').forEach(e=>{e.classList.remove('on');e.querySelector('span').textContent=''});
+  $('#plan').innerHTML='';
+  if(LLM.llm){
+    $('#out').innerHTML='<p class="note">에이전트가 계획을 세우고 도구를 부르는 중… (10초쯤)</p>';
+    try{AG=await (await fetch('/api/agent?venue=ectc&c='+c+'&q='+encodeURIComponent($('#q').value.trim()))).json()}catch(e){AG={error:String(e)}}
+    if(AG.error||!AG.topic){$('#plan').innerHTML=`<div class="note" style="color:var(--red)">에이전트 실패: ${AG.error||'주제를 고르지 못함'} — 정해진 순서로 실행</div>`;AG=null}
+    else{q=AG.topic.toLowerCase();
+      for(const s of AG.trace){$('#plan').insertAdjacentHTML('beforeend',`<div class="note" style="padding:3px 0">→ <b>${NAMES[s.tool]||s.tool}</b> ${Object.values(s.input).join(', ')}</div>`);await sleep(180)}}
+  }
   const res=await fetch('/api/topic?venue=ectc&q='+encodeURIComponent(q));T=await res.json();
   if(T.error){$('#out').innerHTML=`<div class="err">${T.error}</div>`;return}
   const j=T.judge[c],ps=people(c),bt=META.backtest.find(b=>b.cutoff==c)||META.backtest[META.backtest.length-1];
@@ -149,9 +223,10 @@ async function run(){
   await say('#s3',`${c}년까지 이 주제를 발표한 기관 ${ps.inst.length}곳, 저자 ${ps.auth.length}명을 찾았다.`);
   await say('#s4',`${bt.cutoff}년으로 돌아가 같은 방법을 돌렸다. 신호가 켜진 활발한 주제 ${bt.hot_lit}개 중 ${bt.hot_lit_grew}개가 3년 뒤 커졌다.`);
   render(c)}
-$('#run').onclick=run;$('#open').onclick=()=>{if(!T||T.error)return;REVEAL=!REVEAL;$('#open').textContent=REVEAL?'다시 가리기':'가린 것 열기 → 2026';render(Number($('#c').value))};
+$('#run').onclick=run;$('#find').onclick=find;$('#open').onclick=()=>{if(!T&&FIND&&!FIND.error){REVEAL=!REVEAL;$('#open').textContent=REVEAL?'다시 가리기':'가린 것 열기 → 2026';renderFind();return}if(!T||T.error)return;REVEAL=!REVEAL;$('#open').textContent=REVEAL?'다시 가리기':'가린 것 열기 → 2026';render(Number($('#c').value))};
 $('#q').addEventListener('keydown',e=>{if(e.key==='Enter')run()});
-init().then(async()=>{const u=new URLSearchParams(location.search);if(u.get('q')){$('#q').value=u.get('q');if(u.get('c'))$('#c').value=u.get('c');await run();if(u.get('open'))$('#open').click()}});
+init().then(async()=>{const u=new URLSearchParams(location.search);if(u.get('c'))$('#c').value=u.get('c');if(!u.get('q')){$('#q').value='';await find();if(u.get('open'))$('#open').click();return}
+  if(u.get('q')){$('#q').value=u.get('q');if(u.get('c'))$('#c').value=u.get('c');await run();if(u.get('open'))$('#open').click()}});
 </script>
 </body>
 </html>

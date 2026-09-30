@@ -144,6 +144,32 @@ def build(key):
                        for i in sorted(idx, key=lambda i: (rows[i]["year"], rows[i]["title"]))],
         }
 
+    # ── 기관 · 저자별 발표 흐름 (누가 어디로 옮겨 갔나)
+    topic_names = set(topics)
+
+    def flow(kind):
+        bucket = defaultdict(list)
+        for i, r in enumerate(rows):
+            names = ({a["name"] for a in r["authors"] if a["name"]} if kind == "auth"
+                     else {ins["name"] for a in r["authors"] for ins in a["inst"] if ins["name"]})
+            for n in names:
+                bucket[n].append(i)
+        out = {}
+        for n, idx in bucket.items():
+            if len(idx) < (5 if kind == "auth" else 8):
+                continue
+            by_year = {}
+            for y in years:
+                ys = [i for i in idx if rows[i]["year"] == y]
+                if not ys:
+                    continue
+                tc = Counter(t for i in ys for t in terms(rows[i]["title"]) if t in topic_names and " " not in t)
+                by_year[str(y)] = {"n": len(ys), "terms": [t for t, _ in tc.most_common(5)],
+                                   "papers": [{"t": rows[i]["title"], "doi": rows[i]["doi"]} for i in ys]}
+            out[n] = {"n": len(idx), "years": by_year}
+        return out
+
+    who = {"auth": flow("auth"), "inst": flow("inst")}
     all_inst = {ins["id"] for r in rows for a in r["authors"] for ins in a["inst"] if ins["id"]}
     all_auth = {a["id"] for r in rows for a in r["authors"] if a["id"]}
     meta = json.loads((ROOT / "data" / "raw" / f"{key}.meta.json").read_text(encoding="utf-8"))
@@ -151,7 +177,7 @@ def build(key):
            "n_papers": len(rows), "n_inst": len(all_inst), "n_auth": len(all_auth), "n_topics": len(topics),
            "rules": {"min_docs": MIN_DOCS, "min_recent": MIN_RECENT, "signal_rise": SIGNAL_RISE, "grow": GROW,
                      "problem_words": PROBLEM.pattern},
-           "backtest": backtest, "topics": topics}
+           "backtest": backtest, "topics": topics, "who": who}
     d = ROOT / "data" / "derived"
     d.mkdir(parents=True, exist_ok=True)
     (d / f"{key}.json").write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
