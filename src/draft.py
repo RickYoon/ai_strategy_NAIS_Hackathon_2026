@@ -10,6 +10,8 @@ import re
 
 import agent
 
+BUDGET = lambda: True  # 서버가 비용 상한 검사 함수를 넣어 준다
+
 PROMPT = """너는 연구 기획서의 '연구개발 동향' 절 초안을 쓰는 조수다. 아래 재료만 써서 한국어로 쓴다.
 규칙:
 - 지금은 {cutoff}년이다. 그 뒤의 일은 쓰지 않는다. 재료에 없는 사실과 숫자는 쓰지 않는다.
@@ -41,6 +43,8 @@ def write(topic, cutoff, data, events, upstream):
             + [p for p in ps if p["y"] < cutoff - 2][:6])
     papers = [{"no": i + 1, "year": p["y"], "title": p["t"], "institutions": p["inst"][:2], "doi": p["doi"]} for i, p in enumerate(pick)]
     mat["papers"] = [{k: v for k, v in p.items() if k != "doi"} for p in papers]
+    if not BUDGET():
+        return {"error": "공개 시연의 LLM 호출 상한을 다 썼다"}
     import anthropic
     r = anthropic.Anthropic(api_key=key).messages.create(
         model=agent.MODEL, max_tokens=6000,

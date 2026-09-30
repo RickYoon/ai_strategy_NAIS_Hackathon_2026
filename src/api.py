@@ -159,10 +159,24 @@ def combo_result(venue):
     return next((r for r in json.loads(f.read_text(encoding="utf-8")) if r["venue"] == venue), None)
 
 
+import os
+LLM_CAP = int(os.environ.get("NAIS_LLM_CAP", "60"))  # 서버를 한 번 띄운 동안 LLM을 부를 수 있는 횟수 (공개 시연 비용 상한)
+LLM_USED = {"n": 0}
+
+
+def llm_budget():
+    """상한을 넘으면 False. 넘은 뒤에는 저장된 응답만 보여준다."""
+    if LLM_USED["n"] >= LLM_CAP:
+        return False
+    LLM_USED["n"] += 1
+    return True
+
+
 def handle(path, q, derived):
     importlib.reload(agent)
     importlib.reload(gaps)
     importlib.reload(draft)
+    gaps.BUDGET = draft.BUDGET = llm_budget
     d = derived(q.get("venue", "ectc"))
     if path == "/api/meta":
         top = sorted(((t, v["n"]) for t, v in d["topics"].items()), key=lambda x: -x[1])
@@ -185,6 +199,11 @@ def handle(path, q, derived):
         key = hashlib.sha1(f"{q.get('venue', 'ectc')}|{c}|{qs}".encode()).hexdigest()[:16]
         cf = ROOT / "data" / "derived" / "agent_cache" / f"{key}.json"
         try:
+            if not cf.exists() or q.get("fresh"):
+                if not llm_budget():
+                    raise RuntimeError(f"공개 시연 상한({LLM_CAP}회)을 다 썼다")
+            else:
+                raise RuntimeError("같은 질문의 저장된 응답을 쓴다 (비용 절약)")
             res = agent.run(qs, c, d, events(), upstream,
                             {"spread": lambda tp: spread(tp, c, derived), "relations": lambda tp: ontology(tp, c, d, derived)})
         except Exception as e:  # 네트워크 · 키 문제
@@ -276,5 +295,5 @@ def handle(path, q, derived):
     if path == "/api/gapcheck":
         return gaps.gap_check(q.get("q", "").strip().lower(), int(q.get("c", 2023)), d), 200
     if path == "/api/has_llm":
-        return {"llm": bool(agent.api_key()), "model": agent.MODEL}, 200
+        return {"llm": bool(agent.api_key()), "model": agent.MODEL, "used": LLM_USED["n"], "cap": LLM_CAP}, 200
     return {"error": "없는 주소"}, 404

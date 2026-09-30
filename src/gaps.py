@@ -39,7 +39,12 @@ def VP(data):
     return "" if v == "ectc" else v + "__"
 
 
+BUDGET = lambda: True  # 서버가 비용 상한 검사 함수를 넣어 준다
+
+
 def ask(prompt):
+    if not BUDGET():
+        return None
     import anthropic
     r = anthropic.Anthropic(api_key=agent.api_key()).messages.create(
         model=agent.MODEL, max_tokens=8000, messages=[{"role": "user", "content": prompt}])
