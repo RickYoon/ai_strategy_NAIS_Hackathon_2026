@@ -316,6 +316,9 @@ def run(question, cutoff, data, events, upstream, extra=None):
     import anthropic
     client = anthropic.Anthropic(api_key=key)
     box = Toolbox(data, events, upstream, cutoff, extra)
+    name = question.strip().lower()
+    if name in data["topics"]:  # 후보 카드를 누르면 주제 이름이 그대로 온다: 넓은 주제로 바꾸지 않는다
+        question = f'{question}\n(“{name}”은 도구에 있는 주제 이름 그대로다. 더 넓은 주제로 바꾸지 말고 이 주제를 읽는다.)'
     messages = [{"role": "user", "content": question}]
     trace, results = [], []
     for _ in range(MAX_TURNS):
