@@ -180,8 +180,22 @@ def handle(path, q, derived):
         return ({"kind": kind, "name": name, **w}, 200) if w else ({"error": "발표가 적어 흐름을 만들지 않았다"}, 404)
     if path == "/api/agent":
         c = int(q.get("c", 2026))
-        return agent.run(q.get("q", ""), c, d, events(), upstream,
-                         {"spread": lambda tp: spread(tp, c, derived), "relations": lambda tp: ontology(tp, c, d, derived)}), 200
+        import hashlib
+        qs = q.get("q", "").strip()
+        key = hashlib.sha1(f"{q.get('venue', 'ectc')}|{c}|{qs}".encode()).hexdigest()[:16]
+        cf = ROOT / "data" / "derived" / "agent_cache" / f"{key}.json"
+        try:
+            res = agent.run(qs, c, d, events(), upstream,
+                            {"spread": lambda tp: spread(tp, c, derived), "relations": lambda tp: ontology(tp, c, d, derived)})
+        except Exception as e:  # 네트워크 · 키 문제
+            res = {"error": f"{type(e).__name__}: {str(e)[:200]}"}
+        if "error" not in res:
+            cf.parent.mkdir(parents=True, exist_ok=True)
+            cf.write_text(json.dumps({**res, "question": qs}, ensure_ascii=False), encoding="utf-8")
+        elif cf.exists():
+            # LLM을 부를 수 없을 때: 같은 질문에 대해 전에 실제로 받은 응답을 그대로 보여준다 (화면에 표시)
+            res = {**json.loads(cf.read_text(encoding="utf-8")), "cached": True, "cache_reason": res["error"][:120]}
+        return res, 200
     if path == "/api/gap":
         return gaps.gap_map(q.get("q", "").strip().lower(), int(q.get("c", 2023)), d), 200
     if path == "/api/find":

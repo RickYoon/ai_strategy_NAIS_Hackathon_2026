@@ -363,7 +363,7 @@ function agCard(){
   return `<div class="card ag"><h2>에이전트의 설명<small>문장마다 근거 도구 표시 · 숫자는 도구 결과와 대조함</small></h2>
     ${AG.sentences.map(s=>`<p class="s">${s.text} <span class="src">${NAMES[s.from]||s.from}</span></p>`).join('')}
     <div class="lim"><p class="note"><b>한계</b> ${AG.caution||''}</p>
-    <p class="note">도구 결과에 없는 숫자가 들어 있어 버린 문장: ${dr.length}개${dr.map(d=>'<br><s>'+d.text+'</s>').join('')} · ${AG.model||''}</p></div></div>`}
+    <p class="note">도구 결과에 없는 숫자가 들어 있어 버린 문장: ${dr.length}개${dr.map(d=>'<br><s>'+d.text+'</s>').join('')} · ${AG.model||''}${AG.cached?' · <b style="color:var(--red)">LLM에 연결되지 않아, 같은 질문에 전에 실제로 받은 응답을 보여준다</b>':''}</p></div></div>`}
 
 function chart(c,show){
   const Y=META.years,W=1000,H=330,L=56,R=W-44,B=H-40,x=i=>L+i*(R-L)/(Y.length-1),mx=Math.max(...T.share)*1.2||0.01,y=v=>B-v/mx*(B-90);
