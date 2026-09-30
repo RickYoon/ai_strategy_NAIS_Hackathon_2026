@@ -386,6 +386,7 @@ def handle(path, q, derived):
                                 "collected_at": meta["collected_at"][:10], "inst": len(n_i), "auth": len(n_a), "in_graph": m != "pvsc"})
                 if m != "pvsc":
                     tot_i |= n_i; tot_a |= n_a
+            P5 = derived("pkg")  # 학회 다섯 곳 합계는 analyze.py가 센 값을 그대로 쓴다 (화면 · 발표 자료 같은 숫자)
             ev = events()
             _evraw = json.loads((ROOT / "data" / "events.json").read_text(encoding="utf-8"))
             ko = lambda t: labels.get(t, {}).get("ko") or t
@@ -410,8 +411,8 @@ def handle(path, q, derived):
             edges += [{"a": "t:" + t, "b": "a:" + a_, "w": n} for t in cand for a_, n in ta[t].most_common(ka)]
             edges += [{"a": "a:" + a_, "b": "i:" + ai[a_].most_common(1)[0][0], "w": ai[a_].most_common(1)[0][1]} for a_ in auths if ai[a_]]
             cache[gkey] = {"sources": sources, "nodes": nodes, "edges": edges, "ki": ki, "ka": ka, "events": sum(len(v) for k, v in _evraw.items() if not k.startswith("_")), "event_topics": sum(1 for k in _evraw if not k.startswith("_")),
-                          "schema": {"papers": sum(s_["count"] for s_ in sources if s_["in_graph"]), "inst": len(tot_i), "auth": len(tot_a),
-                                     "topics": d["n_topics"], "candidates": len(cand), "features": 16}}
+                          "schema": {**{k: P5[k] for k in ("n_papers", "n_inst", "n_auth", "n_topics")}, "candidates": len(cand), "features": 16}}
+            cache["g" + gkey[1:]]["schema"].update({"papers": P5["n_papers"], "inst": P5["n_inst"], "auth": P5["n_auth"], "topics": P5["n_topics"]})
         return cache[gkey], 200
     if path == "/api/who":
         kind, name = q.get("kind", "inst"), q.get("name", "")
