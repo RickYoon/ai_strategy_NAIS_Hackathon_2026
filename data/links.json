@@ -1,0 +1,10 @@
+{
+  "_설명": "다른 분야와의 연결. 사람이 적은 가설이다. 과거 검증을 거치지 않았다.",
+  "ai_scale": {
+    "label": "AI 모델이 커지는 흐름",
+    "field": "컴퓨터 과학 (OpenAlex 분야 분류)",
+    "queries": ["pre-trained", "language model"],
+    "why": "모델이 커지면 메모리 대역폭 · 전력 · 발열 수요가 는다는 가설",
+    "topics": ["hbm", "hpc", "memory", "power delivery", "cooling"]
+  }
+}

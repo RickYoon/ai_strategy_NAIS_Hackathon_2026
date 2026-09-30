@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>앞으로 성장할 연구 주제를 찾아주는 에이전트</title>
+<style>
+:root{--ink:#12293f;--acc:#12707f;--amb:#a15c12;--grn:#1d6b4a;--red:#a82c38;--sub:#6b7885;--line:#dfe5ea;--panel:#f4f6f8;--accbg:#e6f2f4}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--ink);background:#fff}
+header{padding:18px 28px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+header h1{font-size:18px;margin:0 18px 0 0;letter-spacing:-.02em}
+input,select,button{font:inherit;padding:9px 12px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+input{width:200px}
+button{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700;cursor:pointer}
+button.ghost{background:#fff;color:var(--ink)}
+main{display:grid;grid-template-columns:300px 1fr;gap:20px;padding:20px 28px;max-width:1400px}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+.log{background:var(--panel);border-radius:12px;padding:16px;align-self:start}
+.log h2,.card h2{font-size:13px;color:var(--sub);margin:0 0 10px;letter-spacing:.04em}
+.step{background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:8px;border-left:5px solid var(--line);opacity:.35;transition:opacity .3s}
+.step.on{opacity:1}
+.step b{display:block;font-size:15px}
+.step span{font-size:12.5px;color:#42525f;line-height:1.45;display:block;margin-top:3px}
+.s1.on{border-color:var(--ink)}.s2.on{border-color:var(--amb)}.s3.on{border-color:var(--acc)}.s4.on{border-color:var(--grn)}
+.card{border:1.5px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+.head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.head .t{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.pill{border-radius:30px;padding:4px 12px;font-size:13px;font-weight:800;color:#fff;background:var(--sub)}
+.pill.on{background:var(--amb)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:1100px){.grid{grid-template-columns:1fr}}
+.big{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.note{font-size:12.5px;color:var(--sub);line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:13px}
+td,th{padding:5px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--sub);font-weight:700;font-size:12px}
+.chips span{display:inline-block;font-size:12px;border-radius:20px;padding:3px 9px;margin:0 5px 5px 0;background:var(--panel)}
+.chips .ok{background:#e4f1ea;color:var(--grn);font-weight:700}.chips .no{background:#f6eaea;color:var(--red)}
+a{color:var(--acc)}
+.p{color:var(--amb);font-weight:700}
+.err{color:var(--red);font-weight:700;padding:20px}
+svg text{font-family:inherit}
+</style>
+</head>
+<body>
+<header>
+  <h1>앞으로 성장할 연구 주제를 찾아주는 에이전트</h1>
+  <input id="q" list="names" value="glass" placeholder="주제 (영문, 예: glass)">
+  <datalist id="names"></datalist>
+  <label class="note">기준 연도 <select id="c"></select></label>
+  <button id="run">돌리기</button>
+  <button id="open" class="ghost">가린 것 열기 → 2026</button>
+  <span class="note" id="src"></span>
+</header>
+<main>
+  <section class="log">
+    <h2>에이전트가 하는 일</h2>
+    <div class="step s1" id="s1"><b>01 읽는다</b><span></span></div>
+    <div class="step s2" id="s2"><b>02 대조한다</b><span></span></div>
+    <div class="step s3" id="s3"><b>03 찾는다</b><span></span></div>
+    <div class="step s4" id="s4"><b>04 검증한다</b><span></span></div>
+    <p class="note">숫자는 전부 코드가 센다. 판정은 연구자가 한다.</p>
+  </section>
+  <section id="out"><p class="note">주제를 넣고 "돌리기"를 누른다.</p></section>
+</main>
+<script>
+const $=s=>document.querySelector(s);let META=null,T=null,REVEAL=false;
+const pct=x=>(x*100).toFixed(x<0.1?1:0)+'%';
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function init(){
+  META=await (await fetch('/api/meta?venue=ectc')).json();
+  $('#names').innerHTML=META.topic_names.slice(0,400).map(n=>`<option value="${n}">`).join('');
+  $('#c').innerHTML=META.years.filter(y=>y>=2021).map(y=>`<option ${y==2023?'selected':''}>${y}</option>`).join('');
+  $('#src').textContent=`${META.meta.name} · ${META.meta.years} · ${META.n_papers.toLocaleString()}편 · OpenAlex에서 ${META.meta.collected_at.slice(0,16).replace('T',' ')} (UTC) 수집`;
+}
+function upto(c){return T.papers.filter(p=>p.y<=c)}
+function people(c){const I={},A={};for(const p of upto(c)){for(const n of p.inst)I[n]=(I[n]||0)+1;for(const n of p.auth)A[n]=(A[n]||0)+1}
+  const top=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]);return{inst:top(I),auth:top(A)}}
+function chart(c,show){
+  const Y=META.years,W=760,H=300,x=i=>70+i*(W-110)/(Y.length-1),mx=Math.max(...T.share)*1.15||0.01,y=v=>H-40-v/mx*(H-110);
+  const vis=Y.map((yr,i)=>yr<=show);let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px">`;
+  s+=`<line x1="50" y1="${H-40}" x2="${W-20}" y2="${H-40}" stroke="#dfe5ea" stroke-width="2"/>`;
+  const ci=Y.indexOf(c);
+  if(show<Y[Y.length-1]){s+=`<rect x="${x(ci)+14}" y="18" width="${W-34-x(ci)}" height="${H-58}" rx="8" fill="#eef1f4"/><text x="${(x(ci)+W)/2}" y="${H/2}" text-anchor="middle" font-size="14" font-weight="800" fill="#9aa5ae">가려 둔 미래</text>`}
+  else if(c<Y[Y.length-1]){s+=`<line x1="${x(ci)+14}" y1="18" x2="${x(ci)+14}" y2="${H-40}" stroke="#9aa5ae" stroke-dasharray="4 4"/><text x="${x(ci)+20}" y="30" font-size="11.5" fill="#6b7885">기준 연도 뒤 (열어 본 부분)</text>`}
+  for(const e of T.events){const [ey,em]=e.date.split('-').map(Number);const pos=ey+(em-1)/12;if(pos>show+0.99)continue;
+    const ex=x(0)+(pos-Y[0])*(W-110)/(Y.length-1);s+=`<line x1="${ex}" y1="52" x2="${ex}" y2="${H-40}" stroke="#a15c12" stroke-dasharray="4 4" stroke-width="1.5"/><circle cx="${ex}" cy="52" r="6" fill="#a15c12"><title>${e.date} ${e.text} (${e.source})</title></circle>`}
+  const pts=Y.map((yr,i)=>vis[i]?`${x(i)},${y(T.share[i])}`:null).filter(Boolean).join(' ');
+  s+=`<polyline points="${pts}" fill="none" stroke="#12293f" stroke-width="3.5" stroke-linejoin="round"/>`;
+  Y.forEach((yr,i)=>{s+=`<text x="${x(i)}" y="${H-18}" text-anchor="middle" font-size="12" fill="#6b7885">${yr}</text>`;
+    if(vis[i])s+=`<circle cx="${x(i)}" cy="${y(T.share[i])}" r="4" fill="#12293f"/><text x="${x(i)}" y="${y(T.share[i])-10}" text-anchor="middle" font-size="12" font-weight="800" fill="#12293f">${(T.share[i]*100).toFixed(1)}%</text>`});
+  s+=`<text x="50" y="14" font-size="11.5" fill="#6b7885">학회 발표 중 이 주제의 비중</text>`;
+  if(T.events.length)s+=`<text x="50" y="56" font-size="11.5" font-weight="800" fill="#a15c12">산업</text>`;
+  return s+'</svg>'}
+function upcard(c,show){
+  const U=T.upstream;if(!U)return '';
+  const q=Object.keys(U.series)[0],S=U.series[q],ys=Object.keys(S).map(Number).filter(y=>y<=Math.min(show,2025));
+  const mx=Math.max(...ys.map(y=>S[y]))||1,W=760,H=170,x=y=>70+(y-2018)*(W-110)/8;
+  let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px"><line x1="50" y1="${H-30}" x2="${W-20}" y2="${H-30}" stroke="#dfe5ea" stroke-width="2"/>`;
+  for(const y of ys){if(y<2018)continue;const h=S[y]/mx*(H-70);s+=`<rect x="${x(y)-16}" y="${H-30-h}" width="32" height="${h}" rx="4" fill="#12707f"/><text x="${x(y)}" y="${H-36-h}" text-anchor="middle" font-size="12" font-weight="800" fill="#12707f">${S[y].toLocaleString()}</text>`}
+  for(let y=2018;y<=2026;y++)s+=`<text x="${x(y)}" y="${H-10}" text-anchor="middle" font-size="12" fill="#6b7885">${y}</text>`;
+  s+='</svg>';
+  const a=c-2,b=c,ia=META.years.indexOf(a),ib=META.years.indexOf(b);
+  const grow=S[a]?(S[b]/S[a]).toFixed(1):'-';
+  return `<div class="card"><div class="head"><h2 style="margin:0">다른 분야에서 온 신호 — ${U.label}</h2><span class="pill" style="background:var(--red)">검증 전 · 사람이 적은 연결</span></div>
+   <div class="note">${U.field}에서 제목에 "${q}"가 들어간 논문 수. ${U.why}.</div>${s}
+   <div class="big" style="color:var(--acc);font-size:24px">${a}년 ${S[a].toLocaleString()}편 → ${b>2025?2025:b}년 ${S[Math.min(b,2025)].toLocaleString()}편 (${grow}배)</div>
+   <div class="note">같은 기간 이 학회에서 "${T.topic}"의 비중은 ${(T.share[ia]*100).toFixed(1)}% → ${(T.share[ib]*100).toFixed(1)}%.
+   이 연결은 과거 시점으로 돌려 검증하지 않았다. 지금 와서 고른 사례다.</div></div>`}
+function render(c){
+  const show=REVEAL?2026:c,j=T.judge[c],ps=people(c),bt=META.backtest.find(b=>b.cutoff==c)||META.backtest[META.backtest.length-1];
+  const ev=T.events.filter(e=>Number(e.date.slice(0,4))<=show);
+  const lit=j&&j.lit;
+  const sig=j&&j.n_before?`<div class="big" style="color:${lit?'var(--amb)':'var(--sub)'}">${pct(j.p_before)} → ${pct(j.p_recent)}</div>
+     <div class="note">양산 문제를 다룬 제목의 비중 · ${2018}~${c-3}년 ${j.k_before}/${j.n_before}편 → ${c-2}~${c}년 ${j.k_recent}/${j.n_recent}편<br>10%p 넘게 오르면 신호가 켜졌다고 본다</div>`
+     :`<div class="note">${j?j.reason||'':'이 기준 연도에는 기록이 부족하다'}</div>`;
+  const r=(a,b)=>b?Math.round(a/b*100):0;
+  const ver=`<div class="big" style="color:var(--grn)">${bt.hot_lit}개 중 ${bt.hot_lit_grew}개</div>
+    <div class="note">${bt.cutoff}년 기준으로 같은 신호가 켜진 활발한 주제 가운데 3년 뒤(${bt.opened}) 실제로 커진 것 (${r(bt.hot_lit_grew,bt.hot_lit)}%)<br>
+    신호가 안 켜진 활발한 주제는 ${bt.hot_unlit}개 중 ${bt.hot_unlit_grew}개 (${r(bt.hot_unlit_grew,bt.hot_unlit)}%)<br>
+    모든 주제로 넓히면 켜짐 ${bt.lit}개 중 ${bt.lit_grew}개 (${r(bt.lit_grew,bt.lit)}%) · 안 켜짐 ${bt.unlit}개 중 ${bt.unlit_grew}개 (${r(bt.unlit_grew,bt.unlit)}%)
+    ${bt.cutoff!=c?'<br><b>'+c+'년 기준은 아직 3년이 지나지 않아 검증할 수 없다. 가장 가까운 '+bt.cutoff+'년 기준을 보여준다.</b>':''}</div>
+    <div class="chips" style="margin-top:8px">${bt.lit_topics.filter(x=>x.hot).map(x=>`<span class="${x.grew?'ok':'no'}">${x.grew?'✓':'✗'} ${x.topic}</span>`).join('')}</div>`;
+  $('#out').innerHTML=`
+  <div class="card"><div class="head"><span class="t">${T.topic}</span><span class="pill ${lit?'on':''}">${lit?'신호 켜짐':'신호 없음'}</span><span class="note">기준 연도 ${c}년 — 그 해까지의 기록만 본다${REVEAL?' (지금은 2026년까지 열어 둠)':''}</span></div>
+    ${chart(c,show)}
+    <div class="note">${ev.map(e=>`<span class="p">●</span> ${e.date} ${e.text} <span style="color:#9aa5ae">(${e.source})</span>`).join(' &nbsp; ')||'이 주제에 적어 둔 산업 사건이 없다'}</div></div>
+  ${upcard(c,show)}
+  <div class="grid">
+    <div class="card"><h2>01 읽는다 — 내용이 바뀌었나</h2>${sig}</div>
+    <div class="card"><h2>04 검증한다 — 이 신호는 과거에 얼마나 맞았나</h2>${ver}</div>
+    <div class="card"><h2>03 찾는다 — ${c}년까지 이 주제를 발표한 곳</h2><div class="big" style="color:var(--acc)">${ps.inst.length}곳 · ${ps.auth.length}명</div>
+      <table><tr><th>기관</th><th>발표</th></tr>${ps.inst.slice(0,8).map(([n,k])=>`<tr><td>${n}</td><td>${k}</td></tr>`).join('')}</table>
+      <div class="note" style="margin-top:6px">저자: ${ps.auth.slice(0,6).map(([n,k])=>`${n} (${k})`).join(' · ')}</div></div>
+    <div class="card"><h2>근거 원문 — ${c}년까지 ${upto(c).length}편 (주황 = 양산 문제를 다룬 제목)</h2>
+      <div style="max-height:300px;overflow:auto"><table>${upto(c).slice().reverse().map(p=>`<tr><td>${p.y}</td><td class="${p.p?'p':''}">${p.doi?`<a href="${p.doi}" target="_blank" rel="noopener" ${p.p?'style="color:inherit"':''}>${p.t}</a>`:p.t}</td></tr>`).join('')}</table></div></div>
+  </div>`}
+async function run(){
+  const q=$('#q').value.trim().toLowerCase(),c=Number($('#c').value);REVEAL=false;
+  document.querySelectorAll('.step').forEach(e=>{e.classList.remove('on');e.querySelector('span').textContent=''});
+  const res=await fetch('/api/topic?venue=ectc&q='+encodeURIComponent(q));T=await res.json();
+  if(T.error){$('#out').innerHTML=`<div class="err">${T.error}</div>`;return}
+  const j=T.judge[c],ps=people(c),bt=META.backtest.find(b=>b.cutoff==c)||META.backtest[META.backtest.length-1];
+  const say=async(id,txt)=>{const e=$(id);e.classList.add('on');e.querySelector('span').innerHTML=txt;await sleep(450)};
+  $('#out').innerHTML='<p class="note">읽는 중…</p>';
+  await say('#s1',`발표 ${META.n_papers.toLocaleString()}편의 제목을 읽었다. "${q}"가 들어간 발표는 ${c}년까지 ${upto(c).length}편.${j&&j.n_before?` 양산 문제 비중 ${pct(j.p_before)} → ${pct(j.p_recent)}.`:''}`);
+  await say('#s2',T.events.length?`적어 둔 산업 사건 ${T.events.filter(e=>Number(e.date.slice(0,4))<=c).length}건을 같은 시간축에 놓았다.`:'이 주제에 적어 둔 산업 사건이 없다.');
+  await say('#s3',`${c}년까지 이 주제를 발표한 기관 ${ps.inst.length}곳, 저자 ${ps.auth.length}명을 찾았다.`);
+  await say('#s4',`${bt.cutoff}년으로 돌아가 같은 방법을 돌렸다. 신호가 켜진 활발한 주제 ${bt.hot_lit}개 중 ${bt.hot_lit_grew}개가 3년 뒤 커졌다.`);
+  render(c)}
+$('#run').onclick=run;$('#open').onclick=()=>{if(!T||T.error)return;REVEAL=!REVEAL;$('#open').textContent=REVEAL?'다시 가리기':'가린 것 열기 → 2026';render(Number($('#c').value))};
+$('#q').addEventListener('keydown',e=>{if(e.key==='Enter')run()});
+init().then(async()=>{const u=new URLSearchParams(location.search);if(u.get('q')){$('#q').value=u.get('q');if(u.get('c'))$('#c').value=u.get('c');await run();if(u.get('open'))$('#open').click()}});
+</script>
+</body>
+</html>
