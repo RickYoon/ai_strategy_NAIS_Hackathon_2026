@@ -176,7 +176,41 @@ def topic_rank(venue, d, topic, c):
     ranked = sorted([k for k in act if k in ms], key=lambda k: -ms[k])
     return {"score": round(ms[topic], 3), "is_candidate": topic in act,
             "rank": ranked.index(topic) + 1 if topic in ranked else None, "of": len(ranked),
-            "beats": sum(1 for k in ranked if ms[k] < ms[topic])}
+            "beats": sum(1 for k in ranked if ms[k] < ms[topic]),
+            "parts": score_parts(venue, d, topic, c, vy), "past": past_picks(venue, labels)}
+
+
+def score_parts(venue, d, topic, c, vy):
+    """배운 점수를 지표별로 쪼갠다: 가중치 × (이 주제 값 − 배운 자료의 평균) / 표준편차. 다 더하면 점수가 된다."""
+    import learn
+    import numpy as np
+    predict, (rows, idx, total) = combo.__dict__["_model"][venue]
+    f = learn.feats(rows, idx, total, topic, c, vy, d["years"][0])
+    if f is None:
+        return None
+    z = (np.array(f, float) - predict.mu) / predict.sd
+    return {"base": round(float(predict.b), 3),
+            "items": [{"name": n, "value": round(float(v), 4), "avg": round(float(m), 4), "w": round(float(w), 3), "part": round(float(w * zz), 3)}
+                      for n, v, m, w, zz in zip(learn.FEATS, f, predict.mu, predict.w, z)]}
+
+
+def past_picks(venue, labels):
+    """배우지 않은 해로 시험: 2021 · 2022년으로 배운 모델이 2023년에 위 20%로 꼽았을 주제와 3년 뒤 결과."""
+    cache = combo.__dict__.setdefault("_past", {})
+    if venue not in cache:
+        import learn
+        import numpy as np
+        vy = combo.__dict__.get("_vy") or combo.__dict__.setdefault("_vy", combo.venue_years())
+        X, y, cs, names = learn.dataset(venue, labels, vy)
+        predict, _ = learn.fit_logistic(X[cs < 2023], y[cs < 2023])
+        m = cs == 2023
+        p, yy, nn = predict(X[m]), y[m], [n for n, k in zip(names, m) if k]
+        k = max(1, round(len(yy) * 0.2))
+        top = np.argsort(-p)[:k]
+        ko = lambda t: labels.get(t, {}).get("ko") or t
+        cache[venue] = {"cutoff": 2023, "of": int(len(yy)), "base_grew": int(yy.sum()),
+                        "picks": [{"topic": nn[i], "ko": ko(nn[i]), "grew": bool(yy[i])} for i in top]}
+    return cache[venue]
 
 
 def combo_result(venue):

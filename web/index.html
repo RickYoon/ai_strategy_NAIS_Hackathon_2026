@@ -219,6 +219,13 @@ details.more>summary{cursor:pointer;font-size:13.5px;font-weight:700;color:var(-
 .dots i.g{background:var(--grn)}
 .lbl{font-size:12.5px;font-weight:700;color:var(--sub);margin:12px 0 6px}
 .now1{background:var(--pribg);color:var(--pridk);border-radius:10px;padding:9px 12px;font-size:13px;font-weight:600;margin-bottom:12px}
+.why{background:#f5f8fd;border-radius:12px;padding:14px 16px;margin:6px 0 14px}
+.wh,.wr{display:grid;grid-template-columns:minmax(150px,1.3fr) 92px 1.4fr 44px;gap:10px;align-items:center}
+.wh{margin-top:10px;font-size:11.5px;font-weight:700;color:var(--mute);padding-bottom:4px;border-bottom:1px solid var(--line)}
+.wr{padding:7px 0;border-bottom:1px solid #e8ecf3}
+.wn b{display:block;font-size:13px}.wn span,.wv span{display:block;font-size:11.5px;color:var(--sub);line-height:1.35}
+.wv b{font-size:14px}.wb{position:relative;height:14px;background:linear-gradient(90deg,transparent calc(50% - 1px),#c5ccd9 calc(50% - 1px),#c5ccd9 calc(50% + 1px),transparent calc(50% + 1px))}
+.wb i{position:absolute;top:0;height:100%;border-radius:3px}.wp{font-weight:800;font-size:13px;text-align:right}
 details.fine{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
 details.fine summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--sub)}
 .draftbox{background:var(--panel);border-radius:12px;padding:20px 24px;margin-top:14px}
@@ -403,17 +410,38 @@ function upcard(c,show){
    <div class="note" style="margin-top:4px">같은 기간 이 학회에서 "${T.topic}"의 비중은 ${(T.share[ia]*100).toFixed(1)}% → ${(T.share[ib]*100).toFixed(1)}%.
    이 연결은 과거 시점으로 돌려 검증하지 않았다. 지금 와서 고른 사례다.</div></div>`}
 
+/* 배운 점수를 지표별로 쪼갠 그림 — 가중치 × (이 주제 값 − 보통 주제 값). 다 더하면 점수가 된다 */
+const FDESC={'비중':['최근 3년 발표 중 이 주제 몫','%'],'흐름(배수)':['최근 3년 몫 ÷ 그 전 몫','x'],'가속(배수)':['올해 몫 ÷ 직전 2년 몫','x'],
+ '양산 문제 비중':['제목에 양산 문제 낱말이 든 발표 비율','%'],'양산 문제 비중 변화':['그 비율이 그 전보다 오른 만큼','p'],
+ '새 기관 비율':['최근 3년 발표 기관 중 처음 들어온 곳','%'],'기관 수':['최근 3년 발표 기관 수','곳'],'기업 비율':['기업이 낀 발표 비율','%'],
+ '기업 비율 변화':['그 비율이 그 전보다 바뀐 만큼','p'],'공동 발표 비율':['두 기관 이상이 함께 낸 발표 비율','%'],'공동 발표 비율 변화':['그 비율이 바뀐 만큼','p'],
+ '한 기관 몫':['가장 많이 낸 한 기관의 몫','%'],'한 기관 몫 변화':['그 몫이 바뀐 만큼','p'],'나라 수':['최근 3년 발표 나라 수','곳'],
+ '학회 수':['패키징 학회 다섯 곳 중 이 주제가 나온 곳','곳'],'학회 수 변화':['그 수가 늘어난 만큼','곳']};
+function fv(n,v){const u=(FDESC[n]||['',''])[1];return u=='%'?(v*100).toFixed(0)+'%':u=='p'?(Math.round(v*100)>0?'+':'')+Math.round(v*100).toFixed(0).replace('-0','0')+'%p':u=='x'?v.toFixed(1)+'배':(u=='곳'&&n.includes('변화')?(v>=0?'+':''):'')+Math.round(v)+(u||'')}
+function whyCard(R){
+  const it=R.parts.items.slice().sort((a,b)=>Math.abs(b.part)-Math.abs(a.part)),mx=Math.max(...it.map(x=>Math.abs(x.part)),1);
+  const row=x=>{const w=Math.abs(x.part)/mx*50,col=x.part>=0?'var(--grn)':'var(--red)';
+    return `<div class="wr"><div class="wn"><b>${x.name}</b><span>${(FDESC[x.name]||[''])[0]}</span></div>
+      <div class="wv"><b>${fv(x.name,x.value)}</b><span>보통 ${fv(x.name,x.avg)}</span></div>
+      <div class="wb"><i style="${x.part>=0?'left:50%':'right:50%'};width:${w}%;background:${col}"></i></div>
+      <div class="wp" style="color:${col}">${x.part>=0?'+':''}${x.part.toFixed(1)}</div></div>`};
+  const top=it.slice(0,6),rest=it.slice(6),up=it.filter(x=>x.part>0).reduce((a,x)=>a+x.part,0),dn=it.filter(x=>x.part<0).reduce((a,x)=>a+x.part,0);
+  const P=R.past,g=P.picks.filter(x=>x.grew);
+  return `<div class="why"><b>이 주제의 배운 점수는 어디서 나왔나</b> <span class="note">지표 16개를 보통 주제와 견줘, 배운 가중치만큼 더하고 뺐다 · 올린 것 합 <b style="color:var(--grn)">+${up.toFixed(1)}</b> · 내린 것 합 <b style="color:var(--red)">${dn.toFixed(1)}</b> → 후보 ${R.of}개 중 <b>${R.rank}위</b></span>
+    <div class="wh"><span>지표</span><span>이 주제</span><span style="text-align:center">← 점수를 내림 · 올림 →</span><span></span></div>
+    ${top.map(row).join('')}
+    <details class="fine"><summary>나머지 지표 ${rest.length}개</summary>${rest.map(row).join('')}</details>
+    ${it[0].part>0&&it[0].part>=up/2?`<div class="now1" style="margin-top:10px">올린 점수의 ${Math.round(100*it[0].part/up)}%가 "${it[0].name}" 하나에서 나왔다 (${fv(it[0].name,it[0].value)}). 그 전 기록이 적은 주제는 이 값이 크게 튄다. 원문을 열어 확인할 것.</div>`:''}
+    <div class="lbl" style="margin-top:14px">같은 방식으로 ${P.cutoff}년에 위 20%로 꼽혔던 주제 ${P.picks.length}개 — 3년 뒤 <b style="color:var(--grn)">${g.length}개 성장</b> (그해 전체는 ${P.of}개 중 ${P.base_grew}개)</div>
+    <div class="chips">${P.picks.map(x=>`<span class="${x.grew?'ok':'gr'}">${x.grew?'✓ ':''}${x.ko}</span>`).join('')}</div>
+    <div class="note" style="margin-top:6px">${P.cutoff}년 뒤 기록을 가리고, 그 전 기록으로만 배운 모델이다. 배운 적 없는 다른 학회에서는 위 20%의 ${META.learned?Math.round(100*META.learned.venue.top[0]/META.learned.venue.top[1]):''}%가 성장했다 (아무렇게나 ${META.learned?Math.round(100*META.learned.venue.base[0]/META.learned.venue.base[1]):''}%).</div></div>`}
+
 /* 04 검증한다 — 이 방법을 믿어도 되나 */
 function verCard(bt,c){
   const r=(a,b)=>b?Math.round(a/b*100):0,dots=(k,n)=>`<div class="dots">${Array.from({length:n},(_,i)=>`<i class="${i<k?'g':''}"></i>`).join('')}</div>`;
   const others=META.score.filter(s=>s.cutoff!=bt.cutoff),won=bt.lit_topics.filter(x=>x.grew),lost=bt.lit_topics.filter(x=>!x.grew);
-  return `<div class="card"><h2>04 검증한다 · 이 방법을 믿어도 되나<small>${bt.cutoff}년으로 돌아가 같은 방법을 돌려 봤다 · 성장했는지는 3년 뒤(${bt.opened}) 기록으로 확인</small></h2>
-    ${META.learned?(()=>{const L=META.learned,p=a=>Math.round(a[0]/a[1]*100),row=(lab,v,c)=>`<div style="display:flex;align-items:center;gap:10px;margin:6px 0"><div style="width:150px;font-size:13px;font-weight:700;color:${c}">${lab}</div><div style="flex:1;height:18px;background:#eef1f6;border-radius:5px;overflow:hidden"><div style="width:${v*2.2}%;height:100%;background:${c}"></div></div><b style="width:48px;color:${c}">${v}%</b></div>`;
-      return `<div style="background:#f5f8fd;border-radius:12px;padding:14px 16px;margin:6px 0 14px"><b>에이전트가 배운 점수로 고르면</b> <span class="note">과거에 성장한 주제의 특징 16가지를 배워 줄 세운다 · 점수 위 20% 중 3년 뒤 성장한 비율</span>
-        <div style="margin-top:8px;font-size:12.5px;font-weight:800;color:var(--sub)">2023년으로 돌아가 확인 (배운 적 없는 해)</div>${row('에이전트가 꼽은 주제',p(L.time.top),'var(--grn)')}${row('아무렇게나 고르면',p(L.time.base),'#9aa3b5')}
-        <div style="margin-top:8px;font-size:12.5px;font-weight:800;color:var(--sub)">다른 학회에서 확인 (배운 적 없는 학회)</div>${row('에이전트가 꼽은 주제',p(L.venue.top),'var(--grn)')}${row('아무렇게나 고르면',p(L.venue.base),'#9aa3b5')}
-        ${T&&T.rank&&T.rank.rank?`<div class="note" style="margin-top:6px">이 주제의 배운 점수: 지금 후보 ${T.rank.of}개 중 <b>${T.rank.rank}위</b></div>`:''}</div>
-        `})():''}
+  return `<div class="card" style="grid-column:1/-1"><h2>04 검증한다 · 이 방법을 믿어도 되나<small>${bt.cutoff}년으로 돌아가 같은 방법을 돌려 봤다 · 성장했는지는 3년 뒤(${bt.opened}) 기록으로 확인</small></h2>
+    ${T&&T.rank&&T.rank.parts?whyCard(T.rank):''}
     ${META.learned?`<details class="fine"><summary>참고 · 양산 문제 신호 하나만으로 ${bt.cutoff}년에 골랐을 때 — ${bt.lit}개 중 ${bt.lit_grew}개 성장</summary>`:''}
     ${bt.cutoff!=c?`<div class="now1">지금 후보가 맞을지는 3년 뒤에야 안다. 그래서 가장 가까운 과거(${bt.cutoff}년)의 성적을 보여준다.</div>`:''}
     <div class="big" style="color:var(--ink);font-size:24px">그때 고른 후보 ${bt.lit}개 중 ${bt.lit_grew}개가 성장했다 · ${bt.lit-bt.lit_grew}개는 아니었다</div>

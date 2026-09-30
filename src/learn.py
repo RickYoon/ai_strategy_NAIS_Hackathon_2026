@@ -27,7 +27,9 @@ def fit_logistic(X, y, l2=3.0, steps=4000, lr=0.1):
         g = (p - y) * sw
         w -= lr * (Z.T @ g / len(y) + l2 * w / len(y))
         b -= lr * g.mean()
-    return lambda Xn: 1 / (1 + np.exp(-(((Xn - mu) / sd) @ w + b))), w
+    predict = lambda Xn: 1 / (1 + np.exp(-(((Xn - mu) / sd) @ w + b)))
+    predict.mu, predict.sd, predict.w, predict.b = mu, sd, w, b  # 화면에서 점수를 지표별로 쪼갤 때 쓴다
+    return predict, w
 
 
 def auc(y, p):
