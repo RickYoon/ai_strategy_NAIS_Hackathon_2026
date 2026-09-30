@@ -962,35 +962,35 @@ async function dataView(){document.body.classList.remove('home');const my=++SEQ;
         ${box('verdict','채점 결과','3년 뒤 실제로 성장했나 · 2021 · 2022 · 2023년 기준')}
       </div>
       <div class="note" style="margin-top:10px">주제 — 기관 — 저자 — 학회 — 산업 사건이 한 그래프에 있어서, 주제에서 출발해도 기관에서 출발해도 같은 기록에 닿는다. 판단은 여기 없다 — 연구자가 한다.</div></div>
-    <div class="card"><h2>지금 만들어진 그래프<small>학회 ${G.nodes.filter(x=>x.kind=='venue').length} · 후보 주제 ${S.candidates} · 기관 ${G.nodes.filter(x=>x.kind=='inst').length} · 연결 ${G.edges.length} — 선 굵기 = 최근 3년 발표 수. 주제를 누르면 근거 한 장</small></h2>
+    <div class="card"><h2>지금 만들어진 그래프<small>학회 ${G.nodes.filter(x=>x.kind=='venue').length} · 후보 주제 ${S.candidates} · 기관 ${G.nodes.filter(x=>x.kind=='inst').length} · 저자 ${G.nodes.filter(x=>x.kind=='auth').length} · 연결 ${G.edges.length} — 주제마다 최근 3년 발표 상위 기관 3곳 · 저자 2명. 선 굵기 = 발표 수</small></h2>
       <div class="gwrap"><div id="gbox"><svg id="gsvg" viewBox="0 0 1400 860" style="width:100%;height:auto;display:block;user-select:none"></svg></div><div id="gpanel" class="gpanel"></div></div>
-      <div class="glegend"><span><i style="background:var(--pri)"></i>주제</span><span><i style="background:var(--amb)"></i>학회</span><span><i style="background:var(--sub)"></i>기관</span></div></div>`;
+      <div class="glegend"><span><i style="background:var(--pri)"></i>주제</span><span><i style="background:var(--amb)"></i>학회</span><span><i style="background:var(--sub)"></i>기관</span><span><i style="background:var(--grn)"></i>저자</span></div></div>`;
   drawGraph(G)}
 function drawGraph(G){
   const W=1400,H=860,N=G.nodes.map((d,i)=>({...d,x:W/2+Math.cos(i)*300+Math.random()*40,y:H/2+Math.sin(i)*220+Math.random()*40,vx:0,vy:0}));
   const id={};N.forEach(d=>id[d.id]=d);const E=G.edges.map(e=>({a:id[e.a],b:id[e.b],w:e.w})).filter(e=>e.a&&e.b);
   const deg={},nb={};E.forEach(e=>{deg[e.a.id]=(deg[e.a.id]||0)+e.w;deg[e.b.id]=(deg[e.b.id]||0)+e.w;(nb[e.a.id]=nb[e.a.id]||[]).push([e.b,e.w]);(nb[e.b.id]=nb[e.b.id]||[]).push([e.a,e.w])});
-  const r=d=>d.kind=='venue'?18:d.kind=='topic'?Math.min(26,8+Math.sqrt(deg[d.id]||1)*1.4):6;
+  const r=d=>d.kind=='venue'?18:d.kind=='topic'?Math.min(26,8+Math.sqrt(deg[d.id]||1)*1.4):d.kind=='auth'?4.5:6;
   const V=N.filter(d=>d.kind=='venue');V.forEach((d,i)=>{const a=-Math.PI/2+i*2*Math.PI/V.length;d.fx=W/2+Math.cos(a)*600;d.fy=H/2+Math.sin(a)*370});
   for(let it=0;it<400;it++){const k=it<300?0.9:0.4;
     for(const d of N){if(d.fx!=null){d.x=d.fx;d.y=d.fy;continue}d.vx+= (W/2-d.x)*0.0015;d.vy+=(H/2-d.y)*0.0015}
-    for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){const a=N[i],b=N[j];let dx=b.x-a.x,dy=b.y-a.y,d2=dx*dx+dy*dy+0.01,d=Math.sqrt(d2);const min=r(a)+r(b)+18;const f=(a.kind=='topic'&&b.kind=='topic'?14000:a.kind=='inst'&&b.kind=='inst'?700:3200)/d2+(d<min?(min-d)*0.5:0);dx/=d;dy/=d;if(a.fx==null){a.vx-=dx*f;a.vy-=dy*f}if(b.fx==null){b.vx+=dx*f;b.vy+=dy*f}}
+    for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){const a=N[i],b=N[j];let dx=b.x-a.x,dy=b.y-a.y,d2=dx*dx+dy*dy+0.01,d=Math.sqrt(d2);const min=r(a)+r(b)+18;const f=(a.kind=='topic'&&b.kind=='topic'?14000:(a.kind!='topic'&&a.kind!='venue')&&(b.kind!='topic'&&b.kind!='venue')?500:3200)/d2+(d<min?(min-d)*0.5:0);dx/=d;dy/=d;if(a.fx==null){a.vx-=dx*f;a.vy-=dy*f}if(b.fx==null){b.vx+=dx*f;b.vy+=dy*f}}
     for(const e of E){const dx=e.b.x-e.a.x,dy=e.b.y-e.a.y,d=Math.sqrt(dx*dx+dy*dy)+0.01,vn=e.a.kind=='venue'||e.b.kind=='venue',L=vn?340:70,f=(d-L)*(vn?0.004:0.03)*Math.min(3,Math.sqrt(e.w))/3;if(e.a.fx==null){e.a.vx+=dx/d*f;e.a.vy+=dy/d*f}if(e.b.fx==null){e.b.vx-=dx/d*f;e.b.vy-=dy/d*f}}
     for(const d of N){if(d.fx!=null)continue;d.vx*=0.6;d.vy*=0.6;d.x=Math.max(40,Math.min(W-40,d.x+d.vx*k));d.y=Math.max(30,Math.min(H-30,d.y+d.vy*k))}}
-  const col={venue:C.amb,topic:C.pri,inst:C.sub},svg=$('#gsvg');let SEL=null,HOV=null,vb={x:0,y:0,w:W,h:H};
+  const col={venue:C.amb,topic:C.pri,inst:C.sub,auth:C.grn},svg=$('#gsvg');let SEL=null,HOV=null,vb={x:0,y:0,w:W,h:H};
   const lbl=d=>d.label.length>24?d.label.slice(0,23)+'…':d.label;
   function paint(){const f=SEL||HOV,on=new Set(f?[f.id,...(nb[f.id]||[]).map(([n])=>n.id)]:[]);
     let out='';for(const e of E){const vn=e.a.kind=='venue'||e.b.kind=='venue',hit=f&&(e.a===f||e.b===f);
       out+=`<line x1="${e.a.x.toFixed(1)}" y1="${e.a.y.toFixed(1)}" x2="${e.b.x.toFixed(1)}" y2="${e.b.y.toFixed(1)}" stroke="${hit?C.ink:vn?C.amb:C.sub}" stroke-opacity="${f?(hit?.85:.05):(vn?.12:.4)}" stroke-width="${Math.min(7,0.6+Math.sqrt(e.w))+(hit?1:0)}"/>`}
     for(const d of N){const dim=f&&!on.has(d.id),me=d===f;
-      out+=`<g class="gn" data-id="${d.id}" style="cursor:${d.kind=='topic'?'pointer':'grab'}" opacity="${dim?.18:1}"><circle cx="${d.x.toFixed(1)}" cy="${d.y.toFixed(1)}" r="${r(d)+(me?3:0)}" fill="${col[d.kind]}" fill-opacity="${d.kind=='inst'?.6:.95}" stroke="${me?C.ink:C.card}" stroke-width="${me?2.5:1.5}"/>
-        ${(d.kind!='inst'||deg[d.id]>=8||on.has(d.id))?`<text x="${d.x.toFixed(1)}" y="${(d.y+r(d)+13).toFixed(1)}" text-anchor="middle" font-size="${d.kind=='venue'?13:d.kind=='topic'?12.5:10.5}" font-weight="${d.kind=='inst'?500:700}" fill="${d.kind=='inst'?C.sub:C.ink}" paint-order="stroke" stroke="${C.card}" stroke-width="3" pointer-events="none">${lbl(d)}</text>`:''}</g>`}
+      out+=`<g class="gn" data-id="${d.id}" style="cursor:${d.kind=='topic'?'pointer':'grab'}" opacity="${dim?.18:1}"><circle cx="${d.x.toFixed(1)}" cy="${d.y.toFixed(1)}" r="${r(d)+(me?3:0)}" fill="${col[d.kind]}" fill-opacity="${d.kind=='inst'?.6:d.kind=='auth'?.8:.95}" stroke="${me?C.ink:C.card}" stroke-width="${me?2.5:1.5}"/>
+        ${(d.kind=='venue'||d.kind=='topic'||(d.kind=='inst'&&deg[d.id]>=8)||on.has(d.id))?`<text x="${d.x.toFixed(1)}" y="${(d.y+r(d)+13).toFixed(1)}" text-anchor="middle" font-size="${d.kind=='venue'?13:d.kind=='topic'?12.5:10.5}" font-weight="${d.kind=='inst'||d.kind=='auth'?500:700}" fill="${d.kind=='inst'?C.sub:d.kind=='auth'?C.grn:C.ink}" paint-order="stroke" stroke="${C.card}" stroke-width="3" pointer-events="none">${lbl(d)}</text>`:''}</g>`}
     svg.innerHTML=out;svg.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
     const P=$('#gpanel');if(!P)return;
     if(!f){P.innerHTML='<div class="note">점에 마우스를 올리면 연결이 보인다. 누르면 고정된다 · 끌어서 옮기기 · 휠로 확대</div>';return}
-    const L=(nb[f.id]||[]).slice().sort((a,b)=>b[1]-a[1]),K={venue:'학회',topic:'주제',inst:'기관'};
+    const L=(nb[f.id]||[]).slice().sort((a,b)=>b[1]-a[1]),K={venue:'학회',topic:'주제',inst:'기관',auth:'저자'};
     P.innerHTML=`<div class="gp-h"><span class="pill" style="background:${col[f.kind]};color:${C.card}">${K[f.kind]}</span><b>${f.label}</b>${f.kind=='topic'?`<button type="button" class="sm" data-go="${attr(f.id.slice(2))}">근거 한 장 →</button>`:''}${SEL?'<button type="button" class="ghost sm" id="gclear">풀기</button>':''}</div>
-      <div class="note">연결 ${L.length}개 · 숫자 = 최근 3년 함께 나온 발표 수</div><div class="gp-list">${L.map(([n,w])=>`<div class="gp-row" data-id="${n.id}"><i style="background:${col[n.kind]}"></i><span>${n.label}</span><b>${w}</b></div>`).join('')}</div>`;
+      <div class="note">연결 ${L.length}개 · 숫자 = 최근 3년 발표 수${f.kind=='auth'?' · 저자 — 기관은 소속으로 적힌 횟수':''}</div><div class="gp-list">${L.map(([n,w])=>`<div class="gp-row" data-id="${n.id}"><i style="background:${col[n.kind]}"></i><span>${n.label}</span><b>${w}</b></div>`).join('')}</div>`;
     P.querySelector('[data-go]')?.addEventListener('click',e=>{$('#q').value=e.currentTarget.dataset.go;window.scrollTo(0,0);run()});
     P.querySelector('#gclear')?.addEventListener('click',()=>{SEL=null;paint()});
     P.querySelectorAll('.gp-row').forEach(el=>{el.onmouseenter=()=>{HOV=id[el.dataset.id];paint()};el.onmouseleave=()=>{HOV=null;paint()};el.onclick=()=>{SEL=id[el.dataset.id];paint()}})}

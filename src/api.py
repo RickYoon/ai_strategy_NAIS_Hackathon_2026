@@ -342,7 +342,7 @@ def handle(path, q, derived):
             keep = lambda t: labels.get(t, {"keep": True}).get("keep", True)
             cand = [x["topic"] for x in agent.candidates(d, c) if x["active"] and keep(x["topic"])]
             cs = set(cand)
-            sources, tv, ti, tot_i, tot_a = [], Counter(), defaultdict(Counter), set(), set()
+            sources, tv, ti, ta, ai, tot_i, tot_a = [], Counter(), defaultdict(Counter), defaultdict(Counter), defaultdict(Counter), set(), set()
             for m in _an.GROUPS["pkg"]["members"] + ["pvsc"]:
                 mf = ROOT / "data" / "raw" / f"{m}.meta.json"
                 if not mf.exists():
@@ -362,6 +362,12 @@ def handle(path, q, derived):
                         tv[(t, m)] += 1
                         for i in ins:
                             ti[t][i] += 1
+                        for a_ in r["authors"]:
+                            if a_.get("name"):
+                                ta[t][a_["name"]] += 1
+                                for i in a_["inst"]:
+                                    if i["name"]:
+                                        ai[a_["name"]][i["name"]] += 1
                 sources.append({"venue": m, "name": meta["name"], "field": meta.get("field"), "years": meta["years"], "count": meta["count"],
                                 "collected_at": meta["collected_at"][:10], "inst": len(n_i), "auth": len(n_a), "in_graph": m != "pvsc"})
                 if m != "pvsc":
@@ -375,9 +381,20 @@ def handle(path, q, derived):
             for t in cand:
                 for i, n in ti[t].most_common(3):
                     insts.setdefault(i, 0); insts[i] += n
+            auths = {}
+            for t in cand:
+                for a_, n in ta[t].most_common(2):
+                    auths.setdefault(a_, 0); auths[a_] += n
+            for a_ in auths:  # 저자의 소속(가장 많이 적힌 곳)이 그래프에 없으면 넣는다
+                if ai[a_]:
+                    top_i = ai[a_].most_common(1)[0][0]
+                    insts.setdefault(top_i, 0)
             nodes += [{"id": "i:" + i, "kind": "inst", "label": i} for i in insts]
+            nodes += [{"id": "a:" + a_, "kind": "auth", "label": a_} for a_ in auths]
             edges = [{"a": "t:" + t, "b": "v:" + m, "w": n} for (t, m), n in tv.items()]
             edges += [{"a": "t:" + t, "b": "i:" + i, "w": n} for t in cand for i, n in ti[t].most_common(3)]
+            edges += [{"a": "t:" + t, "b": "a:" + a_, "w": n} for t in cand for a_, n in ta[t].most_common(2)]
+            edges += [{"a": "a:" + a_, "b": "i:" + ai[a_].most_common(1)[0][0], "w": ai[a_].most_common(1)[0][1]} for a_ in auths if ai[a_]]
             cache["g"] = {"sources": sources, "nodes": nodes, "edges": edges, "events": sum(len(v) for k, v in _evraw.items() if not k.startswith("_")), "event_topics": sum(1 for k in _evraw if not k.startswith("_")),
                           "schema": {"papers": sum(s_["count"] for s_ in sources if s_["in_graph"]), "inst": len(tot_i), "auth": len(tot_a),
                                      "topics": d["n_topics"], "candidates": len(cand), "features": 16}}
