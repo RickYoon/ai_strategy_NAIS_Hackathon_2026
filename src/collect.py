@@ -21,6 +21,8 @@ VENUES = {
     "pvsc": {"name": "PVSC (태양광 전문가 학회)", "doi": "10.1109/pvsc", "field": "태양광"},
     "iedm": {"name": "IEDM (국제전자소자회의)", "doi": "10.1109/iedm", "field": "반도체 소자"},
     "irps": {"name": "IRPS (신뢰성 물리 심포지엄)", "doi": "10.1109/irps", "field": "반도체 신뢰성"},
+    # 검증용: 같은 학회를 더 옛날부터 (과거 시점 검증에 비교할 기록을 늘리려고)
+    "ectc_long": {"name": "ECTC 2010~2026 (검증용 긴 기록)", "doi": "10.1109/ectc", "field": "반도체 패키징", "years": "2010-2026"},
     "eptc": {"name": "EPTC (전자패키징기술학회)", "doi": "10.1109/eptc", "field": "반도체 패키징"},
     "icept": {"name": "ICEPT (전자패키징기술 국제학회)", "doi": "10.1109/icept", "field": "반도체 패키징"},
     "estc": {"name": "ESTC (전자시스템통합기술학회)", "doi": "10.1109/estc", "field": "반도체 패키징"},
@@ -53,7 +55,7 @@ def collect(key):
     rows, cursor = [], "*"
     while cursor:
         r = requests.get(API, params={
-            "filter": f"doi_starts_with:{v['doi']},publication_year:{YEARS}",
+            "filter": f"doi_starts_with:{v['doi']},publication_year:{v.get('years', YEARS)}",
             "select": "id,doi,title,publication_year,abstract_inverted_index,cited_by_count,authorships",
             "per-page": 200, "cursor": cursor, **({"mailto": MAILTO} if MAILTO else {})}, timeout=60)
         r.raise_for_status()
@@ -70,7 +72,7 @@ def collect(key):
         for x in rows:
             f.write(json.dumps(x, ensure_ascii=False) + "\n")
     meta = {"venue": key, "name": v["name"], "field": v["field"], "source": "OpenAlex", "doi_prefix": v["doi"],
-            "years": YEARS, "count": len(rows), "collected_at": datetime.now(timezone.utc).isoformat()}
+            "years": v.get("years", YEARS), "count": len(rows), "collected_at": datetime.now(timezone.utc).isoformat()}
     (OUT / f"{key}.meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
     print("저장:", OUT / f"{key}.jsonl", len(rows), "건")
 

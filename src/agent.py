@@ -46,22 +46,27 @@ TOOLS = [
      "input_schema": {"type": "object", "properties": {"topic": {"type": "string"}}, "required": ["topic"]}},
     {"name": "verify_signal", "description": "같은 내용 신호를 과거 시점에 돌렸을 때 몇 개 중 몇 개가 3년 뒤 실제로 커졌는지 돌려준다.",
      "input_schema": {"type": "object", "properties": {}}},
+    {"name": "track_spread", "description": "이 주제가 학회마다 언제 처음 나타났고 언제 발표 비중 2%를 넘었는지 돌려준다(전파). 다섯 학회를 따로 센다.",
+     "input_schema": {"type": "object", "properties": {"topic": {"type": "string"}}, "required": ["topic"]}},
+    {"name": "find_relations", "description": "이 주제를 둘러싼 관계를 돌려준다: 어느 기관이 어느 학회에서 발표하는지, 어느 기관끼리 공동 발표하는지, 함께 나오는 세부 주제.",
+     "input_schema": {"type": "object", "properties": {"topic": {"type": "string"}}, "required": ["topic"]}},
     {"name": "cross_field", "description": "이 주제에 사람이 적어 둔 다른 분야 연결이 있으면, 그 분야의 연도별 논문 수를 돌려준다. 검증되지 않은 가설이다.",
      "input_schema": {"type": "object", "properties": {"topic": {"type": "string"}}, "required": ["topic"]}},
 ]
 
-SYSTEM = """너는 연구 기획자를 돕는 에이전트다. 사용자가 연구 주제를 말하면 도구를 써서 그 주제를 판단할 근거를 모은다.
+SYSTEM = """너는 연구 방향을 정하는 사람을 돕는 에이전트다. 사용자의 말을 읽고, 스스로 계획을 세워 도구를 골라 부르고, 근거가 달린 문장으로 답한다.
 규칙:
 1. 지금은 {cutoff}년이라고 가정한다. 그 뒤의 일은 모른다. 네가 원래 알고 있는 지식으로 미래를 말하지 않는다.
 2. 숫자는 도구 결과에 있는 것만 그대로 쓴다. 계산해서 새 숫자를 만들지 않는다.
-3. 사용자가 주제를 말하지 않고 추천을 바라면 find_candidates를 먼저 부르고 그중 하나를 고른다. 주제를 말했으면 search_topics로 사용자의 말에 맞는 주제 이름을 찾는다. 한글 주제는 영어 낱말 하나로 바꿔 찾는다(예: 유리기판 → glass). 결과가 없으면 다른 낱말로 다시 찾는다.
-4. 찾은 것 가운데 발표가 가장 많은 넓은 주제 하나를 고른다. 좁은 주제(발표 10편 안팎)는 고르지 않는다.
-5. 고른 주제로 read_topic, industry_events, find_people, verify_signal, cross_field를 부른다. 같은 도구를 같은 입력으로 두 번 부르지 않는다.
-6. "성장한다", "유망하다"고 단정하지 않는다. 판정은 연구자가 한다.
-7. 마지막에는 아래 JSON만 출력한다. "topic"에는 search_topics가 돌려준 이름을 그대로 쓴다.
-{{"topic": "고른 주제 이름", "sentences": [{{"text": "한국어 한 문장", "from": "근거가 된 도구 이름"}}], "caution": "이 근거의 한계 한 문장"}}
-문장은 다섯 개, 이 순서로 쓴다: 발표 비중의 흐름 / 내용 신호 / 산업 사건 / 발표한 기관과 사람 / 이 신호의 과거 성적.
-연도별 숫자를 늘어놓지 않는다. 처음과 끝, 가장 낮은 해만 말한다. 과거 성적은 가장 최근 기준 연도의 것을 말하고, 신호가 없던 주제의 성적과 나란히 말한다. 한 문장에 사실 하나."""
+3. 먼저 사용자가 무엇을 바라는지 셋 중 하나로 정한다.
+   - "find": 주제를 정하지 않고 무엇이 뜨는지, 무엇을 하면 좋을지 묻는다 → find_candidates와 verify_signal을 부른다. 후보 이름은 도구가 돌려준 한국어 이름(korean_name)으로 말한다.
+   - "cross": 다른 분야(예: AI, 소프트웨어)가 이 분야에 주는 영향을 묻는다 → cross_field("hbm")과 read_topic("hbm")을 부른다. 이 연결은 검증 전 가설이라고 반드시 말한다.
+   - "topic": 특정 주제를 말한다 → search_topics로 주제 이름을 찾는다. 한글 주제는 영어 낱말 하나로 바꿔 찾는다(예: 유리기판 → glass). 찾은 것 가운데 발표가 가장 많은 넓은 주제 하나를 고르고, read_topic, industry_events, find_people, verify_signal을 부른다. 사용자가 전파 · 관계 · 협력 · 누가 하는지를 물으면 track_spread나 find_relations도 부른다.
+4. 같은 도구를 같은 입력으로 두 번 부르지 않는다. 결과가 없으면 다른 낱말로 한 번 더 찾는다.
+5. "성장한다", "유망하다"고 단정하지 않는다. 판정은 연구자가 한다. 산업 사건 목록이 비어 있으면 "산업 사건이 없다"고 하지 말고 "아직 적어 두지 않았다"고 말한다. 화면에 쓰는 말은 "신호가 켜진 활발한 주제" 대신 "이 방법이 고른 주제", "신호가 꺼진 주제" 대신 "고르지 않은 주제"를 쓴다.
+6. 마지막에는 아래 JSON만 출력한다. "topic"에는 도구가 돌려준 주제 이름을 그대로 쓴다("find" · "cross"이면 null).
+{{"view": "topic 또는 find 또는 cross", "topic": "주제 이름 또는 null", "sentences": [{{"text": "한국어 한 문장", "from": "근거가 된 도구 이름"}}], "caution": "이 근거의 한계 한 문장"}}
+문장은 네 개에서 여섯 개. 한 문장에 사실 하나. 연도별 숫자를 늘어놓지 않는다. 과거 성적은 가장 최근 기준 연도의 것을 말하고, 신호가 없던 주제의 성적과 나란히 말한다."""
 
 
 def profile(data, t, c):
@@ -195,13 +200,16 @@ def describe_topics(names):
 class Toolbox:
     """도구 모음. 전부 기준 연도 가드를 거친다."""
 
-    def __init__(self, data, events, upstream, cutoff):
+    def __init__(self, data, events, upstream, cutoff, extra=None):
         self.d, self.ev, self.up, self.c = data, events, upstream, cutoff
+        self.extra = extra or {}
         self.yi = [i for i, y in enumerate(data["years"]) if y <= cutoff]
 
     def find_candidates(self):
-        c = candidates(self.d, self.c)
-        return [{k: v for k, v in x.items() if k != "share"} for x in c if x["active"]][:12]
+        c = [x for x in candidates(self.d, self.c) if x["active"]]
+        lab = label_topics([x["topic"] for x in c])  # 일반 낱말은 뺀다
+        keep = [x for x in c if lab.get(x["topic"], {"keep": True}).get("keep", True)]
+        return [{"korean_name": lab.get(x["topic"], {}).get("ko"), **{k: v for k, v in x.items() if k != "share"}} for x in keep][:12]
 
     def search_topics(self, keyword):
         k = keyword.strip().lower()
@@ -229,7 +237,8 @@ class Toolbox:
                     "signal_on": j["lit"]}}
 
     def industry_events(self, topic):
-        return [e for e in self.ev.get(topic.strip().lower(), []) if int(e["date"][:4]) <= self.c]
+        ev = [e for e in self.ev.get(topic.strip().lower(), []) if int(e["date"][:4]) <= self.c]
+        return ev or {"recorded": 0, "note": "이 주제의 산업 사건은 아직 적어 두지 않았다. 사건 목록은 사람이 출처를 확인해 적는 것이라 비어 있을 뿐, 산업 사건이 없다는 뜻이 아니다."}
 
     def find_people(self, topic):
         t = self._t(topic)
@@ -249,6 +258,25 @@ class Toolbox:
         return [{"cutoff": b["cutoff"], "opened": b["opened"], "active_topics_signal_on": b["lit"], "of_which_grew": b["lit_grew"],
                  "active_topics_signal_off": b["unlit"], "of_which_grew_off": b["unlit_grew"]}
                 for b in scorecard(self.d) if b["cutoff"] <= self.c]
+
+    def track_spread(self, topic):
+        f = self.extra.get("spread")
+        if not f:
+            return {"note": "전파 도구를 쓸 수 없다"}
+        r = f(topic.strip().lower())
+        return [{"venue": v["venue"].upper(), "papers": v["papers"], "first_year": v["first_year"], "year_share_passed_2_percent": v["settled"]} for v in r["venues"]]
+
+    def find_relations(self, topic):
+        f = self.extra.get("relations")
+        if not f:
+            return {"note": "관계 도구를 쓸 수 없다"}
+        g = f(topic.strip().lower())
+        if "error" in g:
+            return g
+        return {"papers_in_five_venues": g["papers"], "institutions": g["totals"]["inst"], "authors": g["totals"]["auth"],
+                "institution_at_venue": sorted(({"institution": e["b"], "venue": e["a"], "papers": e["n"]} for e in g["venue_inst"]), key=lambda x: -x["papers"])[:10],
+                "joint_presentations": sorted(({"a": e["a"], "b": e["b"], "papers": e["n"]} for e in g["inst_inst"]), key=lambda x: -x["papers"])[:6],
+                "sub_topics": [{"name": x["ko"], "papers": x["n"]} for x in g["topics"]]}
 
     def cross_field(self, topic):
         u = self.up(topic.strip().lower())
@@ -271,17 +299,17 @@ def check(sentences, tool_results):
     return kept, dropped
 
 
-def run(question, cutoff, data, events, upstream):
+def run(question, cutoff, data, events, upstream, extra=None):
     key = api_key()
     if not key:
         return {"error": "쓸 수 있는 LLM 키가 없다", "key": {k: v for k, v in key_info().items() if k != "_key"}}
     import anthropic
     client = anthropic.Anthropic(api_key=key)
-    box = Toolbox(data, events, upstream, cutoff)
+    box = Toolbox(data, events, upstream, cutoff, extra)
     messages = [{"role": "user", "content": question}]
     trace, results = [], []
     for _ in range(MAX_TURNS):
-        r = client.messages.create(model=MODEL, max_tokens=1500, system=SYSTEM.format(cutoff=cutoff), tools=TOOLS, messages=messages)
+        r = client.messages.create(model=MODEL, max_tokens=2000, system=SYSTEM.format(cutoff=cutoff), tools=TOOLS, messages=messages)
         messages.append({"role": "assistant", "content": [
             {"type": "text", "text": b.text} if b.type == "text" else
             {"type": "tool_use", "id": b.id, "name": b.name, "input": b.input}
@@ -295,7 +323,10 @@ def run(question, cutoff, data, events, upstream):
             except json.JSONDecodeError:
                 out = {}
             kept, dropped = check(out.get("sentences", []), results)
-            return {"topic": out.get("topic"), "sentences": kept, "dropped": dropped, "caution": out.get("caution"),
+            view = out.get("view") if out.get("view") in ("topic", "find", "cross") else "topic"
+            if view == "topic" and not out.get("topic"):
+                view = "find"
+            return {"view": view, "topic": out.get("topic"), "sentences": kept, "dropped": dropped, "caution": out.get("caution"),
                     "trace": trace, "model": MODEL, "cutoff": cutoff}
         tool_out = []
         for c in calls:

@@ -16,7 +16,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-FIRST, LAST = 2018, 2026
+LAST = 2026
 
 # 양산 단계에서 나오는 문제를 가리키는 단어 (제목 기준)
 PROBLEM = re.compile(
@@ -73,7 +73,12 @@ def load_meta(key):
     return json.loads((ROOT / "data" / "raw" / f"{key}.meta.json").read_text(encoding="utf-8"))
 
 
+# 학회 묶음마다 기록의 첫 해와 과거로 돌아가 볼 시점이 다르다
+SPANS = {"ectc_long": (2010, tuple(range(2014, 2024)))}
+
+
 def build(key):
+    FIRST, CUTOFFS = SPANS.get(key, (2018, (2021, 2022, 2023)))
     rows = [r for r in load(key) if r["year"] and FIRST <= r["year"] <= LAST]
     years = list(range(FIRST, LAST + 1))
     total = Counter(r["year"] for r in rows)
@@ -111,7 +116,7 @@ def build(key):
 
     # ── 검증: 과거 세 시점
     backtest = []
-    for c in (2021, 2022, 2023):
+    for c in CUTOFFS:
         lit, unlit = [], []
         cand = [(t, idx, judge(idx, c)) for t, idx in by_term.items()]
         cand = [(t, idx, j) for t, idx, j in cand if j]
@@ -155,7 +160,7 @@ def build(key):
             "count": [cnt(idx, y, y) for y in years],
             "share": [round(cnt(idx, y, y) / total[y], 4) if total[y] else 0 for y in years],
             "problem": [cnt(idx, y, y, True) for y in years],
-            "judge": {str(c): judge(idx, c) for c in range(2020, LAST + 1)},
+            "judge": {str(c): judge(idx, c) for c in range(FIRST + 2, LAST + 1)},
             "n_inst": len(inst), "n_auth": len(auth),
             "inst": [{"name": inst_meta[k]["name"], "country": inst_meta[k]["country"], "type": inst_meta[k]["type"], "n": n}
                      for k, n in inst.most_common(12)],

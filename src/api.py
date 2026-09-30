@@ -35,7 +35,7 @@ SPREAD_LINE = 2.0  # 발표 비중이 이 %를 처음 넘은 해를 "자리 잡�
 def venue_titles(derived, v):
     """학회별 (연도, 제목의 주제어 집합). 한 번 읽으면 서버가 살아 있는 동안 들고 있는다."""
     import analyze
-    cache = derived.__dict__.setdefault("_titles", {})
+    cache = derived.__dict__.setdefault("_titles_v2", {})
     f = ROOT / "data" / "raw" / f"{v}.jsonl"
     if not f.exists():
         return None
@@ -43,7 +43,9 @@ def venue_titles(derived, v):
     if v not in cache or cache[v][0] != m:
         rows = [json.loads(l) for l in open(f, encoding="utf-8")]
         meta = json.loads((ROOT / "data" / "raw" / f"{v}.meta.json").read_text(encoding="utf-8"))
-        cache[v] = (m, meta["name"], [(r["year"], analyze.terms(r["title"])) for r in rows if r["year"]])
+        cache[v] = (m, meta["name"], [(r["year"], analyze.terms(r["title"]),
+                                       [(a["name"], [i["name"] for i in a["inst"] if i["name"]]) for a in r["authors"] if a["name"]])
+                                      for r in rows if r["year"]])
     return cache[v][1], cache[v][2]
 
 
@@ -57,7 +59,7 @@ def spread(topic, cutoff, derived):
             continue
         name, rows = got
         tot, n = {y: 0 for y in years}, {y: 0 for y in years}
-        for y, ts in rows:
+        for y, ts, _ in rows:
             if y in tot:
                 tot[y] += 1
                 n[y] += topic in ts
@@ -71,32 +73,61 @@ def spread(topic, cutoff, derived):
 
 
 def ontology(topic, cutoff, d, derived):
-    """온톨로지 조회: 한 주제에 이어진 것들을 종류별로 모은다. 전부 발표 기록에서 센 관계다."""
-    import analyze
+    """온톨로지 조회: 한 주제를 둘러싼 학회 — 기관 — 저자 — 세부 주제의 관계. 다섯 학회의 발표 기록에서 센다.
+
+    학회—기관: 그 기관이 그 학회에서 이 주제로 발표한 편수
+    기관—저자: 그 소속으로 이 주제를 발표한 편수
+    저자—세부 주제: 그 저자의 발표 제목에 그 낱말이 함께 나온 편수
+    기관—기관: 같은 발표에 함께 이름을 올린 편수(공동 발표)
+    """
     from collections import Counter
-    t = d["topics"].get(topic)
-    if not t:
+    from itertools import combinations
+    if topic not in d["topics"]:
         return {"error": "없는 주제"}
     labels = json.loads(agent.LABELS.read_text(encoding="utf-8")) if agent.LABELS.exists() else {}
-    ps = [p for p in t["papers"] if p["y"] <= cutoff]
-    inst, auth, co = Counter(), Counter(), Counter()
     words = set(topic.split())
-    for p in ps:
-        inst.update(set(p["inst"]))
-        auth.update(set(p["auth"]))
-        for term in analyze.terms(p["t"]):
-            if term != topic and term in d["topics"] and not (set(term.split()) & words) and labels.get(term, {"keep": False}).get("keep"):
-                co[term] += 1
-    sp = spread(topic, cutoff, derived)
-    ev = [e for e in events().get(topic, []) if int(e["date"][:4]) <= cutoff]
-    return {"topic": topic, "ko": labels.get(topic, {}).get("ko"), "papers": len(ps),
-            "schema": ["주제 —(다룬다)— 발표", "발표 —(쓴 곳)— 기관", "발표 —(쓴 사람)— 저자", "발표 —(실린 곳)— 학회",
-                       "주제 —(함께 나온다)— 주제", "주제 —(같은 시기)— 산업 사건"],
-            "related": [{"name": k, "ko": labels.get(k, {}).get("ko") or k, "n": n} for k, n in co.most_common(8)],
-            "inst": [{"name": k, "n": n} for k, n in inst.most_common(7)],
-            "auth": [{"name": k, "n": n} for k, n in auth.most_common(7)],
-            "venues": [{"name": v["venue"].upper(), "n": v["papers"], "settled": v["settled"]} for v in sp["venues"] if v["papers"]],
-            "events": ev}
+    inst, auth, co, ven = Counter(), Counter(), Counter(), Counter()
+    e_vi, e_ia, e_at, e_ii = Counter(), Counter(), Counter(), Counter()
+    n = 0
+    for v in SPREAD_VENUES:
+        got = venue_titles(derived, v)
+        if not got:
+            continue
+        for y, ts, authors in got[1]:
+            if y > cutoff or topic not in ts:
+                continue
+            n += 1
+            V = v.upper()
+            ven[V] += 1
+            rel = [x for x in ts if x != topic and not (set(x.split()) & words) and labels.get(x, {"keep": False}).get("keep")]
+            co.update(rel)
+            insts = {i for _, ii in authors for i in ii}
+            inst.update(insts)
+            for i in insts:
+                e_vi[(V, i)] += 1
+            for a, b in combinations(sorted(insts), 2):
+                e_ii[(a, b)] += 1
+            for name, ii in authors:
+                auth[name] += 1
+                for i in ii:
+                    e_ia[(i, name)] += 1
+                for x in rel:
+                    e_at[(name, x)] += 1
+    top_i = [k for k, _ in inst.most_common(8)]
+    top_t = [k for k, _ in co.most_common(8)]
+    # 저자는 고른 기관에 속한 사람을 먼저
+    in_top = [a for a, _ in auth.most_common(60) if any((i, a) in e_ia for i in top_i)]
+    top_a = in_top[:10]
+    ko = lambda x: labels.get(x, {}).get("ko") or x
+    pick = lambda e, A, B: [{"a": a, "b": b, "n": c} for (a, b), c in e.items() if a in A and b in B]
+    return {"topic": topic, "ko": labels.get(topic, {}).get("ko"), "papers": n, "cutoff": cutoff,
+            "venues": [{"id": k, "n": c} for k, c in ven.most_common()],
+            "inst": [{"id": k, "n": inst[k]} for k in top_i],
+            "auth": [{"id": k, "n": auth[k]} for k in top_a],
+            "topics": [{"id": k, "ko": ko(k), "n": co[k]} for k in top_t],
+            "venue_inst": pick(e_vi, set(ven), set(top_i)), "inst_auth": pick(e_ia, set(top_i), set(top_a)),
+            "auth_topic": pick(e_at, set(top_a), set(top_t)), "inst_inst": pick(e_ii, set(top_i), set(top_i)),
+            "totals": {"inst": len(inst), "auth": len(auth)}}
 
 
 def handle(path, q, derived):
@@ -119,7 +150,9 @@ def handle(path, q, derived):
         w = d.get("who", {}).get(kind, {}).get(name)
         return ({"kind": kind, "name": name, **w}, 200) if w else ({"error": "발표가 적어 흐름을 만들지 않았다"}, 404)
     if path == "/api/agent":
-        return agent.run(q.get("q", ""), int(q.get("c", 2023)), d, events(), upstream), 200
+        c = int(q.get("c", 2026))
+        return agent.run(q.get("q", ""), c, d, events(), upstream,
+                         {"spread": lambda tp: spread(tp, c, derived), "relations": lambda tp: ontology(tp, c, d, derived)}), 200
     if path == "/api/gap":
         return gaps.gap_map(q.get("q", "").strip().lower(), int(q.get("c", 2023)), d), 200
     if path == "/api/find":
@@ -179,6 +212,8 @@ def handle(path, q, derived):
         return spread(q.get("q", "").strip().lower(), int(q.get("c", 2026)), derived), 200
     if path == "/api/onto":
         return ontology(q.get("q", "").strip().lower(), int(q.get("c", 2026)), d, derived), 200
+    if path == "/api/gapcheck":
+        return gaps.gap_check(q.get("q", "").strip().lower(), int(q.get("c", 2023)), d), 200
     if path == "/api/has_llm":
         return {"llm": bool(agent.api_key()), "model": agent.MODEL}, 200
     return {"error": "없는 주소"}, 404
