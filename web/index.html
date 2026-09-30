@@ -983,11 +983,11 @@ async function actorsView(){document.body.classList.remove('home');const my=++SE
 $('#actors').onclick=()=>actorsView();
 
 /* 데이터 출처 + 지금 만들어진 온톨로지 그래프 */
-let GRAPH=null;
+let GRAPH={},GSIZE='m';const GK={s:[3,2],m:[5,3],l:[10,6]};
 async function dataView(){document.body.classList.remove('home');const my=++SEQ;T=null;FIND=null;CROSS=null;AG=null;resetLog();
   setView('data');busy('데이터와 그래프를 세는 중…','처음 한 번은 발표 기록 전체를 읽느라 10초쯤 걸린다');
-  if(!GRAPH)try{GRAPH=await (await fetch(`/api/graph?venue=${VENUE}`)).json()}catch(e){GRAPH={error:String(e)}}
-  if(my!==SEQ)return;const G=GRAPH;if(G.error){fail(G.error);return}
+  const [ki,ka]=GK[GSIZE];if(!GRAPH[GSIZE])try{GRAPH[GSIZE]=await (await fetch(`/api/graph?venue=${VENUE}&ki=${ki}&ka=${ka}`)).json()}catch(e){GRAPH[GSIZE]={error:String(e)}}
+  if(my!==SEQ)return;const G=GRAPH[GSIZE];if(G.error){fail(G.error);return}
   const S=G.schema,n=v=>v.toLocaleString();
   const src=G.sources.map(s=>`<tr class="${s.in_graph?'':'dim'}"><td><b>${s.name}</b><div class="note">${s.field||''}${s.in_graph?'':' · 비교용 (그래프에는 넣지 않음)'}</div></td><td>${s.years}</td><td><b>${n(s.count)}</b>편</td><td>${n(s.inst)}곳</td><td>${n(s.auth)}명</td><td class="note">OpenAlex · ${s.collected_at}</td></tr>`).join('');
   const box=(k,l,sub)=>`<div class="on-node ${k}"><b>${l}</b><span>${sub}</span></div>`;
@@ -1010,9 +1010,10 @@ async function dataView(){document.body.classList.remove('home');const my=++SEQ;
         ${box('verdict','채점 결과','3년 뒤 실제로 성장했나 · 2021 · 2022 · 2023년 기준')}
       </div>
       <div class="note" style="margin-top:10px">주제 — 기관 — 저자 — 학회 — 산업 사건이 한 그래프에 있어서, 주제에서 출발해도 기관에서 출발해도 같은 기록에 닿는다. 판단은 여기 없다 — 연구자가 한다.</div></div>
-    <div class="card"><h2>지금 만들어진 그래프<small>학회 ${G.nodes.filter(x=>x.kind=='venue').length} · 후보 주제 ${S.candidates} · 기관 ${G.nodes.filter(x=>x.kind=='inst').length} · 저자 ${G.nodes.filter(x=>x.kind=='auth').length} · 연결 ${G.edges.length} — 주제마다 최근 3년 발표 상위 기관 3곳 · 저자 2명. 선 굵기 = 발표 수</small></h2>
+    <div class="card"><div class="ch"><h2>지금 만들어진 그래프<small>전체 기관 ${n(S.inst)}곳 · 저자 ${n(S.auth)}명 가운데, 후보 주제 ${S.candidates}개에 최근 3년 발표가 많은 순으로 주제마다 기관 ${G.ki}곳 · 저자 ${G.ka}명 — 지금 그림: 학회 ${G.nodes.filter(x=>x.kind=='venue').length} · 주제 ${S.candidates} · 기관 ${G.nodes.filter(x=>x.kind=='inst').length} · 저자 ${G.nodes.filter(x=>x.kind=='auth').length} · 연결 ${G.edges.length}. 선 굵기 = 발표 수</small></h2><div class="seg" style="display:inline-flex">${[['s','작게'],['m','보통'],['l','크게']].map(([k,l])=>`<button type="button" data-gs="${k}" class="${GSIZE==k?'on':''}">${l}</button>`).join('')}</div></div>
       <div class="gwrap"><div id="gbox"><svg id="gsvg" viewBox="0 0 1400 860" style="width:100%;height:auto;display:block;user-select:none"></svg></div><div id="gpanel" class="gpanel"></div></div>
       <div class="glegend"><span><i style="background:var(--pri)"></i>주제</span><span><i style="background:var(--amb)"></i>학회</span><span><i style="background:var(--sub)"></i>기관</span><span><i style="background:var(--grn)"></i>저자</span></div></div>`;
+  $$('[data-gs]').forEach(b=>b.onclick=()=>{GSIZE=b.dataset.gs;dataView()});
   drawGraph(G)}
 function drawGraph(G){
   const W=1400,H=860,N=G.nodes.map((d,i)=>({...d,x:W/2+Math.cos(i)*300+Math.random()*40,y:H/2+Math.sin(i)*220+Math.random()*40,vx:0,vy:0}));

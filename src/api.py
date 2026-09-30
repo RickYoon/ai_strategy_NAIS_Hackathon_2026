@@ -345,7 +345,9 @@ def handle(path, q, derived):
     if path == "/api/graph":
         # 데이터 출처 + 지금 만들어진 온톨로지 그래프: 학회 — 후보 주제 — 기관 (최근 3년 발표 기록에서 센다)
         cache = combo.__dict__.setdefault("_graph", {})
-        if "g" not in cache:
+        ki, ka = max(1, min(12, int(q.get("ki", 3)))), max(1, min(8, int(q.get("ka", 2))))  # 주제당 기관 · 저자 수
+        gkey = f"g{ki}_{ka}"
+        if gkey not in cache:
             import analyze as _an
             from collections import Counter, defaultdict
             c = d["years"][-1]
@@ -390,11 +392,11 @@ def handle(path, q, derived):
             nodes += [{"id": "t:" + t, "kind": "topic", "label": ko(t), "events": len(ev.get(t, []))} for t in cand]
             insts = {}
             for t in cand:
-                for i, n in ti[t].most_common(3):
+                for i, n in ti[t].most_common(ki):
                     insts.setdefault(i, 0); insts[i] += n
             auths = {}
             for t in cand:
-                for a_, n in ta[t].most_common(2):
+                for a_, n in ta[t].most_common(ka):
                     auths.setdefault(a_, 0); auths[a_] += n
             for a_ in auths:  # 저자의 소속(가장 많이 적힌 곳)이 그래프에 없으면 넣는다
                 if ai[a_]:
@@ -403,13 +405,13 @@ def handle(path, q, derived):
             nodes += [{"id": "i:" + i, "kind": "inst", "label": i} for i in insts]
             nodes += [{"id": "a:" + a_, "kind": "auth", "label": a_} for a_ in auths]
             edges = [{"a": "t:" + t, "b": "v:" + m, "w": n} for (t, m), n in tv.items()]
-            edges += [{"a": "t:" + t, "b": "i:" + i, "w": n} for t in cand for i, n in ti[t].most_common(3)]
-            edges += [{"a": "t:" + t, "b": "a:" + a_, "w": n} for t in cand for a_, n in ta[t].most_common(2)]
+            edges += [{"a": "t:" + t, "b": "i:" + i, "w": n} for t in cand for i, n in ti[t].most_common(ki)]
+            edges += [{"a": "t:" + t, "b": "a:" + a_, "w": n} for t in cand for a_, n in ta[t].most_common(ka)]
             edges += [{"a": "a:" + a_, "b": "i:" + ai[a_].most_common(1)[0][0], "w": ai[a_].most_common(1)[0][1]} for a_ in auths if ai[a_]]
-            cache["g"] = {"sources": sources, "nodes": nodes, "edges": edges, "events": sum(len(v) for k, v in _evraw.items() if not k.startswith("_")), "event_topics": sum(1 for k in _evraw if not k.startswith("_")),
+            cache[gkey] = {"sources": sources, "nodes": nodes, "edges": edges, "ki": ki, "ka": ka, "events": sum(len(v) for k, v in _evraw.items() if not k.startswith("_")), "event_topics": sum(1 for k in _evraw if not k.startswith("_")),
                           "schema": {"papers": sum(s_["count"] for s_ in sources if s_["in_graph"]), "inst": len(tot_i), "auth": len(tot_a),
                                      "topics": d["n_topics"], "candidates": len(cand), "features": 16}}
-        return cache["g"], 200
+        return cache[gkey], 200
     if path == "/api/who":
         kind, name = q.get("kind", "inst"), q.get("name", "")
         w = d.get("who", {}).get(kind, {}).get(name)
