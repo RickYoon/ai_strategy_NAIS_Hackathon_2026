@@ -213,6 +213,38 @@ def past_picks(venue, labels):
     return cache[venue]
 
 
+def topic_groups(venue, act, c, cut=0.4, least=5):
+    """후보끼리 묶는다: 최근 3년 발표 가운데 두 주제가 같은 제목에 함께 나온 비율(작은 쪽 기준)이 40% 이상이고 5편 이상이면 같은 묶음.
+    사람이나 LLM이 묶지 않는다 — 제목이 겹치는 것만 본다."""
+    import research
+    cache = combo.__dict__.setdefault("_raw", {})
+    if venue not in cache:
+        cache[venue] = research.raw_index(venue)
+    rows, idx, _ = cache[venue]
+    S = {x["topic"]: {k for k in idx.get(x["topic"], []) if c - 2 <= rows[k][0] <= c} for x in act}
+    par = {t: t for t in S}
+    find = lambda t: t if par[t] == t else find(par[t])
+    names = list(S)
+    for i, a in enumerate(names):
+        for b in names[i + 1:]:
+            n = len(S[a] & S[b])
+            if n >= least and n / max(1, min(len(S[a]), len(S[b]))) >= cut:
+                par[find(a)] = find(b)
+    g = {}
+    for t in names:
+        g.setdefault(find(t), []).append(t)
+    info = {x["topic"]: x for x in act}
+    out = []
+    for m in g.values():
+        if len(m) < 2:
+            continue
+        m.sort(key=lambda t: -len(S[t]))
+        papers = set().union(*(S[t] for t in m))
+        out.append({"topics": [{"topic": t, "ko": info[t].get("ko") or t, "rank": info[t].get("model_rank")} for t in m],
+                    "papers": len(papers), "events": sum(info[t].get("events", 0) for t in m)})
+    return sorted(out, key=lambda x: -x["papers"])
+
+
 def combo_result(venue):
     """지표를 겹친 개수별 과거 성적 (src/combo.py 가 계산해 둔 것)."""
     f = ROOT / "data" / "derived" / "combo.json"
@@ -324,7 +356,11 @@ def handle(path, q, derived):
                  "then": round(x["share_then"] * 100, 1), "after": round(x["share_after"] * 100, 1)}
                 for x in last["lit_topics"] if x["hot"] and lab_all.get(x["topic"], {"keep": True}).get("keep", True)]
         past.sort(key=lambda x: (-x["grew"], -x["after"]))
-        return {"past": {"cutoff": last["cutoff"], "opened": last["opened"], "items": past}, "cutoff": c, "candidates": shown, "removed": len(cand) - len(shown), "labeled": bool(labels), "traits": agent.traits(d), "n_topics": d["n_topics"], "n_eligible": len(cand), "combo": combo_result(q.get("venue", "ectc"))}, 200
+        try:
+            groups = topic_groups(q.get("venue", "ectc"), [x for x in shown if x["active"]], c)
+        except Exception:
+            groups = []
+        return {"past": {"cutoff": last["cutoff"], "opened": last["opened"], "items": past}, "cutoff": c, "candidates": shown, "groups": groups, "removed": len(cand) - len(shown), "labeled": bool(labels), "traits": agent.traits(d), "n_topics": d["n_topics"], "n_eligible": len(cand), "combo": combo_result(q.get("venue", "ectc"))}, 200
     if path == "/api/cross":
         links = json.loads((ROOT / "data" / "links.json").read_text(encoding="utf-8"))
         raw = json.loads((ROOT / "data" / "raw" / "upstream.json").read_text(encoding="utf-8"))
