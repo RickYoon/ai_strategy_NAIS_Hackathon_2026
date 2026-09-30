@@ -293,17 +293,48 @@ html[data-theme=dark] .seg button.on{background:#262233;color:#fff;box-shadow:in
 html[data-theme=dark] .top nav button.on{background:#1d1a36;color:#fff}
 html[data-theme=dark] .chips span,html[data-theme=dark] .tags span{border:1px solid var(--line)}
 html[data-theme=dark] :focus-visible{outline-color:rgba(139,125,255,.5)}
+
+/* 왼쪽 사이드바 */
+.side{position:fixed;left:0;top:0;bottom:0;width:248px;z-index:30;background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px;gap:4px}
+html[data-theme=dark] .side{background:#0e1014}
+body{padding-left:248px}
+.side .brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:6px 8px;color:var(--ink);text-align:left}
+.side .brand:hover{background:none}
+.side .brand i{width:28px;height:28px;border-radius:8px;background:var(--pri);display:grid;place-items:center;flex:none}
+.side .brand h1{font-size:17px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+.side .sub1{font-size:12px;color:var(--mute);padding:0 10px 12px 46px;margin-top:-6px}
+.snav{display:flex;flex-direction:column;gap:2px}
+.snav button,.hist button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;color:var(--txt);font-weight:600;font-size:14px;padding:9px 10px;border-radius:9px}
+.snav button:hover,.hist button:hover{background:var(--panel);color:var(--ink)}
+.snav button.on{background:var(--pribg);color:var(--ink)}
+.snav .ic{width:18px;text-align:center;color:var(--sub);font-size:14px}
+#newq{background:var(--panel);margin-bottom:6px}
+.slbl{font-size:11.5px;font-weight:700;color:var(--mute);padding:14px 10px 4px}
+.hist{flex:1;overflow:auto;display:flex;flex-direction:column;gap:1px}
+.hist button{font-weight:500;font-size:13.5px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.hist .empty{font-size:12.5px;color:var(--mute);padding:4px 10px}
+.sfoot{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:8px}
+.sfoot .note{font-size:11px;line-height:1.5;padding:0 6px}
+#theme{background:transparent;border:1px solid var(--line);color:var(--sub);padding:6px 10px;font-size:12.5px;font-weight:600;border-radius:9px}
+footer{display:none}
+.log{top:16px!important}#banner{top:0!important}
+@media(max-width:900px){.side{position:static;width:auto;border-right:0;border-bottom:1px solid var(--line)}.hist,.slbl,.sfoot .note,.side .sub1{display:none}.snav{flex-direction:row;flex-wrap:wrap}.snav button{width:auto}body{padding-left:0}}
 </style>
 </head>
 <body>
-<header class="top">
-  <button class="brand" id="home" title="첫 화면으로"><i><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="1,11 5,7 8,9 13,2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></i><h1>앞으로 성장할 연구 주제를 찾아주는 에이전트</h1></button>
-  <nav>
-    <button id="find">후보 찾기</button>
-    <button id="cross">분야를 건너는 신호</button>
-    <button id="theme" title="밝게 / 어둡게">◐</button>
+<aside class="side">
+  <button class="brand" id="home" title="첫 화면으로"><i><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="1,11 5,7 8,9 13,2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></i><h1>연구 주제 에이전트</h1></button>
+  <div class="sub1">앞으로 성장할 연구 주제를 찾는다</div>
+  <nav class="snav">
+    <button id="newq" type="button"><span class="ic">＋</span>새 질문</button>
+    <button id="find" type="button"><span class="ic">◎</span>후보 찾기</button>
+    <button id="cross" type="button"><span class="ic">⇄</span>분야를 건너는 신호</button>
+    <button id="spast" type="button"><span class="ic">↺</span>이 방법, 과거에 맞았나?</button>
   </nav>
-</header>
+  <div class="slbl">최근 질문</div>
+  <div id="hist" class="hist"></div>
+  <div class="sfoot"><div id="sdata" class="note"></div><button id="theme" type="button" title="밝게 / 어둡게">◐ 밝게 / 어둡게</button></div>
+</aside>
 <section class="ask">
   <h2 class="askt">무엇이 궁금한가요?</h2>
   <p class="asks">학회 발표 기록에서 내용이 바뀌는 주제를 찾아, 근거와 과거 성적을 같이 보여줍니다.</p>
@@ -377,6 +408,7 @@ async function init(){
     <li><b>산업 사건</b>은 출처를 열어 확인한 것만 적은 목록이다. 열 개 주제에 26건이 있고, 나머지 주제에는 아직 없다.</li>
     <li>${META.learned?`<b>과거 성적:</b> 배운 점수 위 20% 중 ${Math.round(100*META.learned.time.top[0]/META.learned.time.top[1])}%가 성장했다(아무렇게나 고르면 ${Math.round(100*META.learned.time.base[0]/META.learned.time.base[1])}%). 맞히는 도구가 아니다.`:`<b>과거 성적은 높지 않다.</b> ${s.cutoff}년에 같은 방법으로 고른 ${s.lit}개 중 ${s.lit_grew}개가 성장했다. 맞히는 도구가 아니다.`}</li>
     <li><b>검증하지 않은 것</b>: 분야를 건너는 신호, 공백 지도의 다음 후보. 화면에 그렇게 표시한다.</li></ul>`}
+  {const sd=$('#sdata');if(sd)sd.textContent=`${META.meta.name} · ${META.n_papers.toLocaleString()}편 · OpenAlex ${META.meta.collected_at.slice(0,10)} 수집`}
   $('#src').textContent=`${META.meta.name} · ${META.meta.years} · ${META.n_papers.toLocaleString()}편 · OpenAlex에서 ${META.meta.collected_at.slice(0,16).replace('T',' ')} (UTC) 수집 · ${LLM.llm?'LLM '+LLM.model:'LLM 없음 (정해진 순서로 실행)'}`;
 }
 function sync(){const c=Number($('#c').value),p=c<NOW;$('#banner').style.display=p?'':'none';$('#by').textContent=c;$('#past').style.display=p?'none':'';
@@ -790,7 +822,7 @@ function wire(c,show){
         <div class="note" style="margin-top:8px">뒤 3년 발표 ${k.later_papers}편 중 ${k.later_classified}편을 분류했다. 주제 하나, 빈 칸 몇 개로 본 것이라 표본이 매우 작다. 뒤 3년의 발표는 같은 문제 · 방법 목록에 끼워 넣기만 했다.</div>`}}}
 
 async function run(){document.body.classList.remove('home');
-  const raw=$('#q').value.trim();if(!raw)return find();
+  const raw=$('#q').value.trim();if(!raw)return find();histAdd(raw);
   const my=++SEQ;CROSS=null;AG=null;T=null;
   let q=raw.toLowerCase();const c=Number($('#c').value);resetLog();setView('topic');$('#out').innerHTML='';
   if(LLM.llm){
@@ -826,7 +858,14 @@ $('#past').onclick=()=>goto(2023);$('#back').onclick=()=>goto(NOW);
 $$('[data-y]').forEach(a=>a.onclick=e=>{e.preventDefault();goto(a.dataset.y)});
 $('#askform').onsubmit=e=>{e.preventDefault();run()};
 $('#theme').onclick=()=>{const t=document.documentElement.dataset.theme=='dark'?'light':'dark';try{localStorage.setItem('theme',t)}catch(e){}location.reload()};
-$('#find').onclick=()=>find();$('#cross').onclick=()=>cross();
+$('#find').onclick=()=>find();
+$('#newq').onclick=()=>{location.href=location.pathname+(VENUE!='ectc'?'?venue='+VENUE:'')};
+$('#spast').onclick=()=>{document.body.classList.remove('home');goto(2023)};
+function histLoad(){try{return JSON.parse(localStorage.getItem('hist')||'[]')}catch(e){return []}}
+function histDraw(){const h=histLoad();$('#hist').innerHTML=h.length?h.map(q=>`<button type="button" title="${attr(q)}">${q.replace(/</g,'&lt;')}</button>`).join(''):'<div class="empty">아직 물어본 것이 없다</div>';
+  $$('#hist button').forEach(b=>b.onclick=()=>{$('#q').value=b.title;run()})}
+function histAdd(q){if(!q)return;const h=[q,...histLoad().filter(x=>x!==q)].slice(0,12);try{localStorage.setItem('hist',JSON.stringify(h))}catch(e){}histDraw()}
+histDraw();$('#cross').onclick=()=>cross();
 $('#home').onclick=()=>{location.href=location.pathname+(VENUE!='ectc'?'?venue='+VENUE:'')};
 $$('#examples button').forEach(b=>b.onclick=()=>{const fb=b.dataset.fb;$('#q').value=b.textContent;
   if(LLM.llm)return run();
