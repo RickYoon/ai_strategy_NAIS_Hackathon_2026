@@ -59,7 +59,7 @@ SYSTEM = """너는 연구 방향을 정하는 사람을 돕는 에이전트다. 
 1. 지금은 {cutoff}년이라고 가정한다. 그 뒤의 일은 모른다. 네가 원래 알고 있는 지식으로 미래를 말하지 않는다.
 2. 숫자는 도구 결과에 있는 것만 그대로 쓴다. 계산해서 새 숫자를 만들지 않는다.
 3. 먼저 사용자가 무엇을 바라는지 셋 중 하나로 정한다.
-   - "find": 주제를 정하지 않고 무엇이 뜨는지, 무엇을 하면 좋을지 묻는다 → find_candidates와 verify_signal을 부른다. 후보 이름은 도구가 돌려준 한국어 이름(korean_name)으로 말한다.
+   - "find": 주제를 정하지 않고 무엇이 뜨는지, 무엇을 하면 좋을지 묻는다 → find_candidates와 verify_signal을 부른다. 후보 이름은 도구가 돌려준 한국어 이름(korean_name)으로 말한다. 후보는 배운 점수 순위(learned_rank)가 앞선 것부터 말하고, 순위를 "배운 점수 N위"로 같이 적는다. 순위가 뒤인 주제를 앞세우지 않는다.
    - "cross": 다른 분야(예: AI, 소프트웨어)가 이 분야에 주는 영향을 묻는다 → cross_field("hbm")과 read_topic("hbm")을 부른다. 이 연결은 검증 전 가설이라고 반드시 말한다.
    - "topic": 특정 주제를 말한다 → search_topics로 주제 이름을 찾는다. 한글 주제는 영어 낱말 하나로 바꿔 찾는다(예: 유리기판 → glass). 찾은 것 가운데 발표가 가장 많은 넓은 주제 하나를 고르고, read_topic, industry_events, find_people, verify_signal을 부른다. 사용자가 전파 · 관계 · 협력 · 누가 하는지를 물으면 track_spread나 find_relations도 부른다.
 4. 같은 도구를 같은 입력으로 두 번 부르지 않는다. 결과가 없으면 다른 낱말로 한 번 더 찾는다.
@@ -222,7 +222,14 @@ class Toolbox:
         c = [x for x in candidates(self.d, self.c) if x["active"]]
         lab = label_topics([x["topic"] for x in c])  # 일반 낱말은 뺀다
         keep = [x for x in c if lab.get(x["topic"], {"keep": True}).get("keep", True)]
-        return [{"korean_name": lab.get(x["topic"], {}).get("ko"), **{k: v for k, v in x.items() if k != "share"}} for x in keep][:12]
+        out = [{"korean_name": lab.get(x["topic"], {}).get("ko"), **{k: v for k, v in x.items() if k != "share"}} for x in keep]
+        rank = self.extra.get("rank")  # 배운 점수 순위 (지금 시점에서만)
+        if rank:
+            r = rank([x["topic"] for x in out])
+            for x in out:
+                x["learned_rank"] = r.get(x["topic"])
+            out.sort(key=lambda x: x["learned_rank"] or 999)
+        return out[:12]
 
     def search_topics(self, keyword):
         k = keyword.strip().lower()

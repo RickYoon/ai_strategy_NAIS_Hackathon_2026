@@ -556,7 +556,7 @@ function verCard(bt,c){
   const others=META.score.filter(s=>s.cutoff!=bt.cutoff),won=bt.lit_topics.filter(x=>x.grew),lost=bt.lit_topics.filter(x=>!x.grew);
   return `<div class="card" style="grid-column:1/-1"><h2>검증 에이전트 · 이 방법을 믿어도 되나<small>${bt.cutoff}년으로 돌아가 같은 방법을 돌려 봤다 · 성장했는지는 3년 뒤(${bt.opened}) 기록으로 확인</small></h2>
     ${T&&T.rank&&T.rank.parts?whyCard(T.rank):''}
-    ${META.learned?`<details class="fine"><summary>참고 · 양산 문제 신호 하나만으로 ${bt.cutoff}년에 골랐을 때 — ${bt.lit}개 중 ${bt.lit_grew}개 성장</summary>`:''}
+    ${META.learned?`<details class="fine"><summary>참고 · 양산 문제 비중 하나로만 ${bt.cutoff}년에 골랐을 때 — ${bt.lit}개 중 ${bt.lit_grew}개 성장</summary>`:''}
     ${bt.cutoff!=c?`<div class="now1">지금 후보가 맞을지는 3년 뒤에야 안다. 그래서 가장 가까운 과거(${bt.cutoff}년)의 성적을 보여준다.</div>`:''}
     <div class="big" style="color:var(--ink);font-size:24px">그때 고른 후보 ${bt.lit}개 중 ${bt.lit_grew}개가 성장했다 · ${bt.lit-bt.lit_grew}개는 아니었다</div>
     <div class="cmp">
@@ -716,11 +716,11 @@ function renderFind(){
     ${REVEAL&&canOpen?`<div class="res ${x.grew?'ok':'no'}">${x.grew?'✓ 3년 뒤 실제로 성장했다':'✗ 3년 뒤 그대로였다'}</div>`:''}
     <div class="more">근거 보기 →</div></div>`};
   const tr=f.traits,fr=a=>`${a[1]}개 중 ${a[0]}개`,hit=act.filter(x=>x.grew).length;
-  $('#out').innerHTML=`${agCard()}<div class="hero"><h2>${c==NOW?'지금':c+'년으로 돌아가면,'} 후보 주제 <em>${act.length}개</em>${REVEAL&&canOpen?` — 그중 <em class="g">${hit}개</em>가 실제로 성장했다`:''}</h2>
-    <p>발표 ${META.n_papers.toLocaleString()}편을 읽고, 이미 활발한 주제 가운데 <b>내용이 양산 문제 쪽으로 옮겨 간 것</b>을 고르고, 에이전트가 과거 기록에서 배운 점수 순으로 놓았다. ${c==NOW?'':'그 해까지의 기록만 본다. '}카드를 누르면 근거 한 장이 나온다.</p></div>
+  $('#out').innerHTML=`<div class="hero"><h2>${c==NOW?'지금':c+'년으로 돌아가면,'} 후보 주제 <em>${act.length}개</em>${REVEAL&&canOpen?` — 그중 <em class="g">${hit}개</em>가 실제로 성장했다`:''}</h2>
+    <p>발표 ${META.n_papers.toLocaleString()}편을 읽고, 이미 활발한 주제 가운데 <b>내용이 양산 문제 쪽으로 옮겨 간 것</b>을 고르고, 에이전트가 과거 기록에서 배운 점수 순으로 놓았다. ${c==NOW?'':'그 해까지의 기록만 본다. '}카드를 누르면 근거 한 장이 나온다.</p></div>${agCard()}
     ${c==NOW&&f.past?`<div class="card" style="padding:16px 20px"><div class="strip">
       <div class="st" style="flex-basis:100%"><b>이 후보를 얼마나 믿어야 하나 — ${META.learned?`배운 점수 위 20% 중 ${Math.round(100*META.learned.time.top[0]/META.learned.time.top[1])}%가 3년 뒤 성장했다 (아무렇게나 고르면 ${Math.round(100*META.learned.time.base[0]/META.learned.time.base[1])}%)`:`3년 전에 같은 방법으로 고른 후보 ${f.past.items.length}개 중 ${f.past.items.filter(x=>x.grew).length}개만 성장했다`}</b><span class="note">${f.past.cutoff}년 뒤 기록을 가리고 돌린 결과 · 맞히는 도구가 아니다</span></div></div>
-      <details class="fine"><summary>참고 · 양산 문제 신호 하나만으로 ${f.past.cutoff}년에 골랐을 때 — ${f.past.items.length}개 중 ${f.past.items.filter(x=>x.grew).length}개 성장</summary><div class="strip" style="margin-top:10px">
+      <details class="fine"><summary>참고 · 양산 문제 비중 하나로만 ${f.past.cutoff}년에 골랐을 때 — ${f.past.items.length}개 중 ${f.past.items.filter(x=>x.grew).length}개 성장</summary><div class="strip" style="margin-top:10px">
       ${f.past.items.filter(x=>x.grew).map(x=>`<div class="tile"><span>성장 · ${x.ko}</span><b>${x.then}% → ${x.after}%</b></div>`).join('')}
       <div class="tile"><span>성장하지 않은 후보</span><b>${f.past.items.filter(x=>!x.grew).length}개</b></div>
       </div><div class="note" style="margin-top:10px">실제로 그때 추적한 기록이 아니다. 오늘 모은 기록에서 ${f.past.cutoff}년 뒤를 가리고 돌린 결과다. 맞은 것과 틀린 것을 같이 보여준다.</div></details></div>`:''}

@@ -237,6 +237,17 @@ def topic_series(venue, d, topic):
     return out
 
 
+def _learned_rank(venue, d, topics, c):
+    """에이전트의 후보 도구에 붙일 배운 점수 순위 (후보 가운데)."""
+    try:
+        vy = combo.__dict__.get("_vy") or combo.__dict__.setdefault("_vy", combo.venue_years())
+        ms = model_scores(venue, d, topics, c, vy)
+        ranked = sorted([t for t in topics if t in ms], key=lambda t: -ms[t])
+        return {t: i + 1 for i, t in enumerate(ranked)}
+    except Exception:
+        return {}
+
+
 def topic_groups(venue, act, c, cut=0.4, least=5):
     """후보끼리 묶는다: 최근 3년 발표 가운데 두 주제가 같은 제목에 함께 나온 비율(작은 쪽 기준)이 40% 이상이고 5편 이상이면 같은 묶음.
     사람이나 LLM이 묶지 않는다 — 제목이 겹치는 것만 본다."""
@@ -416,7 +427,8 @@ def handle(path, q, derived):
             else:
                 raise RuntimeError("같은 질문의 저장된 응답을 쓴다 (비용 절약)")
             res = agent.run(qs, c, d, events(), upstream,
-                            {"spread": lambda tp: spread(tp, c, derived), "relations": lambda tp: ontology(tp, c, d, derived)})
+                            {"spread": lambda tp: spread(tp, c, derived), "relations": lambda tp: ontology(tp, c, d, derived),
+                             "rank": (lambda tps: _learned_rank(q.get("venue", "ectc"), d, tps, c)) if c == d["years"][-1] else None})
         except Exception as e:  # 네트워크 · 키 문제
             res = {"error": f"{type(e).__name__}: {str(e)[:200]}"}
         if "error" not in res:
