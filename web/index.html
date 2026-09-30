@@ -361,7 +361,7 @@ html[data-theme=dark] .pill.on{background:var(--pribg);color:var(--pri)}
     <button id="newq" type="button"><span class="ic">＋</span>새 질문</button>
     <button id="find" type="button"><span class="ic">◎</span>후보 찾기</button>
     <button id="actors" type="button"><span class="ic">◇</span>기관 · 연구원</button>
-    <button id="cross" type="button"><span class="ic">⇄</span>분야를 건너는 신호</button>
+    <button id="cross" type="button" hidden><span class="ic">⇄</span>분야를 건너는 신호</button>
     <button id="spast" type="button"><span class="ic">↺</span>이 방법, 과거에 맞았나?</button>
   </nav>
   <div class="slbl">최근 질문</div>
@@ -379,7 +379,7 @@ html[data-theme=dark] .pill.on{background:var(--pribg);color:var(--pri)}
   <div class="ex" id="examples">
     <button type="button" data-fb="glass">유리기판 연구를 시작할지 고민 중이야</button>
     <button type="button" data-fb="@find">지금 뜨는 주제 찾아줘</button>
-    <button type="button" data-fb="@cross">AI 때문에 달라지는 패키징 주제는?</button>
+    <button type="button" data-fb="hybrid bonding">하이브리드 본딩은 누가 하고 있어?</button>
   </div>
   <div class="scope" id="scope"></div>
   <div class="filter">
@@ -440,7 +440,7 @@ async function init(){
     <li><b>전파와 관계</b>는 패키징 학회 다섯 곳의 기록으로 그린다.</li>
     <li><b>산업 사건</b>은 출처를 열어 확인한 것만 적은 목록이다. 열 개 주제에 26건이 있고, 나머지 주제에는 아직 없다.</li>
     <li>${META.learned?`<b>과거 성적:</b> 배운 점수 위 20% 중 ${Math.round(100*META.learned.time.top[0]/META.learned.time.top[1])}%가 성장했다(아무렇게나 고르면 ${Math.round(100*META.learned.time.base[0]/META.learned.time.base[1])}%). 맞히는 도구가 아니다.`:`<b>과거 성적은 높지 않다.</b> ${s.cutoff}년에 같은 방법으로 고른 ${s.lit}개 중 ${s.lit_grew}개가 성장했다. 맞히는 도구가 아니다.`}</li>
-    <li><b>검증하지 않은 것</b>: 분야를 건너는 신호, 공백 지도의 다음 후보. 화면에 그렇게 표시한다.</li></ul>`}
+    <li><b>검증하지 않은 것</b>: 공백 지도의 다음 후보. 화면에 그렇게 표시한다.</li></ul>`}
   {const sd=$('#sdata');if(sd)sd.textContent=`${META.meta.name} · ${META.n_papers.toLocaleString()}편 · OpenAlex ${META.meta.collected_at.slice(0,10)} 수집`}
   $('#src').textContent=`${META.meta.name} · ${META.meta.years} · ${META.n_papers.toLocaleString()}편 · OpenAlex에서 ${META.meta.collected_at.slice(0,16).replace('T',' ')} (UTC) 수집 · ${LLM.llm?'LLM '+LLM.model:'LLM 없음 (정해진 순서로 실행)'}`;
 }
