@@ -316,6 +316,21 @@ def handle(path, q, derived):
             ser = None
         return {"topic": name, "ko": lab.get("ko"), "desc": lab.get("desc"), **d["topics"][name], "events": events().get(name, []),
                 "upstream": upstream(name), "rank": rk, "series": ser}, 200
+    if path == "/api/actors":
+        venue, kind = q.get("venue", "ectc"), q.get("kind", "inst")
+        cache = combo.__dict__.setdefault("_actors", {})
+        if (venue, kind) not in cache:
+            import actors
+            c = d["years"][-1]
+            labels = json.loads(agent.LABELS.read_text(encoding="utf-8")) if agent.LABELS.exists() else {}
+            keep = lambda t: labels.get(t, {"keep": True}).get("keep", True)
+            cand = [x["topic"] for x in agent.candidates(d, c) if x["active"] and keep(x["topic"])]
+            bt = next(b for b in d["backtest"] if b["cutoff"] == 2023)
+            hot = {x["topic"]: bool(x["grew"]) for x in bt["lit_topics"] if x["hot"] and keep(x["topic"])}
+            hot.update({x["topic"]: bool(x["grew"]) for x in bt.get("unlit_hot", []) if keep(x["topic"])})
+            ko = {t: v.get("ko") for t, v in labels.items()}
+            cache[(venue, kind)] = actors.build(venue, cand, ko, hot, c, kind)
+        return cache[(venue, kind)], 200
     if path == "/api/who":
         kind, name = q.get("kind", "inst"), q.get("name", "")
         w = d.get("who", {}).get(kind, {}).get(name)

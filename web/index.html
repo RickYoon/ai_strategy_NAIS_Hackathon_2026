@@ -227,6 +227,11 @@ details.more>summary{cursor:pointer;font-size:13.5px;font-weight:700;color:var(-
 .lbl{font-size:12.5px;font-weight:700;color:var(--sub);margin:12px 0 6px}
 .now1{background:var(--pribg);color:var(--pridk);border-radius:10px;padding:9px 12px;font-size:13px;font-weight:600;margin-bottom:12px}
 .mtabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 4px}.mtabs button{background:var(--panel);border:1px solid var(--line);color:var(--sub);font-weight:600;font-size:12.5px;padding:5px 12px;border-radius:20px}.mtabs button:hover{color:var(--ink);background:var(--panel)}.mtabs button.on{background:var(--pribg);border-color:var(--pri);color:var(--ink)}
+.ar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}.ar:last-child{border-bottom:0}
+.an b{display:block;font-size:13.5px;font-weight:600;color:var(--ink)}.an span{display:block;font-size:11.5px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+.av{white-space:nowrap;text-align:right}
+.at{width:100%;border-collapse:collapse;margin-top:10px}.at th{font-size:11.5px;color:var(--mute);font-weight:600;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+.at td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13.5px}.at td:nth-child(2),.at td:nth-child(3){white-space:nowrap}
 .grp{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:10px}.gb{background:var(--panel);border-radius:12px;padding:12px 14px}.gh{font-weight:800;font-size:15px}.gb .chips small{font-weight:600;opacity:.7}
 .why{background:var(--panel);border-radius:12px;padding:14px 16px;margin:6px 0 14px}
 .wh,.wr{display:grid;grid-template-columns:minmax(150px,1.3fr) 92px 1.4fr 44px;gap:10px;align-items:center}
@@ -355,6 +360,7 @@ html[data-theme=dark] .pill.on{background:var(--pribg);color:var(--pri)}
   <nav class="snav">
     <button id="newq" type="button"><span class="ic">＋</span>새 질문</button>
     <button id="find" type="button"><span class="ic">◎</span>후보 찾기</button>
+    <button id="actors" type="button"><span class="ic">◇</span>기관 · 연구원</button>
     <button id="cross" type="button"><span class="ic">⇄</span>분야를 건너는 신호</button>
     <button id="spast" type="button"><span class="ic">↺</span>이 방법, 과거에 맞았나?</button>
   </nav>
@@ -427,7 +433,7 @@ async function init(){
     if(VIEW=='find'){find();return}
     ($('#q').value.trim()?run:find)()};sync();
   LLM=await (await fetch('/api/has_llm')).json();
-  document.querySelectorAll('#vseg button').forEach(b=>{b.classList.toggle('on',b.dataset.v==VENUE);b.onclick=()=>{if(b.dataset.v!=VENUE)location.href='?venue='+b.dataset.v}});
+  document.querySelectorAll('#vseg button').forEach(b=>{b.classList.toggle('on',b.dataset.v==VENUE);b.onclick=()=>{if(b.dataset.v!=VENUE)location.href='?venue='+b.dataset.v+(VIEW=='topic'&&T?'&q='+encodeURIComponent(T.topic):'&view='+VIEW+(VIEW=='actors'?'&kind='+AKIND:''))}});
   {const s=META.score[META.score.length-1];$('#scope').innerHTML=`<span class="h">지금 되는 범위와 한계</span><span class="note">묻기 전에 알아 둘 것</span><ul>
     <li><b>분야는 반도체 패키징 하나</b>다. 모은 기록은 패키징 학회 다섯 곳 10,829편과 태양광 학회 5,170편이다. 지금 화면은 ${META.meta.name} ${META.n_papers.toLocaleString()}편을 읽는다.</li>
     <li><b>발표 제목만 읽는다.</b> 초록과 본문은 읽지 않는다. 주제는 제목의 영어 낱말에서 뽑는다.</li>
@@ -441,7 +447,7 @@ async function init(){
 function sync(){const c=Number($('#c').value),p=c<NOW;$('#banner').style.display=p?'':'none';$('#by').textContent=c;$('#past').style.display=p?'none':'';
   document.body.classList.toggle('past',p);$$('#seg button').forEach(b=>b.classList.toggle('on',Number(b.dataset.y)==c));compact()}
 function compact(){document.body.classList.toggle('compact',!document.body.classList.contains('home'))}  // 첫 화면을 벗어나면 질문 안내 · 한계 상자를 접는다
-function setView(v){document.body.classList.remove('home');VIEW=v;$('#find').classList.toggle('on',v=='find');$('#cross').classList.toggle('on',v=='cross');compact()}
+function setView(v){document.body.classList.remove('home');VIEW=v;$('#find').classList.toggle('on',v=='find');$('#actors').classList.toggle('on',v=='actors');$('#cross').classList.toggle('on',v=='cross');compact()}
 function goto(y){$('#c').value=y;$('#c').onchange()}
 function resetLog(){REVEAL=false;$('#stepsd').open=true;$('#open').textContent=OPENTXT;$('#plan').innerHTML='';$$('.step').forEach(e=>{e.classList.remove('on');e.querySelector('span').textContent=''})}
 function busy(title,sub){const b=$('#out .busy .bt');if(b){b.textContent=title;return}
@@ -885,6 +891,38 @@ $('#past').onclick=()=>goto(2023);$('#back').onclick=()=>goto(NOW);
 $$('[data-y]').forEach(a=>a.onclick=e=>{e.preventDefault();goto(a.dataset.y)});
 $('#askform').onsubmit=e=>{e.preventDefault();run()};
 $('#theme').onclick=()=>{const t=document.documentElement.dataset.theme=='dark'?'light':'dark';try{localStorage.setItem('theme',t)}catch(e){}location.reload()};
+
+/* 기관 · 연구원에서 출발하는 보기 */
+let AKIND='inst',ACT={};
+async function actorsView(){document.body.classList.remove('home');const my=++SEQ;T=null;FIND=null;CROSS=null;AG=null;resetLog();
+  setView('actors');busy('기관 · 연구원을 세는 중…','처음 한 번은 발표 기록 전체를 다시 읽느라 10초쯤 걸린다');
+  if(!ACT[AKIND])try{ACT[AKIND]=await (await fetch(`/api/actors?venue=${VENUE}&kind=${AKIND}`)).json()}catch(e){ACT[AKIND]={error:String(e)}}
+  if(my!==SEQ)return;const A=ACT[AKIND];if(A.error){fail(A.error);return}
+  const W={inst:'기관',auth:'연구원',country:'나라'}[AKIND],U=AKIND=='auth'?'명':'곳',base=Math.round(A.base_rate*100),pct=t=>Math.round(100*t.grew/Math.max(1,t.n));
+  const chip=t=>`<span class="${t.new?'ok':''}" data-go="${attr(t.topic)}" role="button" tabindex="0" style="cursor:pointer">${t.new?'✦ ':''}${t.ko}</span>`;
+  const CN={US:'미국',CN:'중국',TW:'대만',JP:'일본',KR:'한국',DE:'독일',SG:'싱가포르',BE:'벨기에',FR:'프랑스',IN:'인도',GB:'영국',NL:'네덜란드',MY:'말레이시아',CH:'스위스',AT:'오스트리아',IT:'이탈리아',CA:'캐나다',IL:'이스라엘',FI:'핀란드',SE:'스웨덴',IE:'아일랜드',HK:'홍콩',PH:'필리핀',TH:'태국',VN:'베트남',ES:'스페인',DK:'덴마크',AU:'호주',NO:'노르웨이',PL:'폴란드',CZ:'체코'};
+  const TY={company:'기업',education:'대학',facility:'연구소',government:'정부 기관',nonprofit:'비영리',healthcare:'병원',archive:'기관',other:'기타'};
+  const who=r=>`<div class="an"><b>${AKIND=='country'?(CN[r.name]||r.name):r.name}</b>${r.sub?`<span>${TY[r.sub]||r.sub}</span>`:''}</div>`;
+  const box=(h,sub,list,val)=>`<div class="gb"><div class="gh">${h}</div><div class="note">${sub}</div>${list.map(r=>`<div class="ar">${who(r)}<div class="av">${val(r)}</div></div>`).join('')}</div>`;
+  $('#out').innerHTML=`<div class="hero"><h2>${W}에서 출발해 보기 <em>${A.n}${U}</em></h2>
+    <p>최근 3년(${A.last-2}~${A.last}) ${AKIND=='auth'?'3편':'5편'} 넘게 발표한 ${W}. 주제가 아니라 ${W}를 줄 세워, 누가 어느 후보 주제로 들어가고 있는지 본다.</p>
+    <div class="seg" style="margin-top:12px"><button type="button" data-k="inst" class="${AKIND=='inst'?'on':''}">기관</button><button type="button" data-k="auth" class="${AKIND=='auth'?'on':''}">연구원</button><button type="button" data-k="country" class="${AKIND=='country'?'on':''}">나라</button></div></div>
+    <div class="card" style="padding:16px 20px"><div class="grp">
+      ${box('요즘 후보 주제로 새로 들어간 '+W,'지금 후보 주제 가운데 첫 발표가 최근 3년에 있는 것의 수',A.entered,r=>`<b>${r.entered}개</b>`)}
+      ${AKIND=='country'?'':box('그때 다룬 뜨는 주제가 성장한 비율','2021~2023년에 발표한 뜨는 주제(3개 이상) 중 3년 뒤 성장한 것 · 전체는 '+base+'%',A.track,r=>`<b>${r.track.grew}/${r.track.n}</b> <span class="note">${pct(r.track)}%</span>`)}
+      ${box('끊기지 않고 발표한 '+W,A.last+'년부터 거꾸로 이어진 햇수',A.streak,r=>`<b>${r.streak}년</b>`)}
+    </div>${AKIND=='country'?'<div class="note" style="margin-top:10px">나라별 발표는 학회가 열리는 곳에 치우친다 (ECTC는 미국 학회). "패키징 학회 다섯 곳"으로 바꿔 보면 달라진다.</div>':'<div class="now1" style="margin-top:12px">가운데 칸은 한 시점(2023년) · 작은 표본의 기록이다. 이 비율로 앞으로를 맞히는지는 시험하지 않았다 — 검증 전.</div>'}</div>
+    <div class="card"><h2>${W} ${A.rows.length}${U} · 최근 3년 발표 순<small>✦ = 최근 3년에 처음 들어간 후보 주제 · 주제를 누르면 근거 한 장</small></h2>
+    <table class="at"><thead><tr><th>${W}</th><th>최근 3년</th><th>연속</th><th>그때 다룬 뜨는 주제 → 성장</th><th>지금 다루는 후보 주제</th></tr></thead><tbody>
+    ${A.rows.map(r=>`<tr><td>${who(r)}</td><td><b>${r.recent}</b>편</td><td>${r.streak}년</td><td>${r.track.n?`<b>${r.track.grew}/${r.track.n}</b>${r.track.won.length?`<div class="note">${r.track.won.join(' · ')}</div>`:''}`:'<span class="note">—</span>'}</td><td><div class="chips">${r.topics.map(chip).join('')||'<span class="gr">없음</span>'}</div></td></tr>`).join('')}
+    </tbody></table></div>`;
+  $$('[data-k]').forEach(b=>b.onclick=()=>{AKIND=b.dataset.k;actorsView()});
+  $$('#out [data-go]').forEach(a=>a.onclick=e=>{e.preventDefault();$('#q').value=a.dataset.go;window.scrollTo(0,0);run()});
+  const st=(id,txt)=>{const e=$(id);e.classList.add('on');e.querySelector('span').innerHTML=txt};
+  st('#s1',`발표 ${META.n_papers.toLocaleString()}편의 저자와 소속을 읽었다.`);st('#s2',`${W}마다 지금 후보 주제 중 다루는 것과 처음 들어간 해를 붙였다.`);
+  st('#s3',`최근 3년 발표가 많은 ${W} ${A.n}${U}을 찾았다.`);st('#s4',`2023년 기준 뜨는 주제 ${A.hot_n}개 중 그때 다룬 것이 3년 뒤 성장했는지 셌다 (검증 전).`)}
+
+$('#actors').onclick=()=>actorsView();
 $('#find').onclick=()=>find();
 $('#newq').onclick=()=>{location.href=location.pathname+(VENUE!='ectc'?'?venue='+VENUE:'')};
 $('#spast').onclick=()=>{document.body.classList.remove('home');goto(2023)};
@@ -903,6 +941,7 @@ $('#open').onclick=()=>{
   if(VIEW=='cross')renderCross();else if(VIEW=='find')renderFind();else render(Number($('#c').value))};
 if(window.matchMedia('(max-width:1100px)').matches)$('#logd').removeAttribute('open');
 init().then(async()=>{const u=U;if(u.get('c')){$('#c').value=u.get('c');sync()}
+  if(u.get('view')=='actors'){AKIND=u.get('kind')||'inst';await actorsView();return}
   if(u.get('view')=='cross'){await cross();if(u.get('open'))$('#open').click();return}
   if(!u.get('q')&&(u.get('c')||u.get('open')||u.get('view')=='find'||u.get('venue'))){$('#q').value='';await find();if(u.get('open'))$('#open').click();return}
   if(!u.get('q')){document.body.classList.add('home');compact();return}
