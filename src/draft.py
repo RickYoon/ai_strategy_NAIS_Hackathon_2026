@@ -30,7 +30,21 @@ PROMPT = """너는 연구 기획서의 '연구개발 동향' 절 초안을 쓰�
 {material}"""
 
 
-def write(topic, cutoff, data, events, upstream):
+def write(topic, cutoff, data, events, upstream, fresh=False):
+    """저장된 초안이 있으면 그것을 준다 (LLM 15~25초를 아낀다). fresh=True면 새로 쓴다."""
+    from pathlib import Path
+    import gaps
+    f = Path(__file__).resolve().parent.parent / "data" / "derived" / "drafts" / f"{gaps.VP(data)}{re.sub(r'[^a-z0-9]+', '_', topic)}_{cutoff}.json"
+    if f.exists() and not fresh:
+        return {**json.loads(f.read_text(encoding="utf-8")), "cached": True}
+    r = _write(topic, cutoff, data, events, upstream)
+    if "error" not in r:
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(json.dumps(r, ensure_ascii=False), encoding="utf-8")
+    return r
+
+
+def _write(topic, cutoff, data, events, upstream):
     key = agent.api_key()
     if not key:
         return {"error": "LLM 키가 없어 초안을 쓸 수 없다"}

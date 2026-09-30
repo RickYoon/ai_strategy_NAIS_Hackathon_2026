@@ -12,4 +12,5 @@ data/derived/*
 !data/derived/topic_labels.json
 !data/derived/agent_cache/
 !data/derived/gaps/
+!data/derived/drafts/
 data/derived.bak*/

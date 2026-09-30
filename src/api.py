@@ -520,7 +520,7 @@ def handle(path, q, derived):
         return {"label": link["label"], "field": link["field"], "why": link["why"], "milestones": link.get("milestones", []),
                 "other": other, "here": here, "venue": d["meta"]["name"], "collected_at": raw["collected_at"]}, 200
     if path == "/api/draft":
-        return draft.write(q.get("q", "").strip().lower(), int(q.get("c", 2026)), d, events(), upstream), 200
+        return draft.write(q.get("q", "").strip().lower(), int(q.get("c", 2026)), d, events(), upstream, bool(q.get("fresh"))), 200
     if path == "/api/spread":
         return spread(q.get("q", "").strip().lower(), int(q.get("c", 2026)), derived), 200
     if path == "/api/onto":
