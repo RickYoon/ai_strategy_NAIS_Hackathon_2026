@@ -404,7 +404,7 @@ function upcard(c,show){
 function verCard(bt,c){
   const r=(a,b)=>b?Math.round(a/b*100):0,dots=(k,n)=>`<div class="dots">${Array.from({length:n},(_,i)=>`<i class="${i<k?'g':''}"></i>`).join('')}</div>`;
   const others=META.score.filter(s=>s.cutoff!=bt.cutoff),won=bt.lit_topics.filter(x=>x.grew),lost=bt.lit_topics.filter(x=>!x.grew);
-  return `<div class="card"><h2>04 검증한다 · 이 방법을 믿어도 되나<small>${bt.cutoff}년으로 돌아가 같은 방법을 돌려 봤다 · 커졌는지는 3년 뒤(${bt.opened}) 기록으로 확인</small></h2>
+  return `<div class="card"><h2>04 검증한다 · 이 방법을 믿어도 되나<small>${bt.cutoff}년으로 돌아가 같은 방법을 돌려 봤다 · 성장했는지는 3년 뒤(${bt.opened}) 기록으로 확인</small></h2>
     ${bt.cutoff!=c?`<div class="now1">지금 후보가 맞을지는 3년 뒤에야 안다. 그래서 가장 가까운 과거(${bt.cutoff}년)의 성적을 보여준다.</div>`:''}
     <div class="big" style="color:var(--ink);font-size:24px">그때 고른 후보 ${bt.lit}개 중 ${bt.lit_grew}개가 성장했다 · ${bt.lit-bt.lit_grew}개는 아니었다</div>
     <div class="cmp">
