@@ -129,6 +129,7 @@ def build(key):
             "hot_lit": sum(x["hot"] for x in lit), "hot_lit_grew": sum(x["hot"] and x["grew"] for x in lit),
             "hot_unlit": sum(x["hot"] for x in unlit), "hot_unlit_grew": sum(x["hot"] and x["grew"] for x in unlit),
             "lit_topics": [{k: x[k] for k in ("topic", "grew", "hot", "share_then", "share_after", "p_before", "p_recent")} for x in lit],
+            "unlit_hot": [{"topic": x["topic"], "grew": x["grew"]} for x in unlit if x["hot"]],
         })
 
     # ── 주제별 상세 (오늘 기준으로 주제가 되는 것만)

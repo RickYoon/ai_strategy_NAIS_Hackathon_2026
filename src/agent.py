@@ -88,10 +88,11 @@ def profile(data, t, c):
 def traits(data):
     """과거 세 시점의 후보를 모아, 실제로 커진 것과 아닌 것의 특징을 나란히 센다. 표본이 작다."""
     rows = []
+    lab = json.loads(LABELS.read_text(encoding="utf-8")) if LABELS.exists() else {}
     for b in data["backtest"]:
         for x in b["lit_topics"]:
             t = data["topics"].get(x["topic"])
-            if x["hot"] and t:
+            if x["hot"] and t and lab.get(x["topic"], {"keep": True}).get("keep", True):
                 rows.append({**profile(data, t, b["cutoff"]), "grew": x["grew"]})
 
     def split(label, f):
@@ -133,11 +134,12 @@ LABELS = ROOT / "data" / "derived" / "topic_labels.json"
 def label_topics(names):
     """제목에서 뽑은 낱말 중 기술 주제가 아닌 일반 낱말을 LLM이 가려내고 한글 이름을 붙인다. 한 번 한 것은 남겨 둔다."""
     have = json.loads(LABELS.read_text(encoding="utf-8")) if LABELS.exists() else {}
-    todo = [n for n in names if n not in have]
+    todo_all = [n for n in names if n not in have]
     key = api_key()
-    if todo and key:
+    for s in range(0, len(todo_all) if key else 0, 100):
+        todo = todo_all[s:s + 100]
         import anthropic
-        r = anthropic.Anthropic(api_key=key).messages.create(model=MODEL, max_tokens=6000, messages=[{"role": "user", "content":
+        r = anthropic.Anthropic(api_key=key).messages.create(model=MODEL, max_tokens=8000, messages=[{"role": "user", "content":
             "아래는 반도체 패키징 · 전자부품 학회 발표 제목에서 뽑은 낱말이다. 각 낱말이 구체적인 기술 주제이면 keep=true, "
             "일반 낱말(예: challenges, demonstration, optimization, impact, system)이면 keep=false로 한다. "
             "keep=true이면 한국어 이름을 붙인다. 아래 JSON만 출력한다.\n"
@@ -151,6 +153,21 @@ def label_topics(names):
         except (AttributeError, json.JSONDecodeError):
             pass
     return have
+
+
+def scorecard(data):
+    """과거 성적표. 일반 낱말을 거른 뒤의 활발한 주제만 센다. 화면 · 에이전트 · 발표 자료가 모두 이 숫자를 쓴다."""
+    names = [x["topic"] for b in data["backtest"] for x in b["lit_topics"] if x["hot"]] + [x["topic"] for b in data["backtest"] for x in b.get("unlit_hot", [])]
+    lab = label_topics(sorted(set(names)))
+    keep = lambda n: lab.get(n, {"keep": True}).get("keep", True)
+    out = []
+    for b in data["backtest"]:
+        lit = [x for x in b["lit_topics"] if x["hot"] and keep(x["topic"])]
+        un = [x for x in b.get("unlit_hot", []) if keep(x["topic"])]
+        out.append({"cutoff": b["cutoff"], "opened": b["opened"], "lit": len(lit), "lit_grew": sum(x["grew"] for x in lit),
+                    "unlit": len(un), "unlit_grew": sum(x["grew"] for x in un),
+                    "lit_topics": [{"topic": x["topic"], "ko": lab.get(x["topic"], {}).get("ko") or x["topic"], "grew": x["grew"]} for x in lit]})
+    return out
 
 
 def describe_topics(names):
@@ -229,9 +246,9 @@ class Toolbox:
         return {"institutions": len(inst), "authors": len(auth), "top_institutions": top(inst, 6), "top_authors": top(auth, 5)}
 
     def verify_signal(self):
-        return [{"cutoff": b["cutoff"], "opened": b["opened"], "active_topics_signal_on": b["hot_lit"], "of_which_grew": b["hot_lit_grew"],
-                 "active_topics_signal_off": b["hot_unlit"], "of_which_grew_off": b["hot_unlit_grew"]}
-                for b in self.d["backtest"] if b["cutoff"] <= self.c]
+        return [{"cutoff": b["cutoff"], "opened": b["opened"], "active_topics_signal_on": b["lit"], "of_which_grew": b["lit_grew"],
+                 "active_topics_signal_off": b["unlit"], "of_which_grew_off": b["unlit_grew"]}
+                for b in scorecard(self.d) if b["cutoff"] <= self.c]
 
     def cross_field(self, topic):
         u = self.up(topic.strip().lower())

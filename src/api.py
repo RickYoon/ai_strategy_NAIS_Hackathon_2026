@@ -107,12 +107,13 @@ def handle(path, q, derived):
     if path == "/api/meta":
         top = sorted(((t, v["n"]) for t, v in d["topics"].items()), key=lambda x: -x[1])
         return {k: d[k] for k in ("meta", "years", "total", "n_papers", "n_inst", "n_auth", "n_topics", "rules", "backtest")} | {
-            "topic_names": [t for t, _ in top]}, 200
+            "topic_names": [t for t, _ in top], "score": agent.scorecard(d)}, 200
     if path == "/api/topic":
         name = q.get("q", "").strip().lower()
         if name not in d["topics"]:
             return {"error": f"'{name}' 주제가 없다 (발표 {d['rules']['min_docs']}편 미만이거나 제목에 없는 말)"}, 404
-        return {"topic": name, **d["topics"][name], "events": events().get(name, []), "upstream": upstream(name)}, 200
+        lab = json.loads(agent.LABELS.read_text(encoding="utf-8")).get(name, {}) if agent.LABELS.exists() else {}
+        return {"topic": name, "ko": lab.get("ko"), "desc": lab.get("desc"), **d["topics"][name], "events": events().get(name, []), "upstream": upstream(name)}, 200
     if path == "/api/who":
         kind, name = q.get("kind", "inst"), q.get("name", "")
         w = d.get("who", {}).get(kind, {}).get(name)
