@@ -213,6 +213,30 @@ def past_picks(venue, labels):
     return cache[venue]
 
 
+def topic_series(venue, d, topic):
+    """주제 화면 그림에서 고를 수 있는 연도별 지표. 배운 점수의 특징과 같은 재료(제목 · 소속)로 센다."""
+    import research
+    import analyze
+    cache = combo.__dict__.setdefault("_raw", {})
+    if venue not in cache:
+        cache[venue] = research.raw_index(venue)
+    rows, idx, _ = cache[venue]
+    ps = [rows[k] for k in idx.get(topic, [])]
+    seen, out = set(), {k: [] for k in ("papers", "problem", "inst", "newinst", "company", "coop")}
+    for y in d["years"]:
+        g = [p for p in ps if p[0] == y]
+        ins = {n for p in g for n, _, _ in p[2]}
+        fr = (lambda f: round(sum(1 for p in g if f(p)) / len(g), 4)) if g else (lambda f: None)
+        out["papers"].append(len(g))
+        out["problem"].append(fr(lambda p: bool(analyze.PROBLEM.search(" ".join(p[1])))))
+        out["inst"].append(len(ins))
+        out["newinst"].append(len(ins - seen))
+        out["company"].append(fr(lambda p: any(tp == "company" for _, tp, _ in p[2])))
+        out["coop"].append(fr(lambda p: len({n for n, _, _ in p[2]}) >= 2))
+        seen |= ins
+    return out
+
+
 def topic_groups(venue, act, c, cut=0.4, least=5):
     """후보끼리 묶는다: 최근 3년 발표 가운데 두 주제가 같은 제목에 함께 나온 비율(작은 쪽 기준)이 40% 이상이고 5편 이상이면 같은 묶음.
     사람이나 LLM이 묶지 않는다 — 제목이 겹치는 것만 본다."""
@@ -286,8 +310,12 @@ def handle(path, q, derived):
             rk = topic_rank(q.get("venue", "ectc"), d, name, d["years"][-1])
         except Exception:
             pass
+        try:
+            ser = topic_series(q.get("venue", "ectc"), d, name)
+        except Exception:
+            ser = None
         return {"topic": name, "ko": lab.get("ko"), "desc": lab.get("desc"), **d["topics"][name], "events": events().get(name, []),
-                "upstream": upstream(name), "rank": rk}, 200
+                "upstream": upstream(name), "rank": rk, "series": ser}, 200
     if path == "/api/who":
         kind, name = q.get("kind", "inst"), q.get("name", "")
         w = d.get("who", {}).get(kind, {}).get(name)
