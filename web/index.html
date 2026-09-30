@@ -10,8 +10,8 @@
 :root{--bg:#f5f8fd;--card:#fff;--ink:#0f1b3d;--txt:#2b3654;--sub:#6b7693;--mute:#9aa5be;--line:#e3e9f4;--panel:#f3f6fc;
   --pri:#2d4fd8;--pridk:#2340b8;--pribg:#eef2fe;--grn:#1f9462;--grnbg:#e6f6ee;--red:#d64545;--redbg:#fdecec;--amb:#b7791f;--ambbg:#fdf4e3;
   --sh:0 1px 2px rgba(15,27,61,.04),0 4px 16px rgba(15,27,61,.05);--r:16px}
-html[data-theme=dark]{--bg:#0a0b0e;--card:#111318;--ink:#ffffff;--txt:#e6eaf2;--sub:#bcc4d3;--mute:#939eb3;--line:#23262e;--panel:#171a20;
-  --pri:#8b7dff;--pridk:#a497ff;--pribg:#1d1a36;--grn:#3cc98a;--grnbg:#10291d;--red:#ff6b6b;--redbg:#34181b;--amb:#e3a94c;--ambbg:#2e230f;
+html[data-theme=dark]{--bg:#0e0e10;--card:#151517;--ink:#f5f5f6;--txt:rgba(255,255,255,.84);--sub:rgba(255,255,255,.58);--mute:rgba(255,255,255,.40);--line:rgba(255,255,255,.08);--panel:#1c1c1f;
+  --pri:#9b8cff;--pridk:#b3a8ff;--pribg:rgba(155,140,255,.12);--grn:#3cc98a;--grnbg:#10291d;--red:#ff6b6b;--redbg:#34181b;--amb:#e3a94c;--ambbg:#2e230f;
   --sh:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);color-scheme:dark}
 #theme{background:transparent;border:1px solid var(--line);color:var(--sub);padding:4px 10px;font-size:15px}
 input::-webkit-calendar-picker-indicator{display:none!important}
@@ -296,7 +296,7 @@ html[data-theme=dark] :focus-visible{outline-color:rgba(139,125,255,.5)}
 
 /* 왼쪽 사이드바 */
 .side{position:fixed;left:0;top:0;bottom:0;width:248px;z-index:30;background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px;gap:4px}
-html[data-theme=dark] .side{background:#0e1014}
+html[data-theme=dark] .side{background:#111113;border-right-color:rgba(255,255,255,.06)}
 body{padding-left:248px}
 .side .brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:6px 8px;color:var(--ink);text-align:left}
 .side .brand:hover{background:none}
@@ -319,6 +319,33 @@ body{padding-left:248px}
 footer{display:none}
 .log{top:16px!important}#banner{top:0!important}
 @media(max-width:900px){.side{position:static;width:auto;border-right:0;border-bottom:1px solid var(--line)}.hist,.slbl,.sfoot .note,.side .sub1{display:none}.snav{flex-direction:row;flex-wrap:wrap}.snav button{width:auto}body{padding-left:0}}
+
+/* 양산 서비스처럼: 강조색은 선택 · 버튼에만, 숫자는 흰색, 굵기 낮춤, 칩 테두리 없음, 점 격자 옅게 */
+html[data-theme=dark] body{background:radial-gradient(circle,rgba(255,255,255,.045) 1px,transparent 1.2px) 0 0/24px 24px,var(--bg);font-feature-settings:"tnum" 1}
+html[data-theme=dark] :is(.kv,.big,.tcs b,.hero h2 em){color:var(--ink)}
+html[data-theme=dark] :is(.kv,.big,.tcs b,.nm,.hero h2,.sumh .t,.ask .askt,h2){font-weight:650!important}
+html[data-theme=dark] :is(b,strong,.pill,.gh,.lbl){font-weight:600}
+html[data-theme=dark] .kv{font-size:24px;letter-spacing:-.02em}
+html[data-theme=dark] :is(.chips span,.tags span){border:0!important;background:rgba(255,255,255,.06);color:var(--txt);font-weight:500}
+html[data-theme=dark] :is(.chips .ok,.tags .up){background:rgba(60,201,138,.12);color:#6fdcaa}
+html[data-theme=dark] .chips .gr{background:rgba(255,255,255,.04);color:var(--sub)}
+html[data-theme=dark] :is(.card,.tc,.log,.scope){background:var(--card);border:1px solid rgba(255,255,255,.07)!important;border-radius:16px}
+html[data-theme=dark] :is(.why,.gb,.kpis,.kpi){background:transparent}
+html[data-theme=dark] .why,html[data-theme=dark] .gb{border:1px solid rgba(255,255,255,.06)}
+html[data-theme=dark] .tc:hover{background:#19191c;border-color:rgba(255,255,255,.14)!important}
+html[data-theme=dark] .askbox{background:#18181b;border:1px solid rgba(255,255,255,.10);box-shadow:none}
+html[data-theme=dark] .askbox button{width:44px;height:44px;padding:0;border-radius:50%;font-size:0;background:#f5f5f6;border-color:#f5f5f6;flex:none;align-self:center}
+html[data-theme=dark] .askbox button::after{content:"↑";font-size:20px;font-weight:700;color:#0e0e10}
+html[data-theme=dark] .askbox button:hover{background:#fff}
+html[data-theme=dark] .ex button{background:transparent;border:1px solid rgba(255,255,255,.10);color:var(--sub)}
+html[data-theme=dark] .ex button:hover{color:var(--ink);background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.2)}
+html[data-theme=dark] .snav button.on{background:rgba(255,255,255,.07);color:var(--ink)}
+html[data-theme=dark] .snav button.on .ic{color:var(--pri)}
+html[data-theme=dark] #newq{background:rgba(255,255,255,.06)}
+html[data-theme=dark] .seg button.on{background:rgba(255,255,255,.10);box-shadow:none;color:var(--ink)}
+html[data-theme=dark] .mtabs button{background:transparent;border-color:rgba(255,255,255,.10)}
+html[data-theme=dark] .mtabs button.on{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.18);color:var(--ink)}
+html[data-theme=dark] .pill.on{background:var(--pribg);color:var(--pri)}
 </style>
 </head>
 <body>
