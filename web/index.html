@@ -41,6 +41,25 @@ a{color:var(--acc)}
 .p{color:var(--amb);font-weight:700}
 .err{color:var(--red);font-weight:700;padding:20px}
 svg text{font-family:inherit}
+body{background:#f6f8fa}
+header{background:#fff;position:sticky;top:0;z-index:5}
+.card{background:#fff;box-shadow:0 1px 2px rgba(18,41,63,.04)}
+.hero{padding:6px 2px 16px}
+.hero h2{font-size:30px;letter-spacing:-.03em;margin:0 0 6px;color:var(--ink)}
+.hero p{margin:0;color:#42525f;font-size:15px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:1200px){.cards{grid-template-columns:repeat(2,1fr)}}
+.tc{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:16px 18px 14px;cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s;display:flex;flex-direction:column;gap:8px}
+.tc:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:0 6px 18px rgba(18,41,63,.08)}
+.tc .nm{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.tc .en{font-size:12px;color:var(--sub)}
+.tags span{display:inline-block;font-size:11.5px;font-weight:700;border-radius:20px;padding:3px 9px;margin:0 4px 4px 0;background:var(--panel);color:#42525f}
+.tags .up{background:#e4f1ea;color:var(--grn)}.tags .dn{background:#f6eaea;color:var(--red)}.tags .ind{background:#f6ecdf;color:var(--amb)}.tags .x{background:var(--accbg);color:var(--acc)}
+.bar2{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sub)}
+.bar2 i{display:block;height:8px;border-radius:4px;background:#d5dce2}
+.bar2 b{color:var(--amb);font-size:14px}
+.res{font-size:13px;font-weight:800;border-radius:8px;padding:6px 10px;text-align:center}
+.res.ok{background:#e4f1ea;color:var(--grn)}.res.no{background:#f6eaea;color:var(--red)}
 </style>
 </head>
 <body>
@@ -51,12 +70,13 @@ svg text{font-family:inherit}
   <label class="note">시점 <select id="c"></select></label>
   <button id="find">후보 찾기</button>
   <button id="run">이 주제 근거 보기</button>
+  <button id="cross" class="ghost">분야를 건너는 신호</button>
   <button id="open" class="ghost">가린 것 열기 → 2026</button>
   <span class="note" id="src"></span>
 </header>
 <main>
   <section class="log">
-    <h2>에이전트가 하는 일</h2>
+    <h2>어떻게 찾았나 — 에이전트가 한 일</h2>
     <div id="plan" style="margin-bottom:10px"></div>
     <div class="step s1" id="s1"><b>01 읽는다</b><span></span></div>
     <div class="step s2" id="s2"><b>02 대조한다</b><span></span></div>
@@ -74,7 +94,7 @@ async function init(){
   META=await (await fetch('/api/meta?venue=ectc')).json();
   $('#names').innerHTML=META.topic_names.slice(0,400).map(n=>`<option value="${n}">`).join('');
   $('#c').innerHTML=META.years.filter(y=>y>=2021).reverse().map(y=>`<option value="${y}" ${y==2026?'selected':''}>${y==2026?'지금 (2026)':y+'년으로 돌아가 검증'}</option>`).join('');
-  $('#c').onchange=()=>{sync();($('#q').value.trim()?run:find)()};sync();
+  $('#c').onchange=()=>{sync();if(VIEW=='cross'){REVEAL=false;$('#open').textContent='가린 것 열기 → 2026';renderCross();return}($('#q').value.trim()?run:find)()};sync();
   LLM=await (await fetch('/api/has_llm')).json();
   $('#src').textContent=`${META.meta.name} · ${META.meta.years} · ${META.n_papers.toLocaleString()}편 · OpenAlex에서 ${META.meta.collected_at.slice(0,16).replace('T',' ')} (UTC) 수집 · ${LLM.llm?'LLM '+LLM.model:'LLM 없음 (정해진 순서로 실행)'}`;
 }
@@ -152,31 +172,92 @@ function render(c){
     <div class="note">분류는 LLM이 제목만 보고 한다. 개수는 코드가 센다. 거친 지도이므로 칸을 눌러 원문을 확인한다.</div><div id="gapout"></div></div>`;
   wire(c,show)}
 const NAMES={search_topics:'주제 찾기',read_topic:'01 읽는다',industry_events:'02 대조한다',find_people:'03 찾는다',verify_signal:'04 검증한다',cross_field:'다른 분야 신호'};
+let CROSS=null;
+function renderCross(){
+  const r=CROSS,c=Number($('#c').value),show=REVEAL?NOW:c,W=900,X0=2016,X1=2026,x=y=>80+(y-X0)*(W-200)/(X1-X0);
+  const COL=['#12293f','#a15c12','#1d6b4a','#a82c38','#6b7885'];
+  // 위: 다른 분야
+  const o=r.other.find(s=>s.name=='language model')||r.other[0],H1=230;
+  const ov=o.years.map((y,i)=>[y,o.values[i]]).filter(([y])=>y<=show),mx=Math.max(...ov.map(v=>v[1]))||1,y1=v=>H1-30-v/mx*(H1-90);
+  let a=`<svg viewBox="0 0 ${W} ${H1}" style="width:100%;max-width:${W}px"><line x1="60" y1="${H1-30}" x2="${W-110}" y2="${H1-30}" stroke="#dfe5ea" stroke-width="2"/>`;
+  if(show<NOW)a+=`<rect x="${x(show)+12}" y="10" width="${x(X1)-x(show)+8}" height="${H1-44}" rx="8" fill="#eef1f4"/><text x="${(x(show)+x(X1))/2+10}" y="${H1/2}" text-anchor="middle" font-size="13" font-weight="800" fill="#9aa5ae">가려 둔 미래</text>`;
+  r.milestones.forEach((m,i)=>{const [my,mm]=m.date.split('-').map(Number),pos=my+(mm-1)/12;if(pos>show+0.99)return;
+    a+=`<line x1="${x(pos)}" y1="${22+i*17}" x2="${x(pos)}" y2="${H1-30}" stroke="#a15c12" stroke-dasharray="4 4" stroke-width="1.5"/><circle cx="${x(pos)}" cy="${22+i*17}" r="5" fill="#a15c12"/>
+      <text x="${x(pos)+(x(pos)>430?-9:9)}" y="${26+i*17}" text-anchor="${x(pos)>430?'end':'start'}" font-size="12" fill="#a15c12"><tspan font-weight="800">${m.date.replace('-','.')} ${m.who}</tspan> ${m.text}</text>`});
+  a+=`<polyline points="${ov.map(([y,v])=>`${x(y)},${y1(v)}`).join(' ')}" fill="none" stroke="#12707f" stroke-width="4" stroke-linejoin="round"/>`;
+  ov.forEach(([y,v],i)=>{if(i==0||i==ov.length-1||y==2020)a+=`<text x="${x(y)}" y="${y1(v)+(i==ov.length-1?-10:18)}" text-anchor="middle" font-size="12.5" font-weight="800" fill="#12707f">${v.toLocaleString()}편</text>`});
+  a+='</svg>';
+  // 아래: 이 학회
+  const H2=250,mx2=Math.max(...r.here.flatMap(h=>h.values.filter((v,i)=>h.years[i]<=show)))||1,y2=v=>H2-34-v/mx2*(H2-70);
+  let b=`<svg viewBox="0 0 ${W} ${H2}" style="width:100%;max-width:${W}px"><line x1="60" y1="${H2-34}" x2="${W-110}" y2="${H2-34}" stroke="#dfe5ea" stroke-width="2"/>`;
+  if(show<NOW)b+=`<rect x="${x(show)+12}" y="10" width="${x(X1)-x(show)+8}" height="${H2-48}" rx="8" fill="#eef1f4"/>`;
+  const LAB=[];
+  r.here.forEach((h,k)=>{const pv=h.years.map((y,i)=>[y,h.values[i]]).filter(([y])=>y<=show);
+    b+=`<polyline points="${pv.map(([y,v])=>`${x(y)},${y2(v)}`).join(' ')}" fill="none" stroke="${COL[k%5]}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    const [ly,lv]=pv[pv.length-1];LAB.push({x:x(ly)+8,y:y2(lv)+4,txt:`${h.ko.replace(/\(.*\)/,'')} ${lv.toFixed(1)}%`,col:COL[k%5]})});
+  LAB.sort((p,q)=>p.y-q.y);for(let i=1;i<LAB.length;i++)if(LAB[i].y-LAB[i-1].y<15)LAB[i].y=LAB[i-1].y+15;
+  LAB.forEach(l=>{b+=`<text x="${l.x}" y="${l.y}" font-size="12" font-weight="800" fill="${l.col}">${l.txt}</text>`});
+  for(let y=X0;y<=X1;y++)b+=`<text x="${x(y)}" y="${H2-12}" text-anchor="middle" font-size="12" fill="#6b7885">${y}</text>`;
+  b+=`<text x="${x(2016)}" y="${H2/2}" font-size="11.5" fill="#9aa5ae">이 학회 기록은 2018년부터</text></svg>`;
+  const at=(s,y)=>{const i=s.years.indexOf(y);return i<0?null:s.values[i]};
+  const y0=2018,ya=Math.min(show,2025);
+  $('#out').innerHTML=`<div class="card"><div class="head"><span class="t">분야를 건너는 신호</span><span class="pill" style="background:var(--red)">검증 전 · 사람이 적은 연결</span>
+      <span class="note">${show<NOW?show+'년으로 돌아감 — 그 해까지의 기록만 본다':'지금까지의 기록'}</span></div>
+    <div class="note"><b>${r.label}</b> → 이 학회의 하드웨어 주제. ${r.why}.</div>
+    <h2 style="margin-top:14px">다른 분야 — ${r.field}에서 제목에 "language model"이 든 논문 수 · 점 = 규모가 중요하다고 말한 발표</h2>${a}
+    <h2>${r.venue} — 연결해 둔 주제의 발표 비중</h2>${b}
+    <div class="grid" style="margin-top:6px"><div><div class="big" style="color:var(--acc);font-size:24px">다른 분야: ${y0}년 ${at(o,y0).toLocaleString()}편 → ${ya}년 ${at(o,ya).toLocaleString()}편</div></div>
+      <div><div class="big" style="font-size:24px">이 학회: ${r.here.slice(0,2).map(h=>`${h.ko.replace(/\(.*\)/,'')} ${at(h,y0).toFixed(1)}% → ${at(h,show).toFixed(1)}%`).join(' · ')}</div></div></div>
+    <p class="note" style="margin-top:8px">이 연결은 사람이 적은 가설이고, 지금 와서 고른 사례다. 과거 시점으로 돌려 검증하지 않았다. 발표 비중이 1% 안팎인 주제는 한두 편에도 크게 흔들린다.
+    ${show<NOW?'"가린 것 열기"를 누르면 그 뒤가 나온다.':'시점을 과거로 바꾸면 그때 보였던 만큼만 나온다.'}</p></div>`}
+async function cross(){T=null;FIND=null;AG=null;REVEAL=false;$('#open').textContent='가린 것 열기 → 2026';$('#plan').innerHTML='';
+  document.querySelectorAll('.step').forEach(e=>{e.classList.remove('on');e.querySelector('span').textContent=''});
+  $('#out').innerHTML='<p class="note">불러오는 중…</p>';
+  try{CROSS=await (await fetch('/api/cross?venue=ectc')).json()}catch(e){CROSS={error:String(e)}}
+  if(CROSS.error){$('#out').innerHTML=`<div class="err">${CROSS.error}</div>`;return}
+  VIEW='cross';renderCross()}
+let VIEW='find';
 let FIND=null;
 function spark(v){const mx=Math.max(...v,0.0001),w=90,h=26;return `<svg viewBox="0 0 ${w} ${h}" style="width:${w}px;height:${h}px"><polyline points="${v.map((x,i)=>`${4+i*(w-8)/Math.max(1,v.length-1)},${h-3-x/mx*(h-6)}`).join(' ')}" fill="none" stroke="#12293f" stroke-width="2"/></svg>`}
+function area(v,col){const mx=Math.max(...v,0.0001),w=260,h=70,pt=v.map((x,i)=>[6+i*(w-12)/Math.max(1,v.length-1),h-6-x/mx*(h-16)]);
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:70px"><path d="M${pt[0][0]},${h-4} L${pt.map(p=>p.join(',')).join(' L')} L${pt[pt.length-1][0]},${h-4} Z" fill="${col}" opacity=".12"/><polyline points="${pt.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linejoin="round"/><circle cx="${pt[pt.length-1][0]}" cy="${pt[pt.length-1][1]}" r="3.5" fill="${col}"/></svg>`}
 function renderFind(){
   const f=FIND,c=f.cutoff,act=f.candidates.filter(x=>x.active),rest=f.candidates.filter(x=>!x.active);
   const canOpen=act.some(x=>x.grew!==null&&x.grew!==undefined);
-  const row=x=>`<tr><td><a href="#" data-go="${x.topic}"><b>${x.ko||x.topic}</b></a> <span class="note">${x.ko?x.topic:''}</span></td>
-    <td>${spark(x.share)}</td><td>${x.share_recent_percent}% <span class="note" style="color:${x.trend=='오르는 중'||x.trend=='새로 등장'?'var(--grn)':x.trend=='줄어드는 중'?'var(--red)':'var(--sub)'}">${x.trend}</span></td><td><span class="p">${x.problem_before_percent}% → ${x.problem_recent_percent}%</span></td><td>${x.papers_recent}편</td>
-    <td>${x.inst_recent}곳 중 ${x.inst_new}곳 <span class="note">${x.inst_new_percent}%</span></td><td>${x.events?`<span class="p">산업 ${x.events}건</span> `:''}${x.cross?'<span style="color:var(--acc);font-weight:700">다른 분야</span>':''}</td>
-    ${REVEAL&&canOpen?`<td>${x.grew===true?'<b style="color:var(--grn)">✓ 커졌다</b>':x.grew===false?'<span style="color:var(--red)">✗ 그대로</span>':''}</td>`:''}</tr>`;
-  const head=`<tr><th>주제</th><th>발표 비중 흐름</th><th>최근 3년 비중</th><th>양산 문제를 다룬 비중</th><th>최근 3년 발표</th><th>새로 들어온 기관</th><th>겹치는 신호</th>${REVEAL&&canOpen?'<th>3년 뒤 실제</th>':''}</tr>`;
-  const tr=f.traits,fr=a=>`${a[1]}개 중 ${a[0]}개`;
-  $('#out').innerHTML=`<div class="card"><div class="head"><span class="t">${c==NOW?'지금':c+'년으로 돌아가면,'} 신호가 켜진 주제 ${act.length}개</span><span class="note">${c==NOW?'':'그 해까지의 기록만 본다 · '}이미 활발한 주제 중 내용이 양산 문제 쪽으로 옮겨 간 것</span></div>
-    <table>${head}${act.map(row).join('')}</table>
-    <p class="note" style="margin-top:8px">주제를 누르면 근거 한 장이 나온다. ${f.labeled?`일반 낱말 ${f.removed}개는 LLM이 걸러냈다.`:'LLM이 없어 일반 낱말이 섞여 있다.'}
-    ${canOpen?(REVEAL?'':'"가린 것 열기"를 누르면 이 후보들이 3년 뒤 실제로 커졌는지 나온다.'):`이 후보들이 맞을지는 3년 뒤에야 안다. 그래서 같은 방법을 과거에 돌려 본 성적을 같이 준다: <a href="#" id="goback">2023년으로 돌아가 검증하기</a>`}</p>
+  const card=x=>`<div class="tc" data-go="${x.topic}">
+    <div><div class="nm">${x.ko||x.topic}</div><div class="en">${x.ko?x.topic:''} · 최근 3년 ${x.papers_recent}편 · 발표 비중 ${x.share_recent_percent}%</div></div>
+    ${x.desc?`<div style="font-size:13px;color:#42525f;line-height:1.45;min-height:38px">${x.desc}</div>`:''}
+    ${area(x.share,x.trend=='줄어드는 중'?'#a82c38':'#12707f')}
+    <div class="bar2"><span>양산 문제를 다룬 비중</span><i style="width:${Math.max(4,x.problem_before_percent*0.6)}px"></i>${x.problem_before_percent}% → <i style="width:${Math.max(4,x.problem_recent_percent*0.6)}px;background:var(--amb)"></i><b>${x.problem_recent_percent}%</b></div>
+    <div class="tags"><span class="${x.trend=='오르는 중'||x.trend=='새로 등장'?'up':x.trend=='줄어드는 중'?'dn':''}">${x.trend}</span><span>새 기관 ${x.inst_new}/${x.inst_recent}곳</span>${x.events?`<span class="ind">산업 사건 ${x.events}건</span>`:''}${x.cross?'<span class="x">다른 분야 신호</span>':''}</div>
+    ${REVEAL&&canOpen?`<div class="res ${x.grew?'ok':'no'}">${x.grew?'✓ 3년 뒤 실제로 커졌다':'✗ 3년 뒤 그대로였다'}</div>`:''}</div>`;
+  const tr=f.traits,fr=a=>`${a[1]}개 중 ${a[0]}개`,hit=act.filter(x=>x.grew).length;
+  $('#out').innerHTML=`<div class="hero"><h2>${c==NOW?'지금':c+'년으로 돌아가면,'} 신호가 켜진 주제 ${act.length}개${REVEAL&&canOpen?` — 그중 ${hit}개가 실제로 커졌다`:''}</h2>
+    <p>발표 ${META.n_papers.toLocaleString()}편을 읽고, 이미 활발한 주제 가운데 <b>내용이 양산 문제 쪽으로 옮겨 간 것</b>만 골랐다. ${c==NOW?'':'그 해까지의 기록만 본다. '}카드를 누르면 근거 한 장이 나온다.</p></div>
+    ${c==NOW&&f.past?`<div class="card" style="margin-bottom:14px;padding:14px 18px"><div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+      <div style="min-width:230px"><b style="font-size:15px">같은 방법을 ${f.past.cutoff}년에 돌렸다면</b><div class="note">그때 후보 ${f.past.items.length}개 · 발표 비중 ${f.past.cutoff-2}~${f.past.cutoff}년 → ${f.past.opened}년</div></div>
+      ${f.past.items.filter(x=>x.grew).map(x=>`<div style="background:#e4f1ea;border-radius:10px;padding:8px 14px"><div style="font-size:12px;color:var(--grn);font-weight:800">✓ ${x.ko}</div><div style="font-size:18px;font-weight:800;color:var(--grn)">${x.then}% → ${x.after}%</div></div>`).join('')}
+      <div style="background:#f6eaea;border-radius:10px;padding:8px 14px"><div style="font-size:12px;color:var(--red);font-weight:800">✗ 커지지 않은 후보</div><div style="font-size:18px;font-weight:800;color:var(--red)">${f.past.items.filter(x=>!x.grew).length}개</div></div>
+      </div><div class="note" style="margin-top:6px">실제로 그때 추적한 기록이 아니다. 오늘 모은 기록에서 ${f.past.cutoff}년 뒤를 가리고 돌린 결과다. 맞은 것과 틀린 것을 같이 보여준다.</div></div>`:''}
+    <div class="cards">${act.map(card).join('')}</div>
+    <div class="card" style="margin-top:16px"><p class="note" style="margin:0 0 4px">${f.labeled?`제목에서 뽑은 낱말 중 일반 낱말 ${f.removed}개는 LLM이 걸러냈다.`:'LLM이 없어 일반 낱말이 섞여 있다.'}
+    ${canOpen?(REVEAL?'':'<b>"가린 것 열기"</b>를 누르면 이 후보들이 3년 뒤 실제로 커졌는지 카드마다 나온다.'):`이 후보들이 맞을지는 3년 뒤에야 안다. 그래서 같은 방법을 과거에 돌려 본 성적을 같이 준다: <a href="#" id="goback">2023년으로 돌아가 검증하기</a>`}</p>
     <div style="background:var(--panel);border-radius:10px;padding:12px 16px;margin:10px 0"><b style="font-size:14px">이 중 어느 것이 될까 — 과거에 커진 후보의 특징을 세어 봤다</b>
       <div class="note">과거 세 시점의 후보 ${tr.total[1]}개 중 3년 뒤 커진 것은 ${tr.total[0]}개였다.</div>
       <table style="margin-top:4px"><tr><th>그때 이런 후보였다면</th><th>그랬던 후보</th><th>아니었던 후보</th></tr>
       ${tr.splits.map(s=>`<tr><td>${s.label}</td><td><b>${fr(s.yes)}</b> 커짐</td><td>${fr(s.no)} 커짐</td></tr>`).join('')}</table>
       <div class="note">표본이 작아 차이를 믿기 어렵다. 그래서 순위를 매기지 않고, 후보마다 같은 재료를 그대로 보여준다. 고르는 것은 연구자다.</div></div>
-    <details><summary class="note">아직 활발하지 않은 주제 중 신호가 켜진 것 ${rest.length}개</summary><table>${head}${rest.map(row).join('')}</table></details></div>`;
+    <details><summary class="note">아직 활발하지 않은 주제 중 신호가 켜진 것 ${rest.length}개</summary><div class="cards" style="margin-top:10px">${rest.map(card).join('')}</div></details></div>`;
+  const st=(id,txt)=>{const e=$(id);e.classList.add('on');e.querySelector('span').innerHTML=txt};
+  st('#s1',`발표 ${META.n_papers.toLocaleString()}편의 제목에서 주제 ${f.n_topics}개를 뽑았다. 그중 양산 문제 비중이 10%p 넘게 오른 활발한 주제 ${act.length}개를 골랐다.`);
+  st('#s2',`산업 사건이 적힌 후보 ${act.filter(x=>x.events).length}개, 다른 분야 신호가 있는 후보 ${act.filter(x=>x.cross).length}개를 표시했다.`);
+  st('#s3',`후보마다 최근 3년에 발표한 기관과, 그중 새로 들어온 기관을 셌다.`);
+  st('#s4',`같은 방법을 과거 세 시점에 돌렸다. 후보 ${f.traits.total[1]}개 중 ${f.traits.total[0]}개가 3년 뒤 커졌다.`);
+  $('#plan').innerHTML=`<div class="note" style="padding:0 0 8px">${f.labeled?`LLM: 일반 낱말 ${f.removed}개를 거르고, 주제 이름과 설명을 붙였다.`:''}</div>`;
   const gb=$('#goback');if(gb)gb.onclick=e=>{e.preventDefault();$('#c').value=2023;sync();find()};
-  document.querySelectorAll('[data-go]').forEach(a=>a.onclick=e=>{e.preventDefault();$('#q').value=a.dataset.go;run()})}
+  document.querySelectorAll('[data-go]').forEach(a=>a.onclick=e=>{e.preventDefault();$('#q').value=a.dataset.go;window.scrollTo(0,0);run()})}
 async function find(){
-  const c=Number($('#c').value);REVEAL=false;T=null;AG=null;$('#open').textContent='가린 것 열기 → 2026';$('#plan').innerHTML='';
+  VIEW='find';CROSS=null;const c=Number($('#c').value);REVEAL=false;T=null;AG=null;$('#open').textContent='가린 것 열기 → 2026';$('#plan').innerHTML='';
   document.querySelectorAll('.step').forEach(e=>{e.classList.remove('on');e.querySelector('span').textContent=''});
   $('#out').innerHTML='<p class="note">후보를 찾는 중… (처음 한 번은 LLM이 낱말을 거르느라 30초쯤 걸린다)</p>';
   try{FIND=await (await fetch('/api/find?venue=ectc&c='+c)).json()}catch(e){FIND={error:String(e)}}
@@ -210,6 +291,7 @@ function wire(c,show){
       $('#cellout').innerHTML=`<p style="margin:10px 0 4px"><b>${td.dataset.cell.replace('|',' × ')}</b></p>`+x.papers.map(p=>`<div style="font-size:13px;padding:2px 0">${p.y} · ${p.doi?`<a href="${p.doi}" target="_blank" rel="noopener">${p.t}</a>`:p.t}</div>`).join('')})}}
 async function run(){
   if(!$('#q').value.trim())return find();
+  VIEW='topic';CROSS=null;
   let q=$('#q').value.trim().toLowerCase();const c=Number($('#c').value);REVEAL=false;AG=null;$('#open').textContent='가린 것 열기 → 2026';
   document.querySelectorAll('.step').forEach(e=>{e.classList.remove('on');e.querySelector('span').textContent=''});
   $('#plan').innerHTML='';
@@ -230,9 +312,9 @@ async function run(){
   await say('#s3',`${c}년까지 이 주제를 발표한 기관 ${ps.inst.length}곳, 저자 ${ps.auth.length}명을 찾았다.`);
   await say('#s4',`${bt.cutoff}년으로 돌아가 같은 방법을 돌렸다. 신호가 켜진 활발한 주제 ${bt.hot_lit}개 중 ${bt.hot_lit_grew}개가 3년 뒤 커졌다.`);
   render(c)}
-$('#run').onclick=run;$('#find').onclick=find;$('#open').onclick=()=>{if(!T&&FIND&&!FIND.error){REVEAL=!REVEAL;$('#open').textContent=REVEAL?'다시 가리기':'가린 것 열기 → 2026';renderFind();return}if(!T||T.error)return;REVEAL=!REVEAL;$('#open').textContent=REVEAL?'다시 가리기':'가린 것 열기 → 2026';render(Number($('#c').value))};
+$('#run').onclick=run;$('#find').onclick=find;$('#cross').onclick=cross;$('#open').onclick=()=>{if(VIEW=='cross'&&CROSS&&!CROSS.error){REVEAL=!REVEAL;$('#open').textContent=REVEAL?'다시 가리기':'가린 것 열기 → 2026';renderCross();return}if(!T&&FIND&&!FIND.error){REVEAL=!REVEAL;$('#open').textContent=REVEAL?'다시 가리기':'가린 것 열기 → 2026';renderFind();return}if(!T||T.error)return;REVEAL=!REVEAL;$('#open').textContent=REVEAL?'다시 가리기':'가린 것 열기 → 2026';render(Number($('#c').value))};
 $('#q').addEventListener('keydown',e=>{if(e.key==='Enter')run()});
-init().then(async()=>{const u=new URLSearchParams(location.search);if(u.get('c'))$('#c').value=u.get('c');if(!u.get('q')){$('#q').value='';await find();if(u.get('open'))$('#open').click();return}
+init().then(async()=>{const u=new URLSearchParams(location.search);if(u.get('c')){$('#c').value=u.get('c');sync()}if(u.get('view')=='cross'){await cross();if(u.get('open'))$('#open').click();return}if(!u.get('q')){$('#q').value='';await find();if(u.get('open'))$('#open').click();return}
   if(u.get('q')){$('#q').value=u.get('q');if(u.get('c'))$('#c').value=u.get('c');await run();if(u.get('open'))$('#open').click()}});
 </script>
 </body>

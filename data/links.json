@@ -3,8 +3,43 @@
   "ai_scale": {
     "label": "AI 모델이 커지는 흐름",
     "field": "컴퓨터 과학 (OpenAlex 분야 분류)",
-    "queries": ["pre-trained", "language model"],
+    "queries": [
+      "pre-trained",
+      "language model"
+    ],
     "why": "모델이 커지면 메모리 대역폭 · 전력 · 발열 수요가 는다는 가설",
-    "topics": ["hbm", "hpc", "memory", "power delivery", "cooling"]
+    "topics": [
+      "hbm",
+      "hpc",
+      "memory",
+      "power delivery",
+      "cooling"
+    ],
+    "milestones": [
+      {
+        "date": "2017-10",
+        "text": "데이터를 늘리면 성능이 계속 오른다 (이미지 인식)",
+        "who": "구글 · ICCV",
+        "doi": "https://doi.org/10.1109/iccv.2017.97"
+      },
+      {
+        "date": "2020-01",
+        "text": "언어 모델의 규모 법칙",
+        "who": "OpenAI · arXiv",
+        "doi": "https://doi.org/10.48550/arxiv.2001.08361"
+      },
+      {
+        "date": "2022-06",
+        "text": "큰 모델에서 갑자기 나타나는 능력",
+        "who": "구글 · arXiv",
+        "doi": "https://doi.org/10.48550/arxiv.2206.07682"
+      },
+      {
+        "date": "2022-11",
+        "text": "ChatGPT 공개",
+        "who": "OpenAI",
+        "doi": null
+      }
+    ]
   }
 }

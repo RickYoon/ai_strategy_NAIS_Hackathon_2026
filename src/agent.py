@@ -153,6 +153,28 @@ def label_topics(names):
     return have
 
 
+def describe_topics(names):
+    """후보 주제가 무엇인지 한 문장으로 설명한다(LLM의 일반 지식). 숫자와 전망은 쓰지 않게 한다. 한 번 쓴 것은 남겨 둔다."""
+    have = json.loads(LABELS.read_text(encoding="utf-8")) if LABELS.exists() else {}
+    todo = [n for n in names if not have.get(n, {}).get("desc")]
+    key = api_key()
+    if todo and key:
+        import anthropic
+        r = anthropic.Anthropic(api_key=key).messages.create(model=MODEL, max_tokens=4000, messages=[{"role": "user", "content":
+            "아래는 반도체 패키징 학회 발표 제목에서 뽑은 기술 주제다. 각 주제가 무엇인지 비전공자도 알 수 있게 한국어 한 문장(40자 안팎)으로 설명한다. "
+            "숫자, 전망, 평가(유망하다 등)는 쓰지 않는다. 아래 JSON만 출력한다.\n"
+            '{"주제": "설명"}\n\n' + "\n".join(todo)}])
+        m = re.search(r"\{.*\}", "".join(b.text for b in r.content if b.type == "text"), re.S)
+        try:
+            for k, v in json.loads(m.group(0)).items():
+                if k in todo and isinstance(v, str):
+                    have.setdefault(k, {"keep": True})["desc"] = v
+            LABELS.write_text(json.dumps(have, ensure_ascii=False, indent=1), encoding="utf-8")
+        except (AttributeError, json.JSONDecodeError):
+            pass
+    return have
+
+
 class Toolbox:
     """도구 모음. 전부 기준 연도 가드를 거친다."""
 
