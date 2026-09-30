@@ -2,12 +2,18 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>앞으로 성장할 연구 주제를 찾아주는 에이전트</title>
 <style>
 :root{--bg:#f5f8fd;--card:#fff;--ink:#0f1b3d;--txt:#2b3654;--sub:#6b7693;--mute:#9aa5be;--line:#e3e9f4;--panel:#f3f6fc;
   --pri:#2d4fd8;--pridk:#2340b8;--pribg:#eef2fe;--grn:#1f9462;--grnbg:#e6f6ee;--red:#d64545;--redbg:#fdecec;--amb:#b7791f;--ambbg:#fdf4e3;
   --sh:0 1px 2px rgba(15,27,61,.04),0 4px 16px rgba(15,27,61,.05);--r:16px}
+html[data-theme=dark]{--bg:#0d1017;--card:#151922;--ink:#ffffff;--txt:#e6eaf2;--sub:#bcc4d3;--mute:#939eb3;--line:#252b37;--panel:#1b202b;
+  --pri:#6e8dff;--pridk:#8ea6ff;--pribg:#1b2340;--grn:#3cc98a;--grnbg:#10291d;--red:#ff6b6b;--redbg:#34181b;--amb:#e3a94c;--ambbg:#2e230f;
+  --sh:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);color-scheme:dark}
+#theme{background:transparent;border:1px solid var(--line);color:var(--sub);padding:4px 10px;font-size:15px}
+input::-webkit-calendar-picker-indicator{display:none!important}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;color:var(--txt);background:var(--bg);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
@@ -17,15 +23,15 @@ svg{display:block}svg text{font-family:inherit}
 :focus-visible{outline:3px solid rgba(45,79,216,.4);outline-offset:2px;border-radius:6px}
 button{font:inherit;cursor:pointer;border:1.5px solid var(--pri);background:var(--pri);color:#fff;font-weight:700;border-radius:10px;padding:9px 16px;transition:background .15s,border-color .15s,color .15s,box-shadow .15s}
 button:hover{background:var(--pridk);border-color:var(--pridk)}
-button.ghost{background:#fff;color:var(--ink);border-color:var(--line)}
-button.ghost:hover{border-color:var(--pri);color:var(--pri);background:#fff}
+button.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
+button.ghost:hover{border-color:var(--pri);color:var(--pri);background:var(--card)}
 button.sm{padding:6px 12px;font-size:13px;border-radius:8px}
 .note{font-size:12.5px;color:var(--sub);line-height:1.6}
 .note b{color:var(--txt)}
 .p,.p a{color:var(--amb);font-weight:600}
 
 /* 상단 막대 */
-.top{position:sticky;top:0;z-index:20;height:60px;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:20px;padding:0 28px}
+.top{position:sticky;top:0;z-index:20;height:60px;background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:20px;padding:0 28px}
 .brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:4px 6px;color:var(--ink)}
 .brand:hover{background:none}
 .brand i{width:26px;height:26px;border-radius:8px;background:var(--pri);display:grid;place-items:center;flex:none}
@@ -39,17 +45,17 @@ button.sm{padding:6px 12px;font-size:13px;border-radius:8px}
 .ask{max-width:1400px;margin:0 auto;padding:52px 28px 8px;text-align:center}
 .ask .askt{font-size:44px;font-weight:800;letter-spacing:-.035em;color:var(--ink);line-height:1.15}
 .ask .asks{margin:12px auto 26px;font-size:16.5px;color:var(--sub);max-width:640px}
-.askbox{display:flex;gap:8px;max-width:760px;margin:0 auto;background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:8px 8px 8px 20px;box-shadow:var(--sh);transition:border-color .15s,box-shadow .15s}
+.askbox{display:flex;gap:8px;max-width:760px;margin:0 auto;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:8px 8px 8px 20px;box-shadow:var(--sh);transition:border-color .15s,box-shadow .15s}
 .askbox:focus-within{border-color:var(--pri);box-shadow:0 0 0 4px rgba(45,79,216,.12),var(--sh)}
 .askbox input{flex:1;min-width:0;border:0;outline:0;font:inherit;font-size:17px;color:var(--ink);background:none;padding:10px 0}
 .askbox input::placeholder{color:var(--mute)}
 .askbox button{border-radius:12px;padding:11px 22px;font-size:15.5px;white-space:nowrap}
 .ex{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:16px auto 0;max-width:900px}
-.ex button{background:#fff;color:var(--txt);border:1.5px solid var(--line);font-weight:600;font-size:13.5px;border-radius:30px;padding:7px 15px}
+.ex button{background:var(--card);color:var(--txt);border:1.5px solid var(--line);font-weight:600;font-size:13.5px;border-radius:30px;padding:7px 15px}
 .ex button:hover{border-color:var(--pri);color:var(--pri);background:var(--pribg)}
 .filter{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:30px 0 0;padding-top:18px;border-top:1px solid var(--line);text-align:left}
 .filter .fl{font-size:13px;font-weight:700;color:var(--sub)}
-.seg{display:inline-flex;background:#fff;border:1.5px solid var(--line);border-radius:11px;padding:3px;gap:2px}
+.seg{display:inline-flex;background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:3px;gap:2px}
 .seg button{background:none;border:0;color:var(--sub);font-weight:700;font-size:13.5px;padding:6px 14px;border-radius:8px}
 .seg button:hover{color:var(--ink);background:var(--panel)}
 .seg button.on{background:var(--pri);color:#fff}
@@ -58,7 +64,7 @@ button.sm{padding:6px 12px;font-size:13px;border-radius:8px}
 .filter .fh{margin-left:auto}
 body.compact .ask{padding-top:18px;text-align:left}
 body.compact .askt,body.compact .asks,body.compact .ex{display:none}
-.scope{max-width:980px;margin:18px auto 0;text-align:left;background:#fff;border:1px solid var(--line,#e3e8f2);border-radius:14px;padding:12px 18px;font-size:13px;line-height:1.65;color:#42506b}
+.scope{max-width:980px;margin:18px auto 0;text-align:left;background:var(--card);border:1px solid var(--line,#e3e8f2);border-radius:14px;padding:12px 18px;font-size:13px;line-height:1.65;color:#42506b}
 .scope b{color:var(--ink)} .scope .h{font-weight:800;color:var(--ink);margin-right:8px}
 .scope ul{margin:4px 0 0;padding-left:18px;columns:2;column-gap:28px} .scope li{break-inside:avoid}
 body.compact .scope{display:none}
@@ -66,7 +72,7 @@ body.home main,body.home .filter,body.home footer{display:none}
 body.home .ask{padding-top:12vh;min-height:88vh}
 body.home .scope{margin-top:34px}
 .filter .fl,.filter #seg,.filter .fh{display:none}
-.sig4{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 0}.sig4 span{font-size:11.5px;font-weight:700;border-radius:20px;padding:3px 9px;background:#eef1f6;color:#9aa3b5}.sig4 span.on{background:#e3e9fb;color:var(--pri)}.sig4 b{font-size:12px;color:var(--ink);margin-right:2px}
+.sig4{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 0}.sig4 span{font-size:11.5px;font-weight:700;border-radius:20px;padding:3px 9px;background:var(--panel);color:var(--mute)}.sig4 span.on{background:#e3e9fb;color:var(--pri)}.sig4 b{font-size:12px;color:var(--ink);margin-right:2px}
 body.compact .askbox{margin:0;max-width:none;border-radius:14px;padding:5px 5px 5px 16px}
 body.compact .askbox input{font-size:15.5px;padding:7px 0}
 body.compact .askbox button{padding:8px 18px;font-size:14.5px;border-radius:10px}
@@ -78,7 +84,7 @@ body.compact .filter{margin-top:14px;padding-top:0;border-top:0}
 #banner .bt{flex:1;min-width:300px}
 #banner a{color:#8a5a0c;font-weight:700;text-decoration:underline}
 #banner button{background:#8a5a0c;border-color:#8a5a0c}
-#banner button.ghost{background:#fff;color:#6b4a12;border-color:#e3cf9f}
+#banner button.ghost{background:var(--card);color:#6b4a12;border-color:#e3cf9f}
 
 /* 본문 */
 main{display:grid;grid-template-columns:296px minmax(0,1fr);gap:24px;padding:20px 28px 40px;max-width:1400px;margin:0 auto;align-items:start}
@@ -100,7 +106,7 @@ td,th{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;verti
 th{color:var(--sub);font-weight:700;font-size:12px;background:var(--panel)}
 th:first-child{border-radius:8px 0 0 8px}th:last-child{border-radius:0 8px 8px 0}
 tr:last-child td{border-bottom:0}
-tbody tr:hover td{background:#fafbfe}
+tbody tr:hover td{background:var(--panel)}
 td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
 .chips span,.tags span{display:inline-block;font-size:12px;font-weight:600;border-radius:20px;padding:3px 10px;margin:0 5px 5px 0;background:var(--panel);color:var(--txt)}
 .chips .ok,.tags .up{background:var(--grnbg);color:var(--grn)}
@@ -111,7 +117,7 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
 .scroll td:first-child{color:var(--sub);white-space:nowrap}
 
 /* 왼쪽: 어떻게 찾았나 */
-.log{position:sticky;top:76px;background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:18px 18px 14px}
+.log{position:sticky;top:76px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:18px 18px 14px}
 body.past .log{top:136px}
 .log summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
 .log summary::-webkit-details-marker{display:none}
@@ -138,7 +144,7 @@ body.past .log{top:136px}
 .step.s4::before{display:none}
 .step::after{content:attr(data-n);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--panel);color:var(--sub);font-size:11px;font-weight:800;display:grid;place-items:center}
 .step.on{opacity:1}
-.step.on::after{color:#fff}
+.step.on::after{color:var(--card)}
 .s1.on::after{background:var(--ink)}.s2.on::after{background:var(--amb)}.s3.on::after{background:var(--pri)}.s4.on::after{background:var(--grn)}
 .step b{display:block;font-size:14px;color:var(--ink);line-height:24px}
 .step span{font-size:12.5px;color:var(--sub);line-height:1.5;display:block}
@@ -165,7 +171,7 @@ body.past .log{top:136px}
 .tile span{display:block;font-size:11.5px;font-weight:700;color:var(--sub)}
 .tile b{font-size:15px;font-weight:800;letter-spacing:-.02em}
 .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
-.tc{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:20px 20px 16px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s,transform .15s,box-shadow .15s;display:flex;flex-direction:column;gap:12px}
+.tc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 20px 16px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s,transform .15s,box-shadow .15s;display:flex;flex-direction:column;gap:12px}
 .tc:hover,.tc:focus-visible{border-color:var(--pri);transform:translateY(-3px);box-shadow:0 10px 28px rgba(45,79,216,.13)}
 .tch{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
 .tc .nm{font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--ink);line-height:1.25}
@@ -219,13 +225,13 @@ details.more>summary{cursor:pointer;font-size:13.5px;font-weight:700;color:var(-
 .dots i.g{background:var(--grn)}
 .lbl{font-size:12.5px;font-weight:700;color:var(--sub);margin:12px 0 6px}
 .now1{background:var(--pribg);color:var(--pridk);border-radius:10px;padding:9px 12px;font-size:13px;font-weight:600;margin-bottom:12px}
-.grp{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:10px}.gb{background:#f5f8fd;border-radius:12px;padding:12px 14px}.gh{font-weight:800;font-size:15px}.gb .chips small{font-weight:600;opacity:.7}
-.why{background:#f5f8fd;border-radius:12px;padding:14px 16px;margin:6px 0 14px}
+.grp{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:10px}.gb{background:var(--panel);border-radius:12px;padding:12px 14px}.gh{font-weight:800;font-size:15px}.gb .chips small{font-weight:600;opacity:.7}
+.why{background:var(--panel);border-radius:12px;padding:14px 16px;margin:6px 0 14px}
 .wh,.wr{display:grid;grid-template-columns:minmax(150px,1.3fr) 92px 1.4fr 44px;gap:10px;align-items:center}
 .wh{margin-top:10px;font-size:11.5px;font-weight:700;color:var(--mute);padding-bottom:4px;border-bottom:1px solid var(--line)}
-.wr{padding:7px 0;border-bottom:1px solid #e8ecf3}
+.wr{padding:7px 0;border-bottom:1px solid var(--line)}
 .wn b{display:block;font-size:13px}.wn span,.wv span{display:block;font-size:11.5px;color:var(--sub);line-height:1.35}
-.wv b{font-size:14px}.wb{position:relative;height:14px;background:linear-gradient(90deg,transparent calc(50% - 1px),#c5ccd9 calc(50% - 1px),#c5ccd9 calc(50% + 1px),transparent calc(50% + 1px))}
+.wv b{font-size:14px}.wb{position:relative;height:14px;background:linear-gradient(90deg,transparent calc(50% - 1px),var(--mute) calc(50% - 1px),var(--mute) calc(50% + 1px),transparent calc(50% + 1px))}
 .wb i{position:absolute;top:0;height:100%;border-radius:3px}.wp{font-weight:800;font-size:13px;text-align:right}
 details.fine{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
 details.fine summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--sub)}
@@ -233,7 +239,7 @@ details.fine summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(-
 .draftbox p.dt{font-weight:800;color:var(--ink);margin:0 0 4px}
 .draftbox p.dp{margin:0 0 14px;font-size:15px;line-height:1.75}
 .gapt td,.gapt th{text-align:center}.gapt td:first-child,.gapt th:first-child{text-align:left}
-.gapt td.emp{color:var(--red);background:#fef6f6;font-size:12.5px}
+.gapt td.emp{color:var(--red);background:var(--redbg);font-size:12.5px}
 .gapt td[data-cell]{cursor:pointer;font-weight:800;color:var(--ink)}
 .gapt td[data-cell]:hover{outline:2px solid var(--pri);outline-offset:-2px}
 .gapt td .gn{display:block;font-size:20px;font-weight:800;line-height:1.2;color:var(--ink)}
@@ -274,6 +280,7 @@ footer{max-width:1400px;margin:0 auto;padding:0 28px 36px;font-size:12px;color:v
   <nav>
     <button id="find">후보 찾기</button>
     <button id="cross">분야를 건너는 신호</button>
+    <button id="theme" title="밝게 / 어둡게">◐</button>
   </nav>
 </header>
 <section class="ask">
@@ -326,7 +333,7 @@ const U=new URLSearchParams(location.search);
 const pct=x=>(x*100).toFixed(x<0.1?1:0)+'%';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const NOW=2026,OPENTXT='가린 것 열기 → 2026';
-const C={ink:'#0f1b3d',pri:'#2d4fd8',grn:'#1f9462',red:'#d64545',amb:'#b7791f',sub:'#6b7693',mute:'#9aa5be',line:'#e3e9f4',mask:'#edf1f9'};
+const C=(()=>{const cs=getComputedStyle(document.documentElement),v=k=>cs.getPropertyValue('--'+k).trim();return {ink:v('ink'),pri:v('pri'),grn:v('grn'),red:v('red'),amb:v('amb'),sub:v('sub'),mute:v('mute'),line:v('line'),mask:v('panel'),card:v('card')}})();
 const NAMES={find_candidates:'후보 찾기',search_topics:'주제 찾기',read_topic:'01 읽는다',industry_events:'02 대조한다',find_people:'03 찾는다',verify_signal:'04 검증한다',cross_field:'다른 분야 신호'};
 const TCOL={find_candidates:C.pri,search_topics:C.sub,read_topic:C.ink,industry_events:C.amb,find_people:C.pri,verify_signal:C.grn,cross_field:C.red};
 const TABS=[['ev','근거'],['who','사람과 기관'],['onto','관계'],['spread','전파'],['gap','공백 지도'],['draft','기획서 초안']];
@@ -387,10 +394,10 @@ function chart(c,show){
   const P=Y.map((yr,i)=>vis[i]?[x(i),y(T.share[i])]:null).filter(Boolean);
   if(P.length)s+=`<path d="M${P[0][0]},${B} L${P.map(p=>p.join(',')).join(' L')} L${P[P.length-1][0]},${B} Z" fill="${C.pri}" opacity=".08"/>`;
   for(const e of T.events){const [ey,em]=e.date.split('-').map(Number);const pos=ey+(em-1)/12;if(pos>show+0.99)continue;
-    const ex=x(0)+(pos-Y[0])*(R-L)/(Y.length-1);s+=`<line x1="${ex}" y1="52" x2="${ex}" y2="${B}" stroke="${C.amb}" stroke-dasharray="4 4" stroke-width="1.5"/><circle cx="${ex}" cy="52" r="6" fill="${C.amb}" stroke="#fff" stroke-width="2"><title>${e.date} ${e.text} (${e.source})</title></circle>`}
+    const ex=x(0)+(pos-Y[0])*(R-L)/(Y.length-1);s+=`<line x1="${ex}" y1="52" x2="${ex}" y2="${B}" stroke="${C.amb}" stroke-dasharray="4 4" stroke-width="1.5"/><circle cx="${ex}" cy="52" r="6" fill="${C.amb}" stroke="${C.card}" stroke-width="2"><title>${e.date} ${e.text} (${e.source})</title></circle>`}
   s+=`<polyline points="${P.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${C.pri}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>`;
   Y.forEach((yr,i)=>{s+=`<text x="${x(i)}" y="${H-16}" text-anchor="middle" font-size="12.5" fill="${C.sub}">${yr}</text>`;
-    if(vis[i])s+=`<circle cx="${x(i)}" cy="${y(T.share[i])}" r="4.5" fill="#fff" stroke="${C.pri}" stroke-width="2.5"/><text x="${x(i)}" y="${y(T.share[i])-12}" text-anchor="middle" font-size="12.5" font-weight="800" fill="${C.ink}" paint-order="stroke" stroke="#fff" stroke-width="3">${(T.share[i]*100).toFixed(1)}%</text>`});
+    if(vis[i])s+=`<circle cx="${x(i)}" cy="${y(T.share[i])}" r="4.5" fill="${C.card}" stroke="${C.pri}" stroke-width="2.5"/><text x="${x(i)}" y="${y(T.share[i])-12}" text-anchor="middle" font-size="12.5" font-weight="800" fill="${C.ink}" paint-order="stroke" stroke="${C.card}" stroke-width="3">${(T.share[i]*100).toFixed(1)}%</text>`});
   s+=`<text x="${L-20}" y="14" font-size="12" fill="${C.sub}">학회 발표 중 이 주제의 비중</text>`;
   if(T.events.length)s+=`<text x="${L-20}" y="56" font-size="12" font-weight="800" fill="${C.amb}">산업</text>`;
   return s+'</svg>'}
@@ -544,9 +551,9 @@ function renderCross(){
   if(ov.length)a+=`<path d="M${x(ov[0][0])},${H1-30} L${ov.map(([y,v])=>`${x(y)},${y1(v)}`).join(' L')} L${x(ov[ov.length-1][0])},${H1-30} Z" fill="${C.pri}" opacity=".08"/>`;
   r.milestones.forEach((m,i)=>{const [my,mm]=m.date.split('-').map(Number),pos=my+(mm-1)/12;if(pos>show+0.99)return;
     a+=`<line x1="${x(pos)}" y1="${22+i*18}" x2="${x(pos)}" y2="${H1-30}" stroke="${C.amb}" stroke-dasharray="4 4" stroke-width="1.5"/><circle cx="${x(pos)}" cy="${22+i*18}" r="5" fill="${C.amb}"/>
-      <text x="${x(pos)+(x(pos)>480?-10:10)}" y="${26+i*18}" text-anchor="${x(pos)>480?'end':'start'}" font-size="12.5" fill="${C.amb}" paint-order="stroke" stroke="#fff" stroke-width="3"><tspan font-weight="800">${m.date.replace('-','.')} ${m.who}</tspan> ${m.text}</text>`});
+      <text x="${x(pos)+(x(pos)>480?-10:10)}" y="${26+i*18}" text-anchor="${x(pos)>480?'end':'start'}" font-size="12.5" fill="${C.amb}" paint-order="stroke" stroke="${C.card}" stroke-width="3"><tspan font-weight="800">${m.date.replace('-','.')} ${m.who}</tspan> ${m.text}</text>`});
   a+=`<polyline points="${ov.map(([y,v])=>`${x(y)},${y1(v)}`).join(' ')}" fill="none" stroke="${C.pri}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>`;
-  ov.forEach(([y,v],i)=>{if(i==0||i==ov.length-1||y==2020)a+=`<text x="${x(y)}" y="${y1(v)+(i==ov.length-1?-10:18)}" text-anchor="middle" font-size="13" font-weight="800" fill="${C.pri}" paint-order="stroke" stroke="#fff" stroke-width="3">${v.toLocaleString()}편</text>`});
+  ov.forEach(([y,v],i)=>{if(i==0||i==ov.length-1||y==2020)a+=`<text x="${x(y)}" y="${y1(v)+(i==ov.length-1?-10:18)}" text-anchor="middle" font-size="13" font-weight="800" fill="${C.pri}" paint-order="stroke" stroke="${C.card}" stroke-width="3">${v.toLocaleString()}편</text>`});
   a+='</svg>';
   // 아래: 이 학회
   const H2=260,mx2=Math.max(...r.here.flatMap(h=>h.values.filter((v,i)=>h.years[i]<=show)))||1,y2=v=>H2-34-v/mx2*(H2-70);
@@ -557,7 +564,7 @@ function renderCross(){
     b+=`<polyline points="${pv.map(([y,v])=>`${x(y)},${y2(v)}`).join(' ')}" fill="none" stroke="${COL[k%5]}" stroke-width="2.5" stroke-linejoin="round"/>`;
     const [ly,lv]=pv[pv.length-1];LAB.push({x:x(ly)+8,y:y2(lv)+4,txt:`${h.ko.replace(/\(.*\)/,'')} ${lv.toFixed(1)}%`,col:COL[k%5]})});
   LAB.sort((p,q)=>p.y-q.y);for(let i=1;i<LAB.length;i++)if(LAB[i].y-LAB[i-1].y<16)LAB[i].y=LAB[i-1].y+16;
-  LAB.forEach(l=>{b+=`<text x="${l.x}" y="${l.y}" font-size="12.5" font-weight="800" fill="${l.col}" paint-order="stroke" stroke="#fff" stroke-width="3">${l.txt}</text>`});
+  LAB.forEach(l=>{b+=`<text x="${l.x}" y="${l.y}" font-size="12.5" font-weight="800" fill="${l.col}" paint-order="stroke" stroke="${C.card}" stroke-width="3">${l.txt}</text>`});
   for(let y=X0;y<=X1;y++)b+=`<text x="${x(y)}" y="${H2-12}" text-anchor="middle" font-size="12.5" fill="${C.sub}">${y}</text>`;
   b+=`<text x="${x(2016)}" y="${H2/2}" font-size="12" fill="${C.mute}">이 학회 기록은 2018년부터</text></svg>`;
   const at=(s,y)=>{const i=s.years.indexOf(y);return i<0?null:s.values[i]},n=v=>v==null?'-':v.toLocaleString(),f=v=>v==null?'-':v.toFixed(1);
@@ -573,7 +580,7 @@ function renderCross(){
     </div>
     <h3 class="sec" style="margin:18px 0 8px">위 · AI 쪽 논문 수 <span class="note" style="font-weight:500">· 주황 점 = "모델을 키우면 성능이 오른다"고 말한 발표와 ChatGPT 공개</span></h3>${a}
     <h3 class="sec" style="margin:18px 0 8px">아래 · 패키징 학회(${r.venue.split(' ')[0]})에서 AI 수요와 이어질 법한 주제의 발표 비중</h3>${b}
-    <div class="card" style="background:#f5f8fd;box-shadow:none;margin:12px 0 0;padding:14px 18px"><b>읽는 법</b>
+    <div class="card" style="background:var(--panel);box-shadow:none;margin:12px 0 0;padding:14px 18px"><b>읽는 법</b>
       <div style="font-size:14.5px;line-height:1.7;margin-top:4px">AI 쪽 논문은 ${y0}년 ${n(at(o,y0))}편에서 ${ya}년 ${n(at(o,ya))}편이 됐다.
       같은 기간 이 학회에서 ${r.here.slice(0,2).map(h=>`${h.ko.replace(/\(.*\)/,'')}는 ${f(at(h,y0))}%에서 ${f(at(h,show))}%`).join(', ')}가 됐다.
       ${show<NOW?'위 그림은 이미 오르고 있는데 아래 그림은 아직 낮다면, 옆 분야가 먼저 움직인 것이다. "가린 것 열기"로 그 뒤를 확인한다.':'위 그림이 먼저 오르고 아래 그림이 뒤따라 올랐는지를 눈으로 확인한다.'}</div></div>
@@ -661,7 +668,7 @@ function loadSpread(show){
     const lab=[];
     g.venues.forEach(v=>{const pts=v.share.map((sh,i)=>sh===null?null:[x(i),y(sh)]).filter(Boolean);if(!pts.length)return;
       s+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${COL[v.venue]}" stroke-width="${v.venue=='ectc'?3.5:2.2}" stroke-linejoin="round"/>`;
-      if(v.settled){const i=Y.indexOf(v.settled);s+=`<circle cx="${x(i)}" cy="${y(v.share[i])}" r="6" fill="#fff" stroke="${COL[v.venue]}" stroke-width="3"/>`}
+      if(v.settled){const i=Y.indexOf(v.settled);s+=`<circle cx="${x(i)}" cy="${y(v.share[i])}" r="6" fill="${C.card}" stroke="${COL[v.venue]}" stroke-width="3"/>`}
       lab.push({x:pts[pts.length-1][0]+10,y:pts[pts.length-1][1]+4,t:v.venue.toUpperCase(),c:COL[v.venue]})});
     lab.sort((a,b)=>a.y-b.y);for(let i=1;i<lab.length;i++)if(lab[i].y-lab[i-1].y<15)lab[i].y=lab[i-1].y+15;
     lab.forEach(l=>{s+=`<text x="${l.x}" y="${l.y}" font-size="12.5" font-weight="800" fill="${l.c}">${l.t}</text>`});
@@ -687,7 +694,7 @@ function loadOnto(show){
     let nodes='';cols.forEach(K=>{nodes+=`<text x="${K.x}" y="28" text-anchor="middle" font-size="13.5" font-weight="800" fill="${K.col}">${K.lab}</text>`;
       g[K.k].forEach(o=>{const p=pos[K.k+':'+o.id],who=K.k=='inst'||K.k=='auth'?`data-who="${K.k}" data-name="${esc(o.id)}"`:K.k=='topics'?`data-go="${esc(o.id)}"`:'';
         nodes+=`<g class="nd" data-id="${esc(K.k+':'+o.id)}" ${who} style="cursor:pointer"><circle cx="${p.x}" cy="${p.y}" r="${6+Math.min(7,o.n/3)}" fill="${K.col}"/>
-          <text x="${p.x+(K.anc=='end'?-16:16)}" y="${p.y+4}" text-anchor="${K.anc}" font-size="12.5" font-weight="700" fill="${C.ink}" paint-order="stroke" stroke="#fff" stroke-width="3">${cut(o.ko||o.id,K.k=='inst'?30:24)} <tspan fill="${C.sub}" font-weight="500" font-size="11">${o.n}</tspan></text></g>`})});
+          <text x="${p.x+(K.anc=='end'?-16:16)}" y="${p.y+4}" text-anchor="${K.anc}" font-size="12.5" font-weight="700" fill="${C.ink}" paint-order="stroke" stroke="${C.card}" stroke-width="3">${cut(o.ko||o.id,K.k=='inst'?30:24)} <tspan fill="${C.sub}" font-weight="500" font-size="11">${o.n}</tspan></text></g>`})});
     $('#ontoout').innerHTML=`<svg id="ontosvg" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${links}${nodes}</svg>
       <div class="note" style="margin-top:8px"><b>${g.ko||g.topic}</b> · 다섯 학회에서 ${g.cutoff}년까지 ${g.papers}편 · 기관 ${g.totals.inst}곳 · 저자 ${g.totals.auth}명 중 발표가 많은 쪽만 그렸다.
       <b>점 위에 마우스를 올리면 이어진 선만 남는다.</b> 실선 = 학회—기관—저자—세부 주제 · <span style="color:${C.red}">점선 = 기관끼리 공동 발표</span> · 선이 굵을수록 편수가 많다 · 기관과 저자를 누르면 해마다의 발표가, 세부 주제를 누르면 그 주제가 열린다.</div>
@@ -788,6 +795,7 @@ async function run(){document.body.classList.remove('home');
 $('#past').onclick=()=>goto(2023);$('#back').onclick=()=>goto(NOW);
 $$('[data-y]').forEach(a=>a.onclick=e=>{e.preventDefault();goto(a.dataset.y)});
 $('#askform').onsubmit=e=>{e.preventDefault();run()};
+$('#theme').onclick=()=>{const t=document.documentElement.dataset.theme=='dark'?'light':'dark';try{localStorage.setItem('theme',t)}catch(e){}location.reload()};
 $('#find').onclick=()=>find();$('#cross').onclick=()=>cross();
 $('#home').onclick=()=>{location.href=location.pathname+(VENUE!='ectc'?'?venue='+VENUE:'')};
 $$('#examples button').forEach(b=>b.onclick=()=>{const fb=b.dataset.fb;$('#q').value=b.textContent;

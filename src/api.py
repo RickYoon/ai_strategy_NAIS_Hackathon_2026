@@ -314,6 +314,9 @@ def handle(path, q, derived):
         elif cf.exists():
             # LLM을 부를 수 없을 때: 같은 질문에 대해 전에 실제로 받은 응답을 그대로 보여준다 (화면에 표시)
             res = {**json.loads(cf.read_text(encoding="utf-8")), "cached": True, "cache_reason": res["error"][:120]}
+        import re
+        for x in res.get("sentences") or []:  # 영어 필드 이름이 문장에 새어 나오면 지운다 (저장된 응답 포함)
+            x["text"] = re.sub(r"\s*\((learned_agent|back_to_2023|unseen_conferences|[a-z]+_[a-z_]+)\)", "", x.get("text", ""))
         return res, 200
     if path == "/api/gap":
         return gaps.gap_map(q.get("q", "").strip().lower(), int(q.get("c", 2023)), d), 200
