@@ -64,6 +64,46 @@ SYSTEM = """너는 연구 기획자를 돕는 에이전트다. 사용자가 연�
 연도별 숫자를 늘어놓지 않는다. 처음과 끝, 가장 낮은 해만 말한다. 과거 성적은 가장 최근 기준 연도의 것을 말하고, 신호가 없던 주제의 성적과 나란히 말한다. 한 문장에 사실 하나."""
 
 
+def profile(data, t, c):
+    """후보 하나의 판단 재료. 점수가 아니라 사실만 적는다."""
+    yrs, tot = data["years"], data["total"]
+
+    def sh(a, b):
+        idx = [i for i, y in enumerate(yrs) if a <= y <= b]
+        s = sum(tot[i] for i in idx)
+        return sum(t["count"][i] for i in idx) / s if s else 0.0
+
+    recent, before = sh(c - 2, c), sh(yrs[0], c - 3)
+    ratio = recent / before if before else None
+    old = {n for p in t["papers"] if p["y"] <= c - 3 for n in p["inst"]}
+    new = {n for p in t["papers"] if c - 2 <= p["y"] <= c for n in p["inst"]}
+    j = t["judge"].get(str(c)) or {}
+    return {"ratio": round(ratio, 2) if ratio else None,
+            "trend": "새로 등장" if ratio is None else "오르는 중" if ratio >= 1.2 else "줄어드는 중" if ratio <= 0.8 else "비슷",
+            "inst_recent": len(new), "inst_new": len(new - old),
+            "inst_new_percent": round(len(new - old) / len(new) * 100) if new else 0,
+            "rise_points": round((j.get("p_recent", 0) - j.get("p_before", 0)) * 100)}
+
+
+def traits(data):
+    """과거 세 시점의 후보를 모아, 실제로 커진 것과 아닌 것의 특징을 나란히 센다. 표본이 작다."""
+    rows = []
+    for b in data["backtest"]:
+        for x in b["lit_topics"]:
+            t = data["topics"].get(x["topic"])
+            if x["hot"] and t:
+                rows.append({**profile(data, t, b["cutoff"]), "grew": x["grew"]})
+
+    def split(label, f):
+        a, o = [r for r in rows if f(r)], [r for r in rows if not f(r)]
+        return {"label": label, "yes": [sum(r["grew"] for r in a), len(a)], "no": [sum(r["grew"] for r in o), len(o)]}
+
+    return {"total": [sum(r["grew"] for r in rows), len(rows)], "splits": [
+        split("발표 비중이 이미 오르는 중이었다", lambda r: r["trend"] == "오르는 중"),
+        split("최근 3년 발표 기관의 70% 이상이 새로 들어온 곳이었다", lambda r: r["inst_new_percent"] >= 70),
+        split("양산 문제 비중이 20%p 이상 올랐다", lambda r: r["rise_points"] >= 20)]}
+
+
 def candidates(data, cutoff):
     """기준 연도에 내용 신호가 켜진 주제 목록. 전부 코드가 계산한다."""
     yrs = data["years"]
@@ -81,7 +121,8 @@ def candidates(data, cutoff):
         if j.get("lit"):
             out.append({"topic": name, "active": name in hot, "share_recent_percent": round(sh * 100, 1),
                         "problem_before_percent": round(j["p_before"] * 100), "problem_recent_percent": round(j["p_recent"] * 100),
-                        "papers_recent": j["n_recent"], "share": [t["share"][i] for i, y in enumerate(yrs) if y <= cutoff]})
+                        "papers_recent": j["n_recent"], "share": [t["share"][i] for i, y in enumerate(yrs) if y <= cutoff],
+                        **profile(data, t, cutoff)})
     out.sort(key=lambda x: (-x["active"], -(x["problem_recent_percent"] - x["problem_before_percent"])))
     return out
 

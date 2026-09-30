@@ -55,9 +55,12 @@ def handle(path, q, derived):
         shown = [{**x, "ko": labels.get(x["topic"], {}).get("ko")} for x in cand if labels.get(x["topic"], {"keep": True}).get("keep", True)]
         bt = next((b for b in d["backtest"] if b["cutoff"] == c), None)
         grew = {x["topic"]: x["grew"] for x in bt["lit_topics"]} if bt else {}
+        ev = events()
         for x in shown:
             x["grew"] = grew.get(x["topic"])
-        return {"cutoff": c, "candidates": shown, "removed": len(cand) - len(shown), "labeled": bool(labels)}, 200
+            x["events"] = len([e for e in ev.get(x["topic"], []) if int(e["date"][:4]) <= c])
+            x["cross"] = bool(upstream(x["topic"]))
+        return {"cutoff": c, "candidates": shown, "removed": len(cand) - len(shown), "labeled": bool(labels), "traits": agent.traits(d)}, 200
     if path == "/api/has_llm":
         return {"llm": bool(agent.api_key()), "model": agent.MODEL}, 200
     return {"error": "없는 주소"}, 404

@@ -158,13 +158,20 @@ function renderFind(){
   const f=FIND,c=f.cutoff,act=f.candidates.filter(x=>x.active),rest=f.candidates.filter(x=>!x.active);
   const canOpen=act.some(x=>x.grew!==null&&x.grew!==undefined);
   const row=x=>`<tr><td><a href="#" data-go="${x.topic}"><b>${x.ko||x.topic}</b></a> <span class="note">${x.ko?x.topic:''}</span></td>
-    <td>${spark(x.share)}</td><td>${x.share_recent_percent}%</td><td><span class="p">${x.problem_before_percent}% → ${x.problem_recent_percent}%</span></td><td>${x.papers_recent}편</td>
+    <td>${spark(x.share)}</td><td>${x.share_recent_percent}% <span class="note" style="color:${x.trend=='오르는 중'||x.trend=='새로 등장'?'var(--grn)':x.trend=='줄어드는 중'?'var(--red)':'var(--sub)'}">${x.trend}</span></td><td><span class="p">${x.problem_before_percent}% → ${x.problem_recent_percent}%</span></td><td>${x.papers_recent}편</td>
+    <td>${x.inst_recent}곳 중 ${x.inst_new}곳 <span class="note">${x.inst_new_percent}%</span></td><td>${x.events?`<span class="p">산업 ${x.events}건</span> `:''}${x.cross?'<span style="color:var(--acc);font-weight:700">다른 분야</span>':''}</td>
     ${REVEAL&&canOpen?`<td>${x.grew===true?'<b style="color:var(--grn)">✓ 커졌다</b>':x.grew===false?'<span style="color:var(--red)">✗ 그대로</span>':''}</td>`:''}</tr>`;
-  const head=`<tr><th>주제</th><th>발표 비중 흐름</th><th>최근 3년 비중</th><th>양산 문제를 다룬 비중</th><th>최근 3년 발표</th>${REVEAL&&canOpen?'<th>3년 뒤 실제</th>':''}</tr>`;
+  const head=`<tr><th>주제</th><th>발표 비중 흐름</th><th>최근 3년 비중</th><th>양산 문제를 다룬 비중</th><th>최근 3년 발표</th><th>새로 들어온 기관</th><th>겹치는 신호</th>${REVEAL&&canOpen?'<th>3년 뒤 실제</th>':''}</tr>`;
+  const tr=f.traits,fr=a=>`${a[1]}개 중 ${a[0]}개`;
   $('#out').innerHTML=`<div class="card"><div class="head"><span class="t">${c==NOW?'지금':c+'년으로 돌아가면,'} 신호가 켜진 주제 ${act.length}개</span><span class="note">${c==NOW?'':'그 해까지의 기록만 본다 · '}이미 활발한 주제 중 내용이 양산 문제 쪽으로 옮겨 간 것</span></div>
     <table>${head}${act.map(row).join('')}</table>
     <p class="note" style="margin-top:8px">주제를 누르면 근거 한 장이 나온다. ${f.labeled?`일반 낱말 ${f.removed}개는 LLM이 걸러냈다.`:'LLM이 없어 일반 낱말이 섞여 있다.'}
     ${canOpen?(REVEAL?'':'"가린 것 열기"를 누르면 이 후보들이 3년 뒤 실제로 커졌는지 나온다.'):`이 후보들이 맞을지는 3년 뒤에야 안다. 그래서 같은 방법을 과거에 돌려 본 성적을 같이 준다: <a href="#" id="goback">2023년으로 돌아가 검증하기</a>`}</p>
+    <div style="background:var(--panel);border-radius:10px;padding:12px 16px;margin:10px 0"><b style="font-size:14px">이 중 어느 것이 될까 — 과거에 커진 후보의 특징을 세어 봤다</b>
+      <div class="note">과거 세 시점의 후보 ${tr.total[1]}개 중 3년 뒤 커진 것은 ${tr.total[0]}개였다.</div>
+      <table style="margin-top:4px"><tr><th>그때 이런 후보였다면</th><th>그랬던 후보</th><th>아니었던 후보</th></tr>
+      ${tr.splits.map(s=>`<tr><td>${s.label}</td><td><b>${fr(s.yes)}</b> 커짐</td><td>${fr(s.no)} 커짐</td></tr>`).join('')}</table>
+      <div class="note">표본이 작아 차이를 믿기 어렵다. 그래서 순위를 매기지 않고, 후보마다 같은 재료를 그대로 보여준다. 고르는 것은 연구자다.</div></div>
     <details><summary class="note">아직 활발하지 않은 주제 중 신호가 켜진 것 ${rest.length}개</summary><table>${head}${rest.map(row).join('')}</table></details></div>`;
   const gb=$('#goback');if(gb)gb.onclick=e=>{e.preventDefault();$('#c').value=2023;sync();find()};
   document.querySelectorAll('[data-go]').forEach(a=>a.onclick=e=>{e.preventDefault();$('#q').value=a.dataset.go;run()})}
