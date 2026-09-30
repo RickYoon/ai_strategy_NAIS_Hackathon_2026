@@ -66,9 +66,9 @@ button.sm{padding:6px 12px;font-size:13px;border-radius:8px}
 .filter .fh{margin-left:auto}
 body.compact .ask{padding-top:18px;text-align:left}
 body.compact .askt,body.compact .asks,body.compact .ex{display:none}
-.scope{max-width:980px;margin:18px auto 0;text-align:left;background:var(--card);border:1px solid var(--line,#e3e8f2);border-radius:14px;padding:12px 18px;font-size:13px;line-height:1.65;color:var(--txt)}
+.scope{max-width:760px;margin:18px auto 0;text-align:left;background:var(--card);border:1px solid var(--line,#e3e8f2);border-radius:14px;padding:12px 18px;font-size:13px;line-height:1.65;color:var(--txt)}
 .scope b{color:var(--ink)} .scope .h{font-weight:800;color:var(--ink);margin-right:8px}
-.scope ul{margin:4px 0 0;padding-left:18px;columns:2;column-gap:28px} .scope li{break-inside:avoid}
+.scope ul{margin:4px 0 0;padding-left:18px} .scope li{break-inside:avoid}
 body.compact .scope{display:none}
 body.home main,body.home .filter,body.home footer{display:none}
 body.home .ask{padding-top:12vh;min-height:88vh}
@@ -234,6 +234,17 @@ details.more>summary{cursor:pointer;font-size:13.5px;font-weight:700;color:var(-
 .at{width:100%;border-collapse:collapse;margin-top:10px}.at th{font-size:11.5px;color:var(--mute);font-weight:600;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
 .at td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13.5px}.at td:nth-child(2),.at td:nth-child(3){white-space:nowrap}
 .orch{font-size:12.5px;color:var(--sub);background:var(--pribg);border-radius:10px;padding:8px 10px;margin:4px 0 10px}.orch b{color:var(--ink);margin-right:4px}
+.snavb{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;color:var(--txt);font-weight:600;font-size:14px;padding:9px 10px;border-radius:9px}.snavb:hover{background:var(--panel);color:var(--ink)}.snavb.on{background:rgba(255,255,255,.07);color:var(--ink)}.snavb .ic{width:18px;text-align:center;color:var(--sub)}
+.onto{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:center}.onto:nth-of-type(2){grid-template-columns:repeat(4,1fr)}
+.on-node{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel)}.on-node b{display:block;font-size:14px;color:var(--ink)}.on-node span{display:block;font-size:12px;color:var(--sub);margin-top:2px;line-height:1.4}
+.on-node.topic{border-color:var(--pri)}.on-node.score{border-color:var(--grn)}.on-node.venue{border-color:var(--amb)}
+.on-arrow{font-size:12px;color:var(--sub);white-space:nowrap;text-align:center}
+.glegend{display:flex;gap:16px;font-size:12px;color:var(--sub);margin-top:6px}.glegend i{display:inline-block;width:10px;height:10px;border-radius:5px;margin-right:6px;vertical-align:-1px}
+.at tr.dim td{opacity:.6}
+body.dataview .ask,body.dataview .filter,body.dataview aside.log{display:none}body.dataview main{grid-template-columns:1fr;padding-top:8px}
+.gwrap{display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start}#gbox{background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.gpanel{border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:120px;position:sticky;top:16px}.gp-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}.gp-h b{font-size:15px}.gp-list{margin-top:8px;max-height:560px;overflow:auto}.gp-row{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:7px;font-size:13px;cursor:pointer}.gp-row:hover{background:var(--panel)}.gp-row i{width:9px;height:9px;border-radius:5px;flex:none}.gp-row span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gp-row b{color:var(--sub);font-weight:600}
+@media(max-width:1100px){.gwrap{grid-template-columns:1fr}.gpanel{position:static}}
 .grp{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:10px}.gb{background:var(--panel);border-radius:12px;padding:12px 14px}.gh{font-weight:800;font-size:15px}.gb .chips small{font-weight:600;opacity:.7}
 .why{background:var(--panel);border-radius:12px;padding:14px 16px;margin:6px 0 14px}
 .wh,.wr{display:grid;grid-template-columns:minmax(150px,1.3fr) 92px 1.4fr 44px;gap:10px;align-items:center}
@@ -317,7 +328,7 @@ body{padding-left:248px}
 .snav .ic{width:18px;text-align:center;color:var(--sub);font-size:14px}
 #newq{background:var(--panel);margin-bottom:6px}
 .slbl{font-size:11.5px;font-weight:700;color:var(--mute);padding:14px 10px 4px}
-.hist{flex:1;overflow:auto;display:flex;flex-direction:column;gap:1px}
+.hist{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:1px}
 .hist button{font-weight:500;font-size:13.5px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 .hist .empty{font-size:12.5px;color:var(--mute);padding:4px 10px}
 .sfoot{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:8px}
@@ -368,7 +379,7 @@ html[data-theme=dark] .pill.on{background:var(--pribg);color:var(--pri)}
   </nav>
   <div class="slbl">최근 질문</div>
   <div id="hist" class="hist"></div>
-  <div class="sfoot"><div id="sdata" class="note"></div><button id="theme" type="button" title="밝게 / 어둡게">◐ 밝게 / 어둡게</button></div>
+  <div class="sfoot"><button id="datav" type="button" class="snavb"><span class="ic">⬡</span>데이터 · 온톨로지</button><div id="sdata" class="note"></div><button id="theme" type="button" title="밝게 / 어둡게">◐ 밝게 / 어둡게</button></div>
 </aside>
 <section class="ask">
   <h2 class="askt">무엇이 궁금한가요?</h2>
@@ -417,7 +428,7 @@ const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
 const VENUE=new URLSearchParams(location.search).get('venue')||'ectc';
 let SORT='model';let META=null,T=null,REVEAL=false,LLM={llm:false},AG=null,VIEW='find',FIND=null,CROSS=null,SEQ=0,LOADED={},CUR={};
 const U=new URLSearchParams(location.search);
-const pct=x=>(x*100).toFixed(x<0.1?1:0)+'%';
+const pct=x=>{const v=x*100;return (v>0&&v<10?v.toFixed(1):Math.round(v))+'%'};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const NOW=2026,OPENTXT='가린 것 열기 → 2026';
 const C=(()=>{const cs=getComputedStyle(document.documentElement),v=k=>cs.getPropertyValue('--'+k).trim();return {ink:v('ink'),pri:v('pri'),grn:v('grn'),red:v('red'),amb:v('amb'),sub:v('sub'),mute:v('mute'),line:v('line'),mask:v('panel'),card:v('card')}})();
@@ -436,20 +447,17 @@ async function init(){
     ($('#q').value.trim()?run:find)()};sync();
   LLM=await (await fetch('/api/has_llm')).json();
   document.querySelectorAll('#vseg button').forEach(b=>{b.classList.toggle('on',b.dataset.v==VENUE);b.onclick=()=>{if(b.dataset.v!=VENUE)location.href='?venue='+b.dataset.v+(VIEW=='topic'&&T?'&q='+encodeURIComponent(T.topic):'&view='+VIEW+(VIEW=='actors'?'&kind='+AKIND:''))}});
-  {const s=META.score[META.score.length-1];$('#scope').innerHTML=`<span class="h">지금 되는 범위와 한계</span><span class="note">묻기 전에 알아 둘 것</span><ul>
-    <li><b>분야는 반도체 패키징 하나</b>다. 모은 기록은 패키징 학회 다섯 곳 10,829편과 태양광 학회 5,170편이다. 지금 화면은 ${META.meta.name} ${META.n_papers.toLocaleString()}편을 읽는다.</li>
+  {const s=META.score[META.score.length-1];$('#scope').innerHTML=`<span class="h">지금 되는 범위</span><ul>
+    <li><b>분야는 반도체 패키징 하나</b>다. 패키징 학회 다섯 곳 ${(10829).toLocaleString()}편. 지금 화면은 ${META.meta.name} ${META.n_papers.toLocaleString()}편을 읽는다.</li>
     <li><b>발표 제목만 읽는다.</b> 초록과 본문은 읽지 않는다. 주제는 제목의 영어 낱말에서 뽑는다.</li>
-    <li><b>전파와 관계</b>는 패키징 학회 다섯 곳의 기록으로 그린다.</li>
-    <li><b>산업 사건</b>은 출처를 열어 확인한 것만 적은 목록이다. 열 개 주제에 26건이 있고, 나머지 주제에는 아직 없다.</li>
-    <li>${META.learned?`<b>과거 성적:</b> 배운 점수 위 20% 중 ${Math.round(100*META.learned.time.top[0]/META.learned.time.top[1])}%가 성장했다(아무렇게나 고르면 ${Math.round(100*META.learned.time.base[0]/META.learned.time.base[1])}%). 맞히는 도구가 아니다.`:`<b>과거 성적은 높지 않다.</b> ${s.cutoff}년에 같은 방법으로 고른 ${s.lit}개 중 ${s.lit_grew}개가 성장했다. 맞히는 도구가 아니다.`}</li>
-    <li><b>검증하지 않은 것</b>: 공백 지도의 다음 후보. 화면에 그렇게 표시한다.</li></ul>`}
+    <li><b>검증하지 않은 것</b>은 화면에 그렇게 표시한다.</li></ul>`}
   {const sd=$('#sdata');if(sd)sd.textContent=`${META.meta.name} · ${META.n_papers.toLocaleString()}편 · OpenAlex ${META.meta.collected_at.slice(0,10)} 수집`}
   $('#src').textContent=`${META.meta.name} · ${META.meta.years} · ${META.n_papers.toLocaleString()}편 · OpenAlex에서 ${META.meta.collected_at.slice(0,16).replace('T',' ')} (UTC) 수집 · ${LLM.llm?'LLM '+LLM.model:'LLM 없음 (정해진 순서로 실행)'}`;
 }
 function sync(){const c=Number($('#c').value),p=c<NOW;$('#banner').style.display=p?'':'none';$('#by').textContent=c;$('#past').style.display=p?'none':'';
   document.body.classList.toggle('past',p);$$('#seg button').forEach(b=>b.classList.toggle('on',Number(b.dataset.y)==c));compact()}
 function compact(){document.body.classList.toggle('compact',!document.body.classList.contains('home'))}  // 첫 화면을 벗어나면 질문 안내 · 한계 상자를 접는다
-function setView(v){document.body.classList.remove('home');VIEW=v;$('#find').classList.toggle('on',v=='find');$('#actors').classList.toggle('on',v=='actors');$('#cross').classList.toggle('on',v=='cross');compact()}
+function setView(v){document.body.classList.remove('home');VIEW=v;document.body.classList.toggle('dataview',v=='data');$('#find').classList.toggle('on',v=='find');$('#actors').classList.toggle('on',v=='actors');$('#datav').classList.toggle('on',v=='data');$('#cross').classList.toggle('on',v=='cross');compact()}
 function goto(y){$('#c').value=y;$('#c').onchange()}
 function resetLog(){REVEAL=false;$('#stepsd').open=true;$('#open').textContent=OPENTXT;$('#plan').innerHTML='';$$('.step').forEach(e=>{e.classList.remove('on');e.querySelector('span').textContent=''})}
 function busy(title,sub){const b=$('#out .busy .bt');if(b){b.textContent=title;return}
@@ -907,7 +915,7 @@ async function actorsView(){document.body.classList.remove('home');const my=++SE
   const who=r=>`<div class="an"><b>${AKIND=='country'?(CN[r.name]||r.name):r.name}</b>${r.sub?`<span>${TY[r.sub]||r.sub}</span>`:''}</div>`;
   const box=(h,sub,list,val)=>`<div class="gb"><div class="gh">${h}</div><div class="note">${sub}</div>${list.map(r=>`<div class="ar">${who(r)}<div class="av">${val(r)}</div></div>`).join('')}</div>`;
   $('#out').innerHTML=`<div class="hero"><h2>${W}에서 출발해 보기 <em>${A.n}${U}</em></h2>
-    <p>최근 3년(${A.last-2}~${A.last}) ${AKIND=='auth'?'3편':'5편'} 넘게 발표한 ${W}. 주제가 아니라 ${W}를 줄 세워, 누가 어느 후보 주제로 들어가고 있는지 본다.</p>
+    <p>최근 3년(${A.last-2}~${A.last}) ${AKIND=='auth'?'3편':'5편'} 넘게 발표한 ${W}. 주제가 아니라 ${W}${W=='나라'?'를':'을'} 줄 세워, 누가 어느 후보 주제로 들어가고 있는지 본다.</p>
     <div class="seg" style="margin-top:12px"><button type="button" data-k="inst" class="${AKIND=='inst'?'on':''}">기관</button><button type="button" data-k="auth" class="${AKIND=='auth'?'on':''}">연구원</button><button type="button" data-k="country" class="${AKIND=='country'?'on':''}">나라</button></div></div>
     <div class="card" style="padding:16px 20px"><div class="grp">
       ${box('요즘 후보 주제로 새로 들어간 '+W,'지금 후보 주제 가운데 첫 발표가 최근 3년에 있는 것의 수',A.entered,r=>`<b>${r.entered}개</b>`)}
@@ -925,9 +933,83 @@ async function actorsView(){document.body.classList.remove('home');const my=++SE
   st('#s3',`최근 3년 발표가 많은 ${W} ${A.n}${U}을 찾았다.`);st('#s4',`2023년 기준 뜨는 주제 ${A.hot_n}개 중 그때 다룬 것이 3년 뒤 성장했는지 셌다 (검증 전).`)}
 
 $('#actors').onclick=()=>actorsView();
+
+/* 데이터 출처 + 지금 만들어진 온톨로지 그래프 */
+let GRAPH=null;
+async function dataView(){document.body.classList.remove('home');const my=++SEQ;T=null;FIND=null;CROSS=null;AG=null;resetLog();
+  setView('data');busy('데이터와 그래프를 세는 중…','처음 한 번은 발표 기록 전체를 읽느라 10초쯤 걸린다');
+  if(!GRAPH)try{GRAPH=await (await fetch(`/api/graph?venue=${VENUE}`)).json()}catch(e){GRAPH={error:String(e)}}
+  if(my!==SEQ)return;const G=GRAPH;if(G.error){fail(G.error);return}
+  const S=G.schema,n=v=>v.toLocaleString();
+  const src=G.sources.map(s=>`<tr class="${s.in_graph?'':'dim'}"><td><b>${s.name}</b><div class="note">${s.field||''}${s.in_graph?'':' · 비교용 (그래프에는 넣지 않음)'}</div></td><td>${s.years}</td><td><b>${n(s.count)}</b>편</td><td>${n(s.inst)}곳</td><td>${n(s.auth)}명</td><td class="note">OpenAlex · ${s.collected_at}</td></tr>`).join('');
+  const box=(k,l,sub)=>`<div class="on-node ${k}"><b>${l}</b><span>${sub}</span></div>`;
+  $('#out').innerHTML=`<div class="hero"><h2>데이터 · 온톨로지</h2><p>무엇을 읽었고, 읽은 것을 어떤 관계로 엮었나. 아래 그래프는 지금 후보 주제 ${S.candidates}개를 둘러싼 실제 연결이다.</p></div>
+    <div class="card"><h2>데이터 출처<small>발표 제목 · 저자 · 소속 · 연도. 초록과 본문은 읽지 않는다</small></h2>
+      <table class="at"><thead><tr><th>학회</th><th>기간</th><th>발표</th><th>기관</th><th>저자</th><th>수집</th></tr></thead><tbody>${src}</tbody></table>
+      <div class="note" style="margin-top:8px">산업 사건 ${G.events}건(주제 ${G.event_topics}개)은 사람이 출처를 열어 확인해 적었다. 그래프의 기관은 후보 주제마다 최근 3년 발표 상위 3곳.</div></div>
+    <div class="card"><h2>온톨로지<small>노드 7종 · 화살표는 "무엇에서 무엇을 세나"</small></h2>
+      <div class="onto">
+        ${box('venue','학회 5곳','ECTC · EPTC · ICEPT · ESTC · ITherm')}
+        <div class="on-arrow">발표 ${n(S.papers)}편 →</div>
+        ${box('topic','주제 '+n(S.topics)+'개','제목의 영어 낱말 · LLM이 일반 낱말 거름')}
+        <div class="on-arrow">지표 ${S.features}개 →</div>
+        ${box('score','배운 점수','과거에 성장한 주제의 특징을 배운 것 · 후보 '+S.candidates+'개')}
+      </div>
+      <div class="onto" style="margin-top:10px">
+        ${box('inst','기관 '+n(S.inst)+'곳','저자 소속 · 기업/대학/연구소 · 나라')}
+        ${box('auth','저자 '+n(S.auth)+'명','OpenAlex 저자 ID로 같은 사람을 묶음')}
+        ${box('event','산업 사건 '+G.events+'건','날짜 · 출처 URL · 사람이 적음')}
+        ${box('verdict','채점 결과','3년 뒤 실제로 성장했나 · 2021 · 2022 · 2023년 기준')}
+      </div>
+      <div class="note" style="margin-top:10px">주제 — 기관 — 저자 — 학회 — 산업 사건이 한 그래프에 있어서, 주제에서 출발해도 기관에서 출발해도 같은 기록에 닿는다. 판단은 여기 없다 — 연구자가 한다.</div></div>
+    <div class="card"><h2>지금 만들어진 그래프<small>학회 ${G.nodes.filter(x=>x.kind=='venue').length} · 후보 주제 ${S.candidates} · 기관 ${G.nodes.filter(x=>x.kind=='inst').length} · 연결 ${G.edges.length} — 선 굵기 = 최근 3년 발표 수. 주제를 누르면 근거 한 장</small></h2>
+      <div class="gwrap"><div id="gbox"><svg id="gsvg" viewBox="0 0 1400 860" style="width:100%;height:auto;display:block;user-select:none"></svg></div><div id="gpanel" class="gpanel"></div></div>
+      <div class="glegend"><span><i style="background:var(--pri)"></i>주제</span><span><i style="background:var(--amb)"></i>학회</span><span><i style="background:var(--sub)"></i>기관</span></div></div>`;
+  drawGraph(G)}
+function drawGraph(G){
+  const W=1400,H=860,N=G.nodes.map((d,i)=>({...d,x:W/2+Math.cos(i)*300+Math.random()*40,y:H/2+Math.sin(i)*220+Math.random()*40,vx:0,vy:0}));
+  const id={};N.forEach(d=>id[d.id]=d);const E=G.edges.map(e=>({a:id[e.a],b:id[e.b],w:e.w})).filter(e=>e.a&&e.b);
+  const deg={},nb={};E.forEach(e=>{deg[e.a.id]=(deg[e.a.id]||0)+e.w;deg[e.b.id]=(deg[e.b.id]||0)+e.w;(nb[e.a.id]=nb[e.a.id]||[]).push([e.b,e.w]);(nb[e.b.id]=nb[e.b.id]||[]).push([e.a,e.w])});
+  const r=d=>d.kind=='venue'?18:d.kind=='topic'?Math.min(26,8+Math.sqrt(deg[d.id]||1)*1.4):6;
+  const V=N.filter(d=>d.kind=='venue');V.forEach((d,i)=>{const a=-Math.PI/2+i*2*Math.PI/V.length;d.fx=W/2+Math.cos(a)*600;d.fy=H/2+Math.sin(a)*370});
+  for(let it=0;it<400;it++){const k=it<300?0.9:0.4;
+    for(const d of N){if(d.fx!=null){d.x=d.fx;d.y=d.fy;continue}d.vx+= (W/2-d.x)*0.0015;d.vy+=(H/2-d.y)*0.0015}
+    for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){const a=N[i],b=N[j];let dx=b.x-a.x,dy=b.y-a.y,d2=dx*dx+dy*dy+0.01,d=Math.sqrt(d2);const min=r(a)+r(b)+18;const f=(a.kind=='topic'&&b.kind=='topic'?14000:a.kind=='inst'&&b.kind=='inst'?700:3200)/d2+(d<min?(min-d)*0.5:0);dx/=d;dy/=d;if(a.fx==null){a.vx-=dx*f;a.vy-=dy*f}if(b.fx==null){b.vx+=dx*f;b.vy+=dy*f}}
+    for(const e of E){const dx=e.b.x-e.a.x,dy=e.b.y-e.a.y,d=Math.sqrt(dx*dx+dy*dy)+0.01,vn=e.a.kind=='venue'||e.b.kind=='venue',L=vn?340:70,f=(d-L)*(vn?0.004:0.03)*Math.min(3,Math.sqrt(e.w))/3;if(e.a.fx==null){e.a.vx+=dx/d*f;e.a.vy+=dy/d*f}if(e.b.fx==null){e.b.vx-=dx/d*f;e.b.vy-=dy/d*f}}
+    for(const d of N){if(d.fx!=null)continue;d.vx*=0.6;d.vy*=0.6;d.x=Math.max(40,Math.min(W-40,d.x+d.vx*k));d.y=Math.max(30,Math.min(H-30,d.y+d.vy*k))}}
+  const col={venue:C.amb,topic:C.pri,inst:C.sub},svg=$('#gsvg');let SEL=null,HOV=null,vb={x:0,y:0,w:W,h:H};
+  const lbl=d=>d.label.length>24?d.label.slice(0,23)+'…':d.label;
+  function paint(){const f=SEL||HOV,on=new Set(f?[f.id,...(nb[f.id]||[]).map(([n])=>n.id)]:[]);
+    let out='';for(const e of E){const vn=e.a.kind=='venue'||e.b.kind=='venue',hit=f&&(e.a===f||e.b===f);
+      out+=`<line x1="${e.a.x.toFixed(1)}" y1="${e.a.y.toFixed(1)}" x2="${e.b.x.toFixed(1)}" y2="${e.b.y.toFixed(1)}" stroke="${hit?C.ink:vn?C.amb:C.sub}" stroke-opacity="${f?(hit?.85:.05):(vn?.12:.4)}" stroke-width="${Math.min(7,0.6+Math.sqrt(e.w))+(hit?1:0)}"/>`}
+    for(const d of N){const dim=f&&!on.has(d.id),me=d===f;
+      out+=`<g class="gn" data-id="${d.id}" style="cursor:${d.kind=='topic'?'pointer':'grab'}" opacity="${dim?.18:1}"><circle cx="${d.x.toFixed(1)}" cy="${d.y.toFixed(1)}" r="${r(d)+(me?3:0)}" fill="${col[d.kind]}" fill-opacity="${d.kind=='inst'?.6:.95}" stroke="${me?C.ink:C.card}" stroke-width="${me?2.5:1.5}"/>
+        ${(d.kind!='inst'||deg[d.id]>=8||on.has(d.id))?`<text x="${d.x.toFixed(1)}" y="${(d.y+r(d)+13).toFixed(1)}" text-anchor="middle" font-size="${d.kind=='venue'?13:d.kind=='topic'?12.5:10.5}" font-weight="${d.kind=='inst'?500:700}" fill="${d.kind=='inst'?C.sub:C.ink}" paint-order="stroke" stroke="${C.card}" stroke-width="3" pointer-events="none">${lbl(d)}</text>`:''}</g>`}
+    svg.innerHTML=out;svg.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+    const P=$('#gpanel');if(!P)return;
+    if(!f){P.innerHTML='<div class="note">점에 마우스를 올리면 연결이 보인다. 누르면 고정된다 · 끌어서 옮기기 · 휠로 확대</div>';return}
+    const L=(nb[f.id]||[]).slice().sort((a,b)=>b[1]-a[1]),K={venue:'학회',topic:'주제',inst:'기관'};
+    P.innerHTML=`<div class="gp-h"><span class="pill" style="background:${col[f.kind]};color:${C.card}">${K[f.kind]}</span><b>${f.label}</b>${f.kind=='topic'?`<button type="button" class="sm" data-go="${attr(f.id.slice(2))}">근거 한 장 →</button>`:''}${SEL?'<button type="button" class="ghost sm" id="gclear">풀기</button>':''}</div>
+      <div class="note">연결 ${L.length}개 · 숫자 = 최근 3년 함께 나온 발표 수</div><div class="gp-list">${L.map(([n,w])=>`<div class="gp-row" data-id="${n.id}"><i style="background:${col[n.kind]}"></i><span>${n.label}</span><b>${w}</b></div>`).join('')}</div>`;
+    P.querySelector('[data-go]')?.addEventListener('click',e=>{$('#q').value=e.currentTarget.dataset.go;window.scrollTo(0,0);run()});
+    P.querySelector('#gclear')?.addEventListener('click',()=>{SEL=null;paint()});
+    P.querySelectorAll('.gp-row').forEach(el=>{el.onmouseenter=()=>{HOV=id[el.dataset.id];paint()};el.onmouseleave=()=>{HOV=null;paint()};el.onclick=()=>{SEL=id[el.dataset.id];paint()}})}
+  // 마우스: 올리면 연결, 누르면 고정, 끌면 이동, 빈 곳 끌면 이동(팬), 휠로 확대
+  const pt=ev=>{const R=svg.getBoundingClientRect();return {x:vb.x+(ev.clientX-R.left)/R.width*vb.w,y:vb.y+(ev.clientY-R.top)/R.height*vb.h}};
+  let drag=null,pan=null,moved=false;
+  svg.onmousemove=ev=>{const g=ev.target.closest('.gn');if(drag){const p=pt(ev);drag.x=p.x;drag.y=p.y;drag.fx=drag.kind=='venue'?p.x:null;drag.fy=drag.kind=='venue'?p.y:null;moved=true;paint();return}
+    if(pan){vb.x=pan.vx-(ev.clientX-pan.cx)*vb.w/svg.getBoundingClientRect().width;vb.y=pan.vy-(ev.clientY-pan.cy)*vb.h/svg.getBoundingClientRect().height;moved=true;paint();return}
+    const h=g?id[g.dataset.id]:null;if(h!==HOV){HOV=h;paint()}};
+  svg.onmousedown=ev=>{const g=ev.target.closest('.gn');moved=false;if(g){drag=id[g.dataset.id]}else{pan={cx:ev.clientX,cy:ev.clientY,vx:vb.x,vy:vb.y}}ev.preventDefault()};
+  window.addEventListener('mouseup',ev=>{if(drag&&!moved){const d=drag;SEL=(SEL===d)?null:d;paint()}else if(pan&&!moved){SEL=null;paint()}drag=null;pan=null});
+  svg.onmouseleave=()=>{if(HOV){HOV=null;paint()}};
+  svg.onwheel=ev=>{ev.preventDefault();const p=pt(ev),k=ev.deltaY>0?1.12:0.89;const nw=Math.max(300,Math.min(W*1.5,vb.w*k)),nh=nw*H/W;vb={x:p.x-(p.x-vb.x)*nw/vb.w,y:p.y-(p.y-vb.y)*nh/vb.h,w:nw,h:nh};paint()};
+  paint()}
+
+$('#datav').onclick=()=>dataView();
 $('#find').onclick=()=>find();
 $('#newq').onclick=()=>{location.href=location.pathname+(VENUE!='ectc'?'?venue='+VENUE:'')};
-$('#spast').onclick=()=>{document.body.classList.remove('home');goto(2023)};
+$('#spast').onclick=()=>{document.body.classList.remove('home');T=null;setView('find');goto(2023)};
 function histLoad(){try{return JSON.parse(localStorage.getItem('hist')||'[]')}catch(e){return []}}
 function histDraw(){const h=histLoad();$('#hist').innerHTML=h.length?h.map(q=>`<button type="button" title="${attr(q)}">${q.replace(/</g,'&lt;')}</button>`).join(''):'<div class="empty">아직 물어본 것이 없다</div>';
   $$('#hist button').forEach(b=>b.onclick=()=>{$('#q').value=b.title;run()})}

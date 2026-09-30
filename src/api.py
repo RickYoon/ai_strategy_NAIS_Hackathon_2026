@@ -331,6 +331,57 @@ def handle(path, q, derived):
             ko = {t: v.get("ko") for t, v in labels.items()}
             cache[(venue, kind)] = actors.build(venue, cand, ko, hot, c, kind)
         return cache[(venue, kind)], 200
+    if path == "/api/graph":
+        # 데이터 출처 + 지금 만들어진 온톨로지 그래프: 학회 — 후보 주제 — 기관 (최근 3년 발표 기록에서 센다)
+        cache = combo.__dict__.setdefault("_graph", {})
+        if "g" not in cache:
+            import analyze as _an
+            from collections import Counter, defaultdict
+            c = d["years"][-1]
+            labels = json.loads(agent.LABELS.read_text(encoding="utf-8")) if agent.LABELS.exists() else {}
+            keep = lambda t: labels.get(t, {"keep": True}).get("keep", True)
+            cand = [x["topic"] for x in agent.candidates(d, c) if x["active"] and keep(x["topic"])]
+            cs = set(cand)
+            sources, tv, ti, tot_i, tot_a = [], Counter(), defaultdict(Counter), set(), set()
+            for m in _an.GROUPS["pkg"]["members"] + ["pvsc"]:
+                mf = ROOT / "data" / "raw" / f"{m}.meta.json"
+                if not mf.exists():
+                    continue
+                meta = json.loads(mf.read_text(encoding="utf-8"))
+                n_i, n_a = set(), set()
+                for line in open(ROOT / "data" / "raw" / f"{m}.jsonl", encoding="utf-8"):
+                    r = json.loads(line)
+                    if not r["year"]:
+                        continue
+                    ins = {i["name"] for a_ in r["authors"] for i in a_["inst"] if i["name"]}
+                    n_i |= ins; n_a |= {a_["name"] for a_ in r["authors"] if a_.get("name")}
+                    if m == "pvsc" or r["year"] < c - 2:
+                        continue
+                    ts = cs & set(_an.terms(r["title"]))
+                    for t in ts:
+                        tv[(t, m)] += 1
+                        for i in ins:
+                            ti[t][i] += 1
+                sources.append({"venue": m, "name": meta["name"], "field": meta.get("field"), "years": meta["years"], "count": meta["count"],
+                                "collected_at": meta["collected_at"][:10], "inst": len(n_i), "auth": len(n_a), "in_graph": m != "pvsc"})
+                if m != "pvsc":
+                    tot_i |= n_i; tot_a |= n_a
+            ev = events()
+            _evraw = json.loads((ROOT / "data" / "events.json").read_text(encoding="utf-8"))
+            ko = lambda t: labels.get(t, {}).get("ko") or t
+            nodes = [{"id": "v:" + m, "kind": "venue", "label": next(s_["name"] for s_ in sources if s_["venue"] == m).split(" ")[0]} for m in _an.GROUPS["pkg"]["members"]]
+            nodes += [{"id": "t:" + t, "kind": "topic", "label": ko(t), "events": len(ev.get(t, []))} for t in cand]
+            insts = {}
+            for t in cand:
+                for i, n in ti[t].most_common(3):
+                    insts.setdefault(i, 0); insts[i] += n
+            nodes += [{"id": "i:" + i, "kind": "inst", "label": i} for i in insts]
+            edges = [{"a": "t:" + t, "b": "v:" + m, "w": n} for (t, m), n in tv.items()]
+            edges += [{"a": "t:" + t, "b": "i:" + i, "w": n} for t in cand for i, n in ti[t].most_common(3)]
+            cache["g"] = {"sources": sources, "nodes": nodes, "edges": edges, "events": sum(len(v) for k, v in _evraw.items() if not k.startswith("_")), "event_topics": sum(1 for k in _evraw if not k.startswith("_")),
+                          "schema": {"papers": sum(s_["count"] for s_ in sources if s_["in_graph"]), "inst": len(tot_i), "auth": len(tot_a),
+                                     "topics": d["n_topics"], "candidates": len(cand), "features": 16}}
+        return cache["g"], 200
     if path == "/api/who":
         kind, name = q.get("kind", "inst"), q.get("name", "")
         w = d.get("who", {}).get(kind, {}).get(name)
