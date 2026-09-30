@@ -241,7 +241,7 @@ details.more>summary{cursor:pointer;font-size:13.5px;font-weight:700;color:var(-
 .on-arrow{font-size:12px;color:var(--sub);white-space:nowrap;text-align:center}
 .glegend{display:flex;gap:16px;font-size:12px;color:var(--sub);margin-top:6px}.glegend i{display:inline-block;width:10px;height:10px;border-radius:5px;margin-right:6px;vertical-align:-1px}
 .at tr.dim td{opacity:.6}
-body.dataview .ask{display:none}body.browse aside.log{display:none}body.browse main{grid-template-columns:1fr}body.dataview main{padding-top:8px}
+body.dataview .ask{display:none}aside.log{display:none}main{grid-template-columns:1fr}body.dataview main{padding-top:8px}
 .gwrap{display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start}#gbox{background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .gpanel{border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:120px;position:sticky;top:16px}.gp-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}.gp-h b{font-size:15px}.gp-list{margin-top:8px;max-height:560px;overflow:auto}.gp-row{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:7px;font-size:13px;cursor:pointer}.gp-row:hover{background:var(--panel)}.gp-row i{width:9px;height:9px;border-radius:5px;flex:none}.gp-row span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gp-row b{color:var(--sub);font-weight:600}
 @media(max-width:1100px){.gwrap{grid-template-columns:1fr}.gpanel{position:static}}
@@ -253,6 +253,7 @@ mark{background:rgba(227,169,76,.28);color:inherit;border-radius:3px;padding:0 2
 .mlist{margin-top:8px}.mrow{display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}.mrow:last-child{border-bottom:0}.md{color:var(--amb);font-weight:700}.mt em{color:var(--sub);font-style:normal}.mn{white-space:nowrap;color:var(--sub);font-size:12.5px}
 .srow{display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}.srow:last-child{border-bottom:0}.srow>span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.srow b{white-space:nowrap}.srow small{color:var(--mute);white-space:nowrap}.newtag{font-style:normal;font-size:11px;color:var(--grn);font-weight:700;margin-left:4px}
 @media(max-width:1100px){.wsteps{grid-template-columns:1fr 1fr}}
+.trace{background:var(--panel);border-radius:10px;padding:10px 12px;margin:2px 0 12px}.trace>b{margin-right:8px}.trl{display:flex;flex-wrap:wrap;gap:4px 6px;margin-top:6px;font-size:12.5px}.trl span{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:2px 10px;font-weight:600}.trl span em{font-style:normal;color:var(--sub);font-weight:500}.trl i{color:var(--mute);font-style:normal}
 .grp{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:10px}.gb{background:var(--panel);border-radius:12px;padding:12px 14px}.gh{font-weight:800;font-size:15px}.gb .chips small{font-weight:600;opacity:.7}
 .why{background:var(--panel);border-radius:12px;padding:14px 16px;margin:6px 0 14px}
 .wh,.wr{display:grid;grid-template-columns:minmax(150px,1.3fr) 92px 1.4fr 44px;gap:10px;align-items:center}
@@ -482,7 +483,9 @@ const ttl=p=>p.doi?`<a href="${p.doi}" target="_blank" rel="noopener">${p.t}</a>
 /* 에이전트의 설명 — 주제 · 후보 찾기 · 분야 신호 화면이 같이 쓴다 */
 function agCard(){
   if(!AG||!AG.sentences)return '';const dr=AG.dropped||[];
+  const tr=(AG.trace||[]).map(t=>`<span>${NAMES[t.tool]||t.tool}${Object.values(t.input||{}).length?` <em>${Object.values(t.input).join(', ')}</em>`:''}</span>`).join('<i>→</i>');
   return `<div class="card ag"><h2>에이전트의 설명<small>문장마다 근거 도구 표시 · 숫자는 도구 결과와 대조함</small></h2>
+    ${tr?`<div class="trace"><b>총괄 에이전트</b><span class="note">LLM이 질문을 읽고 부른 순서 · 숫자는 각 에이전트의 코드가 계산</span><div class="trl">${tr}</div></div>`:''}
     ${AG.sentences.map(s=>`<p class="s">${s.text} <span class="src">${NAMES[s.from]||s.from}</span></p>`).join('')}
     <div class="lim"><p class="note"><b>한계</b> ${AG.caution||''}</p>
     <p class="note">도구 결과에 없는 숫자가 들어 있어 버린 문장: ${dr.length}개${dr.map(d=>'<br><s>'+d.text+'</s>').join('')} · ${AG.model||''}${AG.cached?` · <b style="color:var(--sub)">같은 질문에 전에 실제로 받은 응답이다 (${(AG.cache_reason||'').includes('비용 절약')?'비용 절약':'LLM 연결 안 됨 · '+(AG.cache_reason||'')})</b>`:''}</p></div></div>`}
