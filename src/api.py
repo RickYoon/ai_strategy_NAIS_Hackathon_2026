@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import agent
+import combo
 import draft
 import gaps
 
@@ -130,6 +131,14 @@ def ontology(topic, cutoff, d, derived):
             "totals": {"inst": len(inst), "auth": len(auth)}}
 
 
+def combo_result(venue):
+    """지표를 겹친 개수별 과거 성적 (src/combo.py 가 계산해 둔 것)."""
+    f = ROOT / "data" / "derived" / "combo.json"
+    if not f.exists():
+        return None
+    return next((r for r in json.loads(f.read_text(encoding="utf-8")) if r["venue"] == venue), None)
+
+
 def handle(path, q, derived):
     importlib.reload(agent)
     importlib.reload(gaps)
@@ -162,6 +171,12 @@ def handle(path, q, derived):
         shown = [{**x, "ko": labels.get(x["topic"], {}).get("ko")} for x in cand if labels.get(x["topic"], {"keep": True}).get("keep", True)]
         bt = next((b for b in d["backtest"] if b["cutoff"] == c), None)
         grew = {x["topic"]: x["grew"] for x in bt["lit_topics"]} if bt else {}
+        vy = derived.__dict__.get("_vy") or derived.__dict__.setdefault("_vy", combo.venue_years())
+        for x in shown:
+            s = combo.signals(d, d["topics"][x["topic"]], x["topic"], c, vy)
+            x["signals"] = dict(zip(combo.NAMES, s))
+            x["signals_on"] = sum(s)
+        shown.sort(key=lambda x: (-x["active"], -x["signals_on"], -(x["problem_recent_percent"] - x["problem_before_percent"])))
         ev = events()
         desc = agent.describe_topics([x["topic"] for x in shown if x["active"]])
         for x in shown:
@@ -176,7 +191,7 @@ def handle(path, q, derived):
                  "then": round(x["share_then"] * 100, 1), "after": round(x["share_after"] * 100, 1)}
                 for x in last["lit_topics"] if x["hot"] and lab_all.get(x["topic"], {"keep": True}).get("keep", True)]
         past.sort(key=lambda x: (-x["grew"], -x["after"]))
-        return {"past": {"cutoff": last["cutoff"], "opened": last["opened"], "items": past}, "cutoff": c, "candidates": shown, "removed": len(cand) - len(shown), "labeled": bool(labels), "traits": agent.traits(d), "n_topics": d["n_topics"], "n_eligible": len(cand)}, 200
+        return {"past": {"cutoff": last["cutoff"], "opened": last["opened"], "items": past}, "cutoff": c, "candidates": shown, "removed": len(cand) - len(shown), "labeled": bool(labels), "traits": agent.traits(d), "n_topics": d["n_topics"], "n_eligible": len(cand), "combo": combo_result(q.get("venue", "ectc"))}, 200
     if path == "/api/cross":
         links = json.loads((ROOT / "data" / "links.json").read_text(encoding="utf-8"))
         raw = json.loads((ROOT / "data" / "raw" / "upstream.json").read_text(encoding="utf-8"))

@@ -1,8 +1,179 @@
 {
-  "_설명": "산업의 사건. 사람이 출처를 확인하고 적은 목록이다. 자동 수집이 아니다.",
-  "glass": [
-    {"date": "2022-11", "text": "Absolics, 미국 조지아 유리 기판 공장 착공", "source": "SKC 보도자료"},
-    {"date": "2023-03", "text": "DNP, 유리 코어 기판 개발 발표", "source": "DNP 보도자료"},
-    {"date": "2023-09", "text": "Intel, 유리 기판 로드맵 발표", "source": "Intel 보도자료"}
-  ]
+ "_설명": "산업의 사건. 출처를 열어 확인한 것만 적었다(2026-09-30 확인). 자동 수집이 아니다. 출처가 공식 보도자료가 아니라 전문지 · 언론인 경우 source에 그렇게 적었다.",
+ "glass": [
+  {
+   "date": "2022-11",
+   "text": "Absolics, 미국 조지아 코빙턴 유리 기판 공장 착공",
+   "source": "SK 공식 뉴스",
+   "url": "https://eng.sk.com/news/absolics-breaks-ground-on-planned-600-million-manufacturing-site-in-georgia-for-breakthrough-semiconductor-material"
+  },
+  {
+   "date": "2023-03",
+   "text": "DNP, TGV 유리 코어 기판 개발 발표",
+   "source": "DNP 공식 뉴스",
+   "url": "https://www.global.dnp/en/news/detail/2023/03/0320_20169052/"
+  },
+  {
+   "date": "2023-09",
+   "text": "Intel, 차세대 패키징용 유리 기판 공개",
+   "source": "Intel 보도자료",
+   "url": "https://www.intc.com/news-events/press-releases/detail/1647/intel-unveils-industry-leading-glass-substrates-to-meet"
+  },
+  {
+   "date": "2024-12",
+   "text": "미국 상무부, Absolics에 보조금 최대 7,500만 달러 확정",
+   "source": "NIST 공지",
+   "url": "https://www.nist.gov/news-events/news/2024/12/biden-harris-administration-announces-chips-incentives-awards-absolics-and"
+  }
+ ],
+ "glass core": [
+  {
+   "date": "2023-03",
+   "text": "DNP, TGV 유리 코어 기판 개발 발표",
+   "source": "DNP 공식 뉴스",
+   "url": "https://www.global.dnp/en/news/detail/2023/03/0320_20169052/"
+  },
+  {
+   "date": "2023-09",
+   "text": "Intel, 차세대 패키징용 유리 기판 공개",
+   "source": "Intel 보도자료",
+   "url": "https://www.intc.com/news-events/press-releases/detail/1647/intel-unveils-industry-leading-glass-substrates-to-meet"
+  },
+  {
+   "date": "2025-12",
+   "text": "DNP, TGV 유리 코어 기판 파일럿 라인 가동 발표",
+   "source": "DNP 공식 뉴스",
+   "url": "https://www.global.dnp/en/news/detail/2025/12/1216_20177773/"
+  }
+ ],
+ "tgv": [
+  {
+   "date": "2023-03",
+   "text": "DNP, TGV 유리 코어 기판 개발 발표",
+   "source": "DNP 공식 뉴스",
+   "url": "https://www.global.dnp/en/news/detail/2023/03/0320_20169052/"
+  },
+  {
+   "date": "2025-12",
+   "text": "DNP, TGV 유리 코어 기판 파일럿 라인 가동 발표",
+   "source": "DNP 공식 뉴스",
+   "url": "https://www.global.dnp/en/news/detail/2025/12/1216_20177773/"
+  }
+ ],
+ "chiplet": [
+  {
+   "date": "2021-05",
+   "text": "AMD, 하이브리드 본딩 기반 3D 칩렛 기술 공개",
+   "source": "AMD 보도자료",
+   "url": "https://ir.amd.com/news-events/press-releases/detail/1007/amd-showcases-industry-leading-innovation-across-the-high-performance-computing-ecosystem-at-computex-2021"
+  },
+  {
+   "date": "2022-03",
+   "text": "UCIe 컨소시엄 출범, 칩렛 연결 표준화 착수",
+   "source": "UCIe 컨소시엄 보도자료 목록",
+   "url": "https://www.uciexpress.org/press-releases"
+  },
+  {
+   "date": "2024-08",
+   "text": "UCIe 2.0 규격 공개",
+   "source": "UCIe 컨소시엄 보도자료 목록",
+   "url": "https://www.uciexpress.org/press-releases"
+  }
+ ],
+ "hybrid bonding": [
+  {
+   "date": "2020-10",
+   "text": "Applied Materials · Besi, 하이브리드 본딩 장비 공동개발 발표",
+   "source": "Besi 보도자료",
+   "url": "https://www.besi.com/investor-relations/press-releases/2020/details/applied-materials-and-be-semiconductor-industries-to-accelerate-chip-integration-technology-for-the-semiconductor-industry/"
+  },
+  {
+   "date": "2021-05",
+   "text": "AMD, 하이브리드 본딩 기반 3D 칩렛 기술 공개",
+   "source": "AMD 보도자료",
+   "url": "https://ir.amd.com/news-events/press-releases/detail/1007/amd-showcases-industry-leading-innovation-across-the-high-performance-computing-ecosystem-at-computex-2021"
+  }
+ ],
+ "hbm": [
+  {
+   "date": "2024-02",
+   "text": "Micron, HBM3E 양산 개시 발표",
+   "source": "Micron 보도자료",
+   "url": "https://investors.micron.com/news-releases/news-release-details/micron-commences-volume-production-industry-leading-hbm3e"
+  },
+  {
+   "date": "2024-03",
+   "text": "SK hynix, HBM3E 양산 개시 발표",
+   "source": "SK hynix 뉴스룸",
+   "url": "https://news.skhynix.com/sk-hynix-begins-volume-production-of-industry-first-hbm3e/"
+  },
+  {
+   "date": "2025-09",
+   "text": "SK hynix, HBM4 개발 완료 · 양산 체제 구축 발표",
+   "source": "SK hynix 뉴스룸",
+   "url": "https://news.skhynix.com/en/sk-hynix-completes-worlds-first-hbm4-development-and-readies-mass-production/"
+  }
+ ],
+ "hpc": [
+  {
+   "date": "2023-06",
+   "text": "TSMC, 첨단 패키징 · 테스트 공장 개소",
+   "source": "TSMC 보도자료",
+   "url": "https://pr.tsmc.com/english/news/3033"
+  },
+  {
+   "date": "2024-12",
+   "text": "미국 상무부, Amkor 애리조나 패키징 공장에 보조금 확정",
+   "source": "NIST 공지",
+   "url": "https://www.nist.gov/news-events/news/2024/12/biden-harris-administration-announces-chips-incentives-award-amkor"
+  },
+  {
+   "date": "2025-03",
+   "text": "TSMC, 미국 투자 확대에 첨단 패키징 시설 2곳 포함 발표",
+   "source": "TSMC 보도자료",
+   "url": "https://pr.tsmc.com/english/news/3210"
+  }
+ ],
+ "automotive": [
+  {
+   "date": "2024-04",
+   "text": "Infineon · Amkor, 포르투갈 패키징 · 테스트 센터 협력 발표",
+   "source": "3D InCites (전문지)",
+   "url": "https://www.3dincites.com/2024/04/infineon-and-amkor-deepen-partnership-and-strengthen-european-supply-chain-for-semiconductor-solutions/"
+  },
+  {
+   "date": "2024-10",
+   "text": "imec 차량용 칩렛 프로그램에 10개사 참여 발표",
+   "source": "imec 보도자료",
+   "url": "https://www.imec-int.com/en/press/arm-ase-bmw-group-bosch-cadence-siemens-siliconauto-synopsys-tenstorrent-and-valeo-commit"
+  }
+ ],
+ "panel level": [
+  {
+   "date": "2025-11",
+   "text": "Powertech, 패널 레벨 패키징 양산 확대 위해 공장 인수 발표",
+   "source": "Taipei Times (언론)",
+   "url": "https://www.taipeitimes.com/News/biz/archives/2025/11/15/2003847225"
+  },
+  {
+   "date": "2026-05",
+   "text": "ASE, 310mm 패널 레벨 패키징 라인 개발 발표",
+   "source": "Investing.com (언론)",
+   "url": "https://www.investing.com/news/company-news/ase-develops-automated-310mm-panellevel-packaging-line-93CH-4709954"
+  }
+ ],
+ "optical": [
+  {
+   "date": "2024-03",
+   "text": "Broadcom, 광 패키징 이더넷 스위치 고객 공급 발표",
+   "source": "eeNews Europe (전문지)",
+   "url": "https://www.eenewseurope.com/en/first-51-2-tbit-s-co-packaged-optical-ethernet-switch-for-scalable-ai/"
+  },
+  {
+   "date": "2025-03",
+   "text": "NVIDIA, 광 패키징 기반 네트워크 스위치 발표",
+   "source": "NVIDIA 뉴스룸",
+   "url": "https://nvidianews.nvidia.com/news/nvidia-spectrum-x-co-packaged-optics-networking-switches-ai-factories"
+  }
+ ]
 }

@@ -33,6 +33,12 @@ PROMPT_FIXED = """아래는 한 연구 주제("{topic}")의 학회 발표 제목
 {titles}"""
 
 
+def VP(data):
+    """저장 파일 이름 앞에 붙이는 학회 표시. ECTC는 예전 이름을 그대로 쓴다."""
+    v = data["meta"].get("venue", "ectc")
+    return "" if v == "ectc" else v + "__"
+
+
 def ask(prompt):
     import anthropic
     r = anthropic.Anthropic(api_key=agent.api_key()).messages.create(
@@ -61,7 +67,7 @@ def gap_map(topic, cutoff, data):
     t = data["topics"].get(topic)
     if not t:
         return {"error": "없는 주제"}
-    cache = ROOT / "data" / "derived" / "gaps" / f"{re.sub(r'[^a-z0-9]+', '_', topic)}_{cutoff}_v2.json"
+    cache = ROOT / "data" / "derived" / "gaps" / f"{VP(data)}{re.sub(r'[^a-z0-9]+', '_', topic)}_{cutoff}_v2.json"
     if cache.exists():
         return json.loads(cache.read_text(encoding="utf-8"))
     key = agent.api_key()
@@ -119,7 +125,7 @@ def gap_check(topic, cutoff, data):
     base = gap_map(topic, cutoff, data)
     if "error" in base:
         return base
-    cache = ROOT / "data" / "derived" / "gaps" / f"{re.sub(r'[^a-z0-9]+', '_', topic)}_{cutoff}_check.json"
+    cache = ROOT / "data" / "derived" / "gaps" / f"{VP(data)}{re.sub(r'[^a-z0-9]+', '_', topic)}_{cutoff}_check.json"
     if cache.exists():
         return json.loads(cache.read_text(encoding="utf-8"))
     later = [p for p in t["papers"] if cutoff < p["y"] <= cutoff + 3][:MAX_TITLES]

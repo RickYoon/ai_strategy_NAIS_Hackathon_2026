@@ -63,6 +63,7 @@ body.compact .askt,body.compact .asks,body.compact .ex{display:none}
 .scope ul{margin:4px 0 0;padding-left:18px;columns:2;column-gap:28px} .scope li{break-inside:avoid}
 body.compact .scope{display:none}
 .filter .fl,.filter #seg,.filter .fh{display:none}
+.sig4{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 0}.sig4 span{font-size:11.5px;font-weight:700;border-radius:20px;padding:3px 9px;background:#eef1f6;color:#9aa3b5}.sig4 span.on{background:#e3e9fb;color:var(--pri)}.sig4 b{font-size:12px;color:var(--ink);margin-right:2px}
 body.compact .askbox{margin:0;max-width:none;border-radius:14px;padding:5px 5px 5px 16px}
 body.compact .askbox input{font-size:15.5px;padding:7px 0}
 body.compact .askbox button{padding:8px 18px;font-size:14.5px;border-radius:10px}
@@ -281,6 +282,8 @@ footer{max-width:1400px;margin:0 auto;padding:0 28px 36px;font-size:12px;color:v
   <div class="filter">
     <span class="fl">시점</span>
     <div class="seg" id="seg"><button type="button" data-y="2026">지금</button><button type="button" data-y="2023">2023년</button><button type="button" data-y="2022">2022년</button><button type="button" data-y="2021">2021년</button></div>
+    <span class="note" style="margin-right:6px">읽는 기록</span>
+    <div class="seg" id="vseg" style="display:inline-flex"><button type="button" data-v="ectc">ECTC 한 곳 · 3,420편</button><button type="button" data-v="pkg">패키징 학회 다섯 곳 · 10,829편</button></div>
     <button id="past" class="link" type="button">이 방법, 과거에 맞았나? →</button>
     <span class="note fh">과거 연도를 고르면 그 뒤 발표를 가리고 같은 방법을 돌려 봅니다.</span>
     <select id="c" style="display:none"></select>
@@ -306,6 +309,7 @@ footer{max-width:1400px;margin:0 auto;padding:0 28px 36px;font-size:12px;color:v
 <footer><span id="src"></span></footer>
 <script>
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const VENUE=new URLSearchParams(location.search).get('venue')||'ectc';
 let META=null,T=null,REVEAL=false,LLM={llm:false},AG=null,VIEW='find',FIND=null,CROSS=null,SEQ=0,LOADED={},CUR={};
 const U=new URLSearchParams(location.search);
 const pct=x=>(x*100).toFixed(x<0.1?1:0)+'%';
@@ -318,7 +322,7 @@ const TABS=[['ev','근거'],['who','사람과 기관'],['onto','관계'],['sprea
 let TAB='ev';{const t=(U.get('tab')||'').replace(/\s/g,'');if(t){const f=TABS.find(([id,l])=>id==t||l.replace(/\s/g,'').includes(t));if(f)TAB=f[0]}}
 
 async function init(){
-  META=await (await fetch('/api/meta?venue=ectc')).json();
+  META=await (await fetch('/api/meta?venue='+VENUE+'')).json();
   $('#names').innerHTML=META.topic_names.slice(0,400).map(n=>`<option value="${n}">`).join('');
   $('#c').innerHTML=META.years.filter(y=>y>=2021).reverse().map(y=>`<option value="${y}" ${y==2026?'selected':''}>${y==2026?'지금 (2026)':y+'년으로 돌아가 검증'}</option>`).join('');
   $('#c').onchange=()=>{sync();
@@ -326,11 +330,12 @@ async function init(){
     if(VIEW=='find'){find();return}
     ($('#q').value.trim()?run:find)()};sync();
   LLM=await (await fetch('/api/has_llm')).json();
+  document.querySelectorAll('#vseg button').forEach(b=>{b.classList.toggle('on',b.dataset.v==VENUE);b.onclick=()=>{if(b.dataset.v!=VENUE)location.href='?venue='+b.dataset.v}});
   {const s=META.score[META.score.length-1];$('#scope').innerHTML=`<span class="h">지금 되는 범위와 한계</span><span class="note">묻기 전에 알아 둘 것</span><ul>
-    <li><b>분야는 반도체 패키징 하나</b>다. ${META.meta.name} ${META.meta.years.replace('-','~')}년 발표 ${META.n_papers.toLocaleString()}편을 읽는다. 다른 분야는 학회를 넣어야 한다.</li>
+    <li><b>분야는 반도체 패키징 하나</b>다. 모은 기록은 패키징 학회 다섯 곳 10,829편과 태양광 학회 5,170편이다. 지금 화면은 ${META.meta.name} ${META.n_papers.toLocaleString()}편을 읽는다.</li>
     <li><b>발표 제목만 읽는다.</b> 초록과 본문은 읽지 않는다. 주제는 제목의 영어 낱말에서 뽑는다.</li>
     <li><b>전파와 관계</b>는 패키징 학회 다섯 곳의 기록으로 그린다.</li>
-    <li><b>산업 사건</b>은 사람이 출처를 확인해 적은 목록이다. 아직 일부 주제에만 있다.</li>
+    <li><b>산업 사건</b>은 출처를 열어 확인한 것만 적은 목록이다. 열 개 주제에 26건이 있고, 나머지 주제에는 아직 없다.</li>
     <li><b>과거 성적은 높지 않다.</b> ${s.cutoff}년에 같은 방법으로 고른 ${s.lit}개 중 ${s.lit_grew}개가 커졌다. 맞히는 도구가 아니다.</li>
     <li><b>검증하지 않은 것</b>: 분야를 건너는 신호, 공백 지도의 다음 후보. 화면에 그렇게 표시한다.</li></ul>`}
   $('#src').textContent=`${META.meta.name} · ${META.meta.years} · ${META.n_papers.toLocaleString()}편 · OpenAlex에서 ${META.meta.collected_at.slice(0,16).replace('T',' ')} (UTC) 수집 · ${LLM.llm?'LLM '+LLM.model:'LLM 없음 (정해진 순서로 실행)'}`;
@@ -433,7 +438,7 @@ function render(c){
       ${kpi('이 방법의 과거 성적'+(bt.lit_grew*2<bt.lit?' — 높지 않다':''),`${bt.lit}개 중 ${bt.lit_grew}개`,`${bt.cutoff}년 기준 · 고른 ${bt.lit}개 중 ${bt.lit_grew}개 · 고르지 않은 ${bt.unlit}개 중 ${bt.unlit_grew}개`,'var(--txt)')}
     </div>
     ${chart(c,show)}
-    <div class="evs">${ev.map(e=>`<span><i></i>${e.date} ${e.text} <em>(${e.source})</em></span>`).join('')||'<span class="note">이 주제의 산업 사건은 아직 적어 두지 않았다 (사건 목록은 사람이 출처를 확인해 적는다 · 없다는 뜻이 아니다)</span>'}</div>
+    <div class="evs">${ev.map(e=>`<span><i></i>${e.date} ${e.text} <em>(${e.url?`<a href="${e.url}" target="_blank" rel="noopener">${e.source}</a>`:e.source})</em></span>`).join('')||'<span class="note">이 주제의 산업 사건은 아직 적어 두지 않았다 (사건 목록은 사람이 출처를 확인해 적는다 · 없다는 뜻이 아니다)</span>'}</div>
   </div>
   ${agCard()}
   <div class="tabs" role="tablist">${TABS.map(([id,l])=>`<button role="tab" data-tab="${id}" aria-selected="${id==TAB}" class="${id==TAB?'on':''}">${l}</button>`).join('')}</div>
@@ -537,7 +542,7 @@ function renderCross(){
     ${show<NOW?'"가린 것 열기"를 누르면 그 뒤가 나온다.':'위의 "이 방법, 과거에 맞았나?"를 누르면 그때 보였던 만큼만 나온다.'}</p></div>`}
 async function cross(keep){const my=++SEQ;T=null;FIND=null;if(keep!==true)AG=null;if(keep!==true)resetLog();else{REVEAL=false;$('#open').textContent=OPENTXT}
   setView('cross');busy('불러오는 중…');
-  try{CROSS=await (await fetch('/api/cross?venue=ectc')).json()}catch(e){CROSS={error:String(e)}}
+  try{CROSS=await (await fetch('/api/cross?venue='+VENUE+'')).json()}catch(e){CROSS={error:String(e)}}
   if(my!==SEQ)return;
   if(CROSS.error){fail(CROSS.error);return}
   renderCross()}
@@ -554,6 +559,7 @@ function renderFind(){
     ${area(x.share,x.trend=='줄어드는 중'?C.red:C.pri)}
     <div class="gx"><span>${META.years[0]}</span><span>${META.years[x.share.length-1]}</span></div>
     <div class="ds">${x.desc||`양산 문제를 다룬 비중 ${x.problem_before_percent}% → ${x.problem_recent_percent}%`}</div>
+    ${x.signals?`<div class="sig4"><b>겹친 지표 ${x.signals_on}개</b>${Object.entries(x.signals).map(([k,v])=>`<span class="${v?'on':''}">${v?'●':'○'} ${k}</span>`).join('')}</div>`:''}
     <div class="tags"><span class="${x.trend=='오르는 중'||x.trend=='새로 등장'?'up':x.trend=='줄어드는 중'?'dn':''}">${x.trend}</span><span>양산 문제 ${x.problem_before_percent}% → ${x.problem_recent_percent}%</span><span>최근 3년 ${x.papers_recent}편</span><span>새 기관 ${x.inst_new}/${x.inst_recent}곳</span>${x.events?`<span class="ind">산업 사건 ${x.events}건</span>`:''}${x.cross?'<span class="x">다른 분야 신호</span>':''}</div>
     ${REVEAL&&canOpen?`<div class="res ${x.grew?'ok':'no'}">${x.grew?'✓ 3년 뒤 실제로 커졌다':'✗ 3년 뒤 그대로였다'}</div>`:''}
     <div class="more">근거 보기 →</div></div>`};
@@ -568,11 +574,12 @@ function renderFind(){
     <div class="cards">${act.map(card).join('')}</div>
     <div class="card" style="margin-top:18px"><p class="note">${f.labeled?`제목에서 뽑은 낱말 중 일반 낱말 ${f.removed}개는 LLM이 걸러냈다.`:'LLM이 없어 일반 낱말이 섞여 있다.'}
     ${canOpen?(REVEAL?'':'<b>"가린 것 열기"</b>를 누르면 이 후보들이 3년 뒤 실제로 커졌는지 카드마다 나온다.'):`이 후보들이 맞을지는 3년 뒤에야 안다. 그래서 같은 방법을 과거에 돌려 본 성적을 같이 준다: <a href="#" id="goback">이 방법이 과거에 맞았는지 보기</a>`}</p>
-    <div class="inbox"><h3 class="sec">이 중 어느 것이 될까 — 과거에 커진 후보의 특징을 세어 봤다</h3>
-      <div class="note">과거 세 시점에 이 방법이 고른 후보 ${tr.total[1]}개 중 3년 뒤 실제로 커진 것은 ${tr.total[0]}개였다.</div>
-      <table style="margin-top:8px"><thead><tr><th>그때 이런 후보였다면</th><th>그랬던 후보</th><th>아니었던 후보</th></tr></thead><tbody>
-      ${tr.splits.map(s=>`<tr><td>${s.label}</td><td><b>${fr(s.yes)}</b> 커짐</td><td>${fr(s.no)} 커짐</td></tr>`).join('')}</tbody></table>
-      <div class="note" style="margin-top:8px">표본이 작아 차이를 믿기 어렵다. 그래서 순위를 매기지 않고, 후보마다 같은 재료를 그대로 보여준다. 고르는 것은 연구자다.</div></div>
+    ${f.combo?`<div class="inbox"><h3 class="sec">지표 하나로는 약하다 — 네 가지를 겹쳐 봤다</h3>
+      <div class="note">내용(양산 문제 비중이 오름) · 사람(새 기관이 몰림) · 흐름(발표 비중이 오르는 중) · 전파(발표하는 학회가 늘어남). 과거 세 시점의 활발한 주제 ${f.combo.n}개를 놓고, 켜진 지표 개수별로 3년 뒤 커진 비율을 셌다.</div>
+      <table style="margin-top:8px"><thead><tr><th>켜진 지표</th><th>그런 주제</th><th>3년 뒤 커진 것</th><th>비율</th><th style="width:34%"></th></tr></thead><tbody>
+      ${f.combo.by_count.map(r=>{const p=r.topics?Math.round(r.grew/r.topics*100):0;return `<tr><td><b>${r.signals_on}개</b></td><td>${r.topics}개</td><td>${r.grew}개</td><td><b>${p}%</b></td><td><i style="display:block;height:10px;border-radius:5px;background:var(--pri);opacity:${r.topics<10?.35:.85};width:${Math.min(100,p*3.5)}%"></i></td></tr>`}).join('')}</tbody></table>
+      <div class="note" style="margin-top:8px">두 개 이상 겹친 주제는 세 시점 모두에서 더 자주 커졌다: ${[2021,2022,2023].map(y=>{const lo=f.combo.by_cutoff.find(r=>r.cutoff==y&&r.group=='0~1개'),hi=f.combo.by_cutoff.find(r=>r.cutoff==y&&r.group=='2개 이상');return lo&&hi?`${y}년 ${hi.topics}개 중 ${hi.grew}개 대 ${lo.topics}개 중 ${lo.grew}개`:''}).filter(Boolean).join(' · ')}.
+      그래도 커진 것은 열에 한둘이다. 네 개가 다 켜진 주제는 몇 개뿐이라 그 줄은 믿기 어렵다. 후보 카드의 "겹친 지표"는 이 네 가지다. 고르는 것은 연구자다.</div></div>`:''}
     <details class="more"><summary>아직 활발하지 않은 주제 중 신호가 켜진 것 ${rest.length}개</summary><div class="cards" style="margin-top:12px">${rest.map(card).join('')}</div></details></div>`;
   const st=(id,txt)=>{const e=$(id);e.classList.add('on');e.querySelector('span').innerHTML=txt};
   st('#s1',`발표 ${META.n_papers.toLocaleString()}편의 제목에서 주제 ${f.n_topics}개를 뽑았다. 그중 양산 문제 비중이 10%p 넘게 오른 활발한 주제 ${act.length}개를 골랐다.`);
@@ -586,7 +593,7 @@ async function find(keep){
   const my=++SEQ;CROSS=null;const c=Number($('#c').value);T=null;if(keep!==true){AG=null;resetLog()}else{REVEAL=false;$('#open').textContent=OPENTXT}
   setView('find');
   busy('후보를 찾는 중…','처음 한 번은 LLM이 낱말을 거르느라 30초쯤 걸린다');
-  try{FIND=await (await fetch('/api/find?venue=ectc&c='+c)).json()}catch(e){FIND={error:String(e)}}
+  try{FIND=await (await fetch('/api/find?venue='+VENUE+'&c='+c)).json()}catch(e){FIND={error:String(e)}}
   if(my!==SEQ)return;
   if(FIND.error){fail(FIND.error);return}
   renderFind()}
@@ -594,7 +601,7 @@ async function find(keep){
 function wireWho(show){
   $$('#out [data-who]').forEach(a=>a.onclick=async e=>{e.preventDefault();
     const box=(a.closest('.pane')||document).querySelector('.who');if(!box)return;
-    const r=await (await fetch(`/api/who?venue=ectc&kind=${a.dataset.who}&name=`+encodeURIComponent(a.dataset.name))).json();
+    const r=await (await fetch(`/api/who?venue=${VENUE}&kind=${a.dataset.who}&name=`+encodeURIComponent(a.dataset.name))).json();
     if(r.error){box.innerHTML=`<div class="card"><span class="note">${a.dataset.name}: ${r.error}</span></div>`;return}
     const ys=Object.keys(r.years).filter(y=>Number(y)<=show);
     box.innerHTML=`<div class="card"><h2>${r.name} — 해마다 무엇을 발표했나<small>${show}년까지 · 이 학회 전체 발표 기준</small></h2>
@@ -659,7 +666,7 @@ function wire(c,show){
     const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download=`${T.topic.replace(/\s+/g,'_')}_until_${c}.bib`;a.click()};
   wireWho(show);
   $('#draftbtn').onclick=async()=>{$('#draftout').innerHTML='<p class="note" style="margin-top:12px">쓰는 중…</p>';
-    let g;try{g=await (await fetch(`/api/draft?venue=ectc&c=${c}&q=`+encodeURIComponent(T.topic))).json()}catch(e){g={error:String(e)}}
+    let g;try{g=await (await fetch(`/api/draft?venue=${VENUE}&c=${c}&q=`+encodeURIComponent(T.topic))).json()}catch(e){g={error:String(e)}}
     if(!$('#draftout'))return;
     if(g.error){$('#draftout').innerHTML=`<p class="err" style="margin-top:12px">${g.error}</p>`;return}
     const ref=x=>typeof x=='number'?`<a href="#ref${x}">[${x}]</a>`:`<span class="src">${NAMES[x]||x}</span>`;
@@ -670,7 +677,7 @@ function wire(c,show){
       · 초안이다. 연구자가 읽고 고쳐 쓴다. <button class="ghost sm" id="copyd" style="padding:3px 10px;font-size:12px">글 복사</button></p>`;
     $('#copyd').onclick=()=>{navigator.clipboard.writeText($('#drafttext').innerText);$('#copyd').textContent='복사됨'}};
   $('#gapbtn').onclick=async()=>{$('#gapout').innerHTML='<p class="note" style="margin-top:12px">분류하는 중…</p>';
-    let g;try{g=await (await fetch(`/api/gap?venue=ectc&c=${c}&q=`+encodeURIComponent(T.topic))).json()}catch(e){g={error:String(e)}}
+    let g;try{g=await (await fetch(`/api/gap?venue=${VENUE}&c=${c}&q=`+encodeURIComponent(T.topic))).json()}catch(e){g={error:String(e)}}
     if(!$('#gapout'))return;
     if(g.error){$('#gapout').innerHTML=`<p class="err" style="margin-top:12px">${g.error}</p>`;return}
     const cut=(s,n)=>s&&s.length>n?s.slice(0,n-1)+'…':(s||''),fys=Object.values(g.cells).map(x=>x.first_year).filter(Boolean),y0=Math.min(...fys),y1=Math.max(...fys);
@@ -693,7 +700,7 @@ function wire(c,show){
     $$('[data-cell]').forEach(td=>td.onclick=()=>{const x=g.cells[td.dataset.cell];
       $('#cellout').innerHTML=`<p style="margin:14px 0 6px;color:var(--ink)"><b>${td.dataset.cell.replace('|',' × ')}</b> <span class="note">${x.n}편 · 연도순</span></p>`+plist(x.papers)});
     const ck=$('#gapchk');if(ck)ck.onclick=async()=>{ck.disabled=true;$('#gapchkout').innerHTML='<p class="note" style="margin-top:10px">뒤 3년의 발표를 같은 목록에 끼워 넣는 중…</p>';
-      let k;try{k=await (await fetch(`/api/gapcheck?venue=ectc&c=${c}&q=`+encodeURIComponent(T.topic))).json()}catch(e){k={error:String(e)}}
+      let k;try{k=await (await fetch(`/api/gapcheck?venue=${VENUE}&c=${c}&q=`+encodeURIComponent(T.topic))).json()}catch(e){k={error:String(e)}}
       ck.disabled=false;if(!$('#gapchkout'))return;
       if(k.error){$('#gapchkout').innerHTML=`<p class="err" style="margin-top:10px">${k.error}</p>`;return}
       const line=o=>`<div class="chk"><span class="pill ${o.filled?'ok':''}">${o.filled?'채워짐 '+o.n+'편':'그대로'}</span><div><b>${o.problem} × ${o.method}</b>${o.filled?plist(o.papers||[]):''}</div></div>`;
@@ -710,7 +717,7 @@ async function run(){
   if(LLM.llm){
     busy('에이전트가 질문을 읽고 있습니다','계획을 세우고 도구를 부르는 데 10~15초쯤 걸립니다. 부른 도구가 아래에 하나씩 나타납니다.');
     planAdd(`<b>질문</b> “${raw.replace(/</g,'&lt;')}”`,'',C.ink);planAdd('계획을 세우고 도구를 부르는 중…','wait');
-    try{AG=await (await fetch('/api/agent?venue=ectc&c='+c+'&q='+encodeURIComponent(raw))).json()}catch(e){AG={error:String(e)}}
+    try{AG=await (await fetch('/api/agent?venue='+VENUE+'&c='+c+'&q='+encodeURIComponent(raw))).json()}catch(e){AG={error:String(e)}}
     if(my!==SEQ)return;
     $$('.pl.wait').forEach(e=>e.remove());
     const view=AG.view||'topic';
@@ -722,7 +729,7 @@ async function run(){
       q=AG.topic.toLowerCase()}
   }
   compact();
-  const res=await fetch('/api/topic?venue=ectc&q='+encodeURIComponent(q));T=await res.json();
+  const res=await fetch('/api/topic?venue='+VENUE+'&q='+encodeURIComponent(q));T=await res.json();
   if(my!==SEQ)return;
   if(T.error){fail(T.error);return}
   const j=T.judge[c],ps=people(c),bt=META.score.find(b=>b.cutoff==c)||META.score[META.score.length-1];
