@@ -509,7 +509,7 @@ function chart(c,show){CHARTARGS=[c,show];
   return s+'</svg>'}
 
 function upcard(c,show){
-  const U=T.upstream;if(!U)return '';
+  const U=T.upstream;if(!U||true)return '';  // 옆 분야 신호는 로드맵으로 옮겼다 (10/1) — 검증 전 연결이라 화면에서 뺀다
   const q=Object.keys(U.series)[0],S=U.series[q],ys=Object.keys(S).map(Number).filter(y=>y<=Math.min(show,2025));
   const mx=Math.max(...ys.map(y=>S[y]))||1,W=1000,H=190,x=y=>80+(y-2018)*(W-160)/8;
   let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto"><line x1="40" y1="${H-30}" x2="${W-20}" y2="${H-30}" stroke="${C.line}" stroke-width="2"/>`;
