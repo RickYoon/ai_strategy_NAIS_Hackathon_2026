@@ -121,7 +121,7 @@ body.past .log{top:136px}
 .log details:not([open]) summary{margin-bottom:0}
 .log details:not([open]) summary::after{content:"펼치기"}
 .lt{font-size:11.5px;font-weight:700;color:var(--mute);margin:0 0 8px}
-#plan:empty,#plan:empty+.lt{display:none}
+#plan:empty{display:none}#plan:empty+#stepsd>summary{display:none}#stepsd>summary{cursor:pointer}
 #plan{margin-bottom:12px}
 .pl{position:relative;padding:0 0 9px 20px;font-size:12.5px;color:var(--sub);line-height:1.45;animation:in .3s ease both}
 .pl::before{content:"";position:absolute;left:4px;top:14px;bottom:-4px;width:1.5px;background:var(--line)}
@@ -300,11 +300,11 @@ footer{max-width:1400px;margin:0 auto;padding:0 28px 36px;font-size:12px;color:v
 <main>
   <aside class="log"><details id="logd" open>
     <summary><h2>어떻게 찾았나</h2><span>에이전트가 한 일</span></summary>
-    <div id="plan"></div><p class="lt">네 단계</p>
+    <div id="plan"></div><details id="stepsd" open><summary class="lt">네 단계</summary>
     <div class="step s1" id="s1" data-n="01"><b>읽는다</b><span></span></div>
     <div class="step s2" id="s2" data-n="02"><b>대조한다</b><span></span></div>
     <div class="step s3" id="s3" data-n="03"><b>찾는다</b><span></span></div>
-    <div class="step s4" id="s4" data-n="04"><b>검증한다</b><span></span></div>
+    <div class="step s4" id="s4" data-n="04"><b>검증한다</b><span></span></div></details>
     <p class="note foot">모든 수치는 프로그램이 계산한다. 판단은 연구자가 한다.</p>
   </details></aside>
   <section id="out"><div class="card busy"><div class="spin"></div><div><b class="bt">후보를 찾는 중…</b></div></div></section>
@@ -345,10 +345,10 @@ async function init(){
 }
 function sync(){const c=Number($('#c').value),p=c<NOW;$('#banner').style.display=p?'':'none';$('#by').textContent=c;$('#past').style.display=p?'none':'';
   document.body.classList.toggle('past',p);$$('#seg button').forEach(b=>b.classList.toggle('on',Number(b.dataset.y)==c));compact()}
-function compact(){document.body.classList.toggle('compact',VIEW!='find'||Number($('#c').value)<NOW||!!(AG&&AG.sentences))}
+function compact(){document.body.classList.toggle('compact',!document.body.classList.contains('home'))}  // 첫 화면을 벗어나면 질문 안내 · 한계 상자를 접는다
 function setView(v){document.body.classList.remove('home');VIEW=v;$('#find').classList.toggle('on',v=='find');$('#cross').classList.toggle('on',v=='cross');compact()}
 function goto(y){$('#c').value=y;$('#c').onchange()}
-function resetLog(){REVEAL=false;$('#open').textContent=OPENTXT;$('#plan').innerHTML='';$$('.step').forEach(e=>{e.classList.remove('on');e.querySelector('span').textContent=''})}
+function resetLog(){REVEAL=false;$('#stepsd').open=true;$('#open').textContent=OPENTXT;$('#plan').innerHTML='';$$('.step').forEach(e=>{e.classList.remove('on');e.querySelector('span').textContent=''})}
 function busy(title,sub){const b=$('#out .busy .bt');if(b){b.textContent=title;return}
   $('#out').innerHTML=`<div class="card busy"><div class="spin"></div><div style="flex:1"><b class="bt">${title}</b><div class="note">${sub||''}</div><div id="busylist"></div></div></div>`}
 function planAdd(html,cls,col){const h=`<div class="pl ${cls||''}"><i class="dot" ${col?`style="background:${col}"`:''}></i>${html}</div>`;
@@ -413,7 +413,8 @@ function verCard(bt,c){
         <div style="margin-top:8px;font-size:12.5px;font-weight:800;color:var(--sub)">2023년으로 돌아가 확인 (배운 적 없는 해)</div>${row('에이전트가 꼽은 주제',p(L.time.top),'var(--grn)')}${row('아무렇게나 고르면',p(L.time.base),'#9aa3b5')}
         <div style="margin-top:8px;font-size:12.5px;font-weight:800;color:var(--sub)">다른 학회에서 확인 (배운 적 없는 학회)</div>${row('에이전트가 꼽은 주제',p(L.venue.top),'var(--grn)')}${row('아무렇게나 고르면',p(L.venue.base),'#9aa3b5')}
         ${T&&T.rank&&T.rank.rank?`<div class="note" style="margin-top:6px">이 주제의 배운 점수: 지금 후보 ${T.rank.of}개 중 <b>${T.rank.rank}위</b></div>`:''}</div>
-        <div style="font-size:13px;font-weight:800;margin:4px 0 2px">참고 · 양산 문제 신호 하나만으로 골랐을 때</div>`})():''}
+        `})():''}
+    ${META.learned?`<details class="fine"><summary>참고 · 양산 문제 신호 하나만으로 ${bt.cutoff}년에 골랐을 때 — ${bt.lit}개 중 ${bt.lit_grew}개 성장</summary>`:''}
     ${bt.cutoff!=c?`<div class="now1">지금 후보가 맞을지는 3년 뒤에야 안다. 그래서 가장 가까운 과거(${bt.cutoff}년)의 성적을 보여준다.</div>`:''}
     <div class="big" style="color:var(--ink);font-size:24px">그때 고른 후보 ${bt.lit}개 중 ${bt.lit_grew}개가 성장했다 · ${bt.lit-bt.lit_grew}개는 아니었다</div>
     <div class="cmp">
@@ -424,10 +425,10 @@ function verCard(bt,c){
     <div class="lbl">성장한 후보 ${won.length}개</div><div class="chips">${won.map(x=>`<span class="ok">${x.ko}</span>`).join('')||'<span class="gr">없다</span>'}</div>
     <div class="lbl">성장하지 않은 후보 ${lost.length}개</div><div class="chips">${lost.map(x=>`<span class="gr">${x.ko}</span>`).join('')||'<span class="gr">없다</span>'}</div>
     <details class="fine" open><summary>더 앞선 해로 돌아가면</summary><p class="note" style="margin-top:6px">${others.map(s=>`${s.cutoff}년 ${s.lit}개 중 ${s.lit_grew}개 (고르지 않은 주제는 ${s.unlit}개 중 ${s.unlit_grew}개)`).join(', ')}.
-      앞선 해일수록 비교할 과거 기록이 1~2년뿐이었다. 그래서 이 방법은 맞히는 도구가 아니다. 후보와 이 성적을 같이 보고 연구자가 판단한다.</p></details></div>`}
+      앞선 해일수록 비교할 과거 기록이 1~2년뿐이었다. 그래서 이 방법은 맞히는 도구가 아니다. 후보와 이 성적을 같이 보고 연구자가 판단한다.</p></details>${META.learned?'</details>':''}</div>`}
 
 function kpi(l,v,s,col){return `<div class="kpi"><div class="kl">${l}</div><div class="kv" ${col?`style="color:${col}"`:''}>${v}</div><div class="ks">${s||''}</div></div>`}
-function render(c){
+function render(c){$('#stepsd').open=false;
   const show=REVEAL?2026:c,j=T.judge[c],ps=people(c),bt=META.score.find(b=>b.cutoff==c)||META.score[META.score.length-1];
   const ev=T.events.filter(e=>Number(e.date.slice(0,4))<=show),lit=j&&j.lit,docs=upto(c),si=META.years.indexOf(show);
   CUR={c,show};LOADED={};
@@ -577,11 +578,11 @@ function renderFind(){
   $('#out').innerHTML=`${agCard()}<div class="hero"><h2>${c==NOW?'지금':c+'년으로 돌아가면,'} 후보 주제 <em>${act.length}개</em>${REVEAL&&canOpen?` — 그중 <em class="g">${hit}개</em>가 실제로 성장했다`:''}</h2>
     <p>발표 ${META.n_papers.toLocaleString()}편을 읽고, 이미 활발한 주제 가운데 <b>내용이 양산 문제 쪽으로 옮겨 간 것</b>을 고르고, 에이전트가 과거 기록에서 배운 점수 순으로 놓았다. ${c==NOW?'':'그 해까지의 기록만 본다. '}카드를 누르면 근거 한 장이 나온다.</p></div>
     ${c==NOW&&f.past?`<div class="card" style="padding:16px 20px"><div class="strip">
-      <div class="st" style="flex-basis:100%"><b>이 후보를 얼마나 믿어야 하나 — 3년 전에 같은 방법으로 고른 후보 ${f.past.items.length}개 중 ${f.past.items.filter(x=>x.grew).length}개만 성장했다</b><span class="note">같은 방법을 ${f.past.cutoff}년에 돌렸다면 · 발표 비중 ${f.past.cutoff-2}~${f.past.cutoff}년 → ${f.past.opened}년</span></div>
+      <div class="st" style="flex-basis:100%"><b>이 후보를 얼마나 믿어야 하나 — ${META.learned?`배운 점수 위 20% 중 ${Math.round(100*META.learned.time.top[0]/META.learned.time.top[1])}%가 3년 뒤 성장했다 (아무렇게나 고르면 ${Math.round(100*META.learned.time.base[0]/META.learned.time.base[1])}%)`:`3년 전에 같은 방법으로 고른 후보 ${f.past.items.length}개 중 ${f.past.items.filter(x=>x.grew).length}개만 성장했다`}</b><span class="note">${f.past.cutoff}년 뒤 기록을 가리고 돌린 결과 · 맞히는 도구가 아니다</span></div></div>
+      <details class="fine"><summary>참고 · 양산 문제 신호 하나만으로 ${f.past.cutoff}년에 골랐을 때 — ${f.past.items.length}개 중 ${f.past.items.filter(x=>x.grew).length}개 성장</summary><div class="strip" style="margin-top:10px">
       ${f.past.items.filter(x=>x.grew).map(x=>`<div class="tile"><span>성장 · ${x.ko}</span><b>${x.then}% → ${x.after}%</b></div>`).join('')}
       <div class="tile"><span>성장하지 않은 후보</span><b>${f.past.items.filter(x=>!x.grew).length}개</b></div>
-      </div><div class="note" style="margin-top:10px">실제로 그때 추적한 기록이 아니다. 오늘 모은 기록에서 ${f.past.cutoff}년 뒤를 가리고 돌린 결과다. 맞은 것과 틀린 것을 같이 보여준다.</div></div>`:''}
-    ${act.some(x=>x.model_rank)?`<div style="display:flex;align-items:center;gap:10px;margin:0 0 10px"><span class="note">줄 세우기</span><div class="seg" style="display:inline-flex"><button type="button" class="${SORT=='sig'?'on':''}" data-sort="sig">겹친 지표 개수</button><button type="button" class="${SORT=='model'?'on':''}" data-sort="model">배운 모델 점수</button></div><span class="note">배운 모델 = 과거에 성장한 주제의 특징 16개를 데이터에서 배운 것 · 배운 적 없는 학회에서도 아무렇게나 고를 때의 두 배를 맞혔다</span></div>`:''}
+      </div><div class="note" style="margin-top:10px">실제로 그때 추적한 기록이 아니다. 오늘 모은 기록에서 ${f.past.cutoff}년 뒤를 가리고 돌린 결과다. 맞은 것과 틀린 것을 같이 보여준다.</div></details></div>`:''}
     <div class="cards">${(SORT=='model'&&act.some(x=>x.model_rank)?act.slice().sort((a,b)=>(a.model_rank||999)-(b.model_rank||999)):act).map(card).join('')}</div>
     <div class="card" style="margin-top:18px"><p class="note">${f.labeled?`제목에서 뽑은 낱말 중 일반 낱말 ${f.removed}개는 LLM이 걸러냈다.`:'LLM이 없어 일반 낱말이 섞여 있다.'}
     ${canOpen?(REVEAL?'':'<b>"가린 것 열기"</b>를 누르면 이 후보들이 3년 뒤 실제로 성장했는지 카드마다 나온다.'):`이 후보들이 맞을지는 3년 뒤에야 안다. 그래서 같은 방법을 과거에 돌려 본 성적을 같이 준다: <a href="#" id="goback">이 방법이 과거에 맞았는지 보기</a>`}</p>
@@ -766,7 +767,7 @@ if(window.matchMedia('(max-width:1100px)').matches)$('#logd').removeAttribute('o
 init().then(async()=>{const u=U;if(u.get('c')){$('#c').value=u.get('c');sync()}
   if(u.get('view')=='cross'){await cross();if(u.get('open'))$('#open').click();return}
   if(!u.get('q')&&(u.get('c')||u.get('open')||u.get('view')=='find'||u.get('venue'))){$('#q').value='';await find();if(u.get('open'))$('#open').click();return}
-  if(!u.get('q')){document.body.classList.add('home');return}
+  if(!u.get('q')){document.body.classList.add('home');compact();return}
   $('#q').value=u.get('q');await run();if(u.get('open'))$('#open').click();
   if(u.get('do')&&VIEW=='topic'){const b=TAB=='gap'?$('#gapbtn'):TAB=='draft'?$('#draftbtn'):null;if(b){await b.onclick();if(u.get('check')&&$('#gapchk'))await $('#gapchk').onclick()}}
 }).catch(e=>{$('#out').innerHTML=`<div class="card"><p class="err">서버에 닿지 못했다: ${e}</p></div>`});
