@@ -565,8 +565,8 @@ function renderFind(){
     ${REVEAL&&canOpen?`<div class="res ${x.grew?'ok':'no'}">${x.grew?'✓ 3년 뒤 실제로 커졌다':'✗ 3년 뒤 그대로였다'}</div>`:''}
     <div class="more">근거 보기 →</div></div>`};
   const tr=f.traits,fr=a=>`${a[1]}개 중 ${a[0]}개`,hit=act.filter(x=>x.grew).length;
-  $('#out').innerHTML=`${agCard()}<div class="hero"><h2>${c==NOW?'지금':c+'년으로 돌아가면,'} 신호가 켜진 주제 <em>${act.length}개</em>${REVEAL&&canOpen?` — 그중 <em class="g">${hit}개</em>가 실제로 커졌다`:''}</h2>
-    <p>발표 ${META.n_papers.toLocaleString()}편을 읽고, 이미 활발한 주제 가운데 <b>내용이 양산 문제 쪽으로 옮겨 간 것</b>만 골랐다. ${c==NOW?'':'그 해까지의 기록만 본다. '}카드를 누르면 근거 한 장이 나온다.</p></div>
+  $('#out').innerHTML=`${agCard()}<div class="hero"><h2>${c==NOW?'지금':c+'년으로 돌아가면,'} 후보 주제 <em>${act.length}개</em>${REVEAL&&canOpen?` — 그중 <em class="g">${hit}개</em>가 실제로 커졌다`:''}</h2>
+    <p>발표 ${META.n_papers.toLocaleString()}편을 읽고, 이미 활발한 주제 가운데 <b>내용이 양산 문제 쪽으로 옮겨 간 것</b>을 고르고, 지표 네 가지가 많이 겹친 순으로 놓았다. ${c==NOW?'':'그 해까지의 기록만 본다. '}카드를 누르면 근거 한 장이 나온다.</p></div>
     ${c==NOW&&f.past?`<div class="card" style="padding:16px 20px"><div class="strip">
       <div class="st" style="flex-basis:100%"><b>이 후보를 얼마나 믿어야 하나 — 3년 전에 같은 방법으로 고른 후보 ${f.past.items.length}개 중 ${f.past.items.filter(x=>x.grew).length}개만 커졌다</b><span class="note">같은 방법을 ${f.past.cutoff}년에 돌렸다면 · 발표 비중 ${f.past.cutoff-2}~${f.past.cutoff}년 → ${f.past.opened}년</span></div>
       ${f.past.items.filter(x=>x.grew).map(x=>`<div class="tile"><span>커짐 · ${x.ko}</span><b>${x.then}% → ${x.after}%</b></div>`).join('')}

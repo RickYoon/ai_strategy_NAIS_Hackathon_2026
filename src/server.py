@@ -53,5 +53,7 @@ class H(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    print("http://127.0.0.1:8790")
-    ThreadingHTTPServer(("127.0.0.1", 8790), H).serve_forever()
+    import os
+    port = int(os.environ.get("PORT", "8790"))
+    print(f"http://127.0.0.1:{port}")
+    ThreadingHTTPServer(("127.0.0.1", port), H).serve_forever()
