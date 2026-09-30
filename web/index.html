@@ -67,13 +67,18 @@ header{background:#fff;position:sticky;top:0;z-index:5}
   <h1>앞으로 성장할 연구 주제를 찾아주는 에이전트</h1>
   <input id="q" list="names" value="" placeholder="주제를 넣거나, 비워 두고 후보 찾기">
   <datalist id="names"></datalist>
-  <label class="note">시점 <select id="c"></select></label>
+  <select id="c" style="display:none"></select>
   <button id="find">후보 찾기</button>
   <button id="run">이 주제 근거 보기</button>
   <button id="cross" class="ghost">분야를 건너는 신호</button>
-  <button id="open" class="ghost">가린 것 열기 → 2026</button>
+  <button id="past" class="ghost">이 방법, 과거에 맞았나?</button>
   <span class="note" id="src"></span>
 </header>
+<div id="banner" style="display:none;background:#fdf3e3;border-bottom:1px solid #ecd9b8;padding:10px 28px;font-size:14px;color:#6b4a12">
+  <b>지금 <span id="by"></span>년으로 돌아가 있습니다.</b> 그 뒤에 나온 발표는 전부 가렸습니다. 이때 이 방법이 무엇을 골랐을지 보고, 가린 것을 열어 실제와 맞춰 봅니다.
+  &nbsp; 다른 해: <a href="#" data-y="2021">2021</a> · <a href="#" data-y="2022">2022</a> · <a href="#" data-y="2023">2023</a>
+  &nbsp; <button id="open" style="padding:5px 12px;font-size:13px">가린 것 열기 → 2026</button>
+  <button id="back" class="ghost" style="padding:5px 12px;font-size:13px">지금으로 돌아오기</button></div>
 <main>
   <section class="log">
     <h2>어떻게 찾았나 — 에이전트가 한 일</h2>
@@ -98,7 +103,8 @@ async function init(){
   LLM=await (await fetch('/api/has_llm')).json();
   $('#src').textContent=`${META.meta.name} · ${META.meta.years} · ${META.n_papers.toLocaleString()}편 · OpenAlex에서 ${META.meta.collected_at.slice(0,16).replace('T',' ')} (UTC) 수집 · ${LLM.llm?'LLM '+LLM.model:'LLM 없음 (정해진 순서로 실행)'}`;
 }
-const NOW=2026;function sync(){$('#open').style.display=Number($('#c').value)<NOW?'':'none'}
+const NOW=2026;function sync(){const c=Number($('#c').value),p=c<NOW;$('#banner').style.display=p?'':'none';$('#by').textContent=c;$('#past').style.display=p?'none':''}
+function goto(y){$('#c').value=y;$('#c').onchange()}
 function upto(c){return T.papers.filter(p=>p.y<=c)}
 function people(c){const I={},A={};for(const p of upto(c)){for(const n of p.inst)I[n]=(I[n]||0)+1;for(const n of p.auth)A[n]=(A[n]||0)+1}
   const top=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]);return{inst:top(I),auth:top(A)}}
@@ -167,6 +173,9 @@ function render(c){
       <div style="max-height:300px;overflow:auto"><table>${upto(c).slice().reverse().map(p=>`<tr><td>${p.y}</td><td class="${p.p?'p':''}">${p.doi?`<a href="${p.doi}" target="_blank" rel="noopener" ${p.p?'style="color:inherit"':''}>${p.t}</a>`:p.t}</td></tr>`).join('')}</table></div></div>
   </div>
   <div id="who"></div>
+  <div class="card" id="draft" style="border-color:var(--ink)"><div class="head"><h2 style="margin:0">기획서 '연구개발 동향' 절 초안 — 과거 발표 기록을 분석해 새 문서를 쓴다</h2>
+    <button id="draftbtn" style="padding:5px 12px;font-size:13px">초안 쓰기 (15~25초)</button></div>
+    <div class="note">재료(흐름 · 신호 · 산업 사건 · 기관 · 과거 성적 · 근거 논문)는 코드가 만든다. LLM은 문장만 쓰고, 문장마다 근거를 단다. 재료에 없는 숫자가 든 문장은 버린다.</div><div id="draftout"></div></div>
   <div class="card" id="gap"><div class="head"><h2 style="margin:0">연구 공백 지도 — 어떤 문제를 어떤 방법으로 풀고 있고, 어디가 비었나</h2>
     <button class="ghost" id="gapbtn" style="padding:5px 12px;font-size:13px">그리기 (LLM이 제목 분류 · 20~40초)</button></div>
     <div class="note">분류는 LLM이 제목만 보고 한다. 개수는 코드가 센다. 거친 지도이므로 칸을 눌러 원문을 확인한다.</div><div id="gapout"></div></div>`;
@@ -209,7 +218,7 @@ function renderCross(){
     <div class="grid" style="margin-top:6px"><div><div class="big" style="color:var(--acc);font-size:24px">다른 분야: ${y0}년 ${at(o,y0).toLocaleString()}편 → ${ya}년 ${at(o,ya).toLocaleString()}편</div></div>
       <div><div class="big" style="font-size:24px">이 학회: ${r.here.slice(0,2).map(h=>`${h.ko.replace(/\(.*\)/,'')} ${at(h,y0).toFixed(1)}% → ${at(h,show).toFixed(1)}%`).join(' · ')}</div></div></div>
     <p class="note" style="margin-top:8px">이 연결은 사람이 적은 가설이고, 지금 와서 고른 사례다. 과거 시점으로 돌려 검증하지 않았다. 발표 비중이 1% 안팎인 주제는 한두 편에도 크게 흔들린다.
-    ${show<NOW?'"가린 것 열기"를 누르면 그 뒤가 나온다.':'시점을 과거로 바꾸면 그때 보였던 만큼만 나온다.'}</p></div>`}
+    ${show<NOW?'"가린 것 열기"를 누르면 그 뒤가 나온다.':'위의 "이 방법, 과거에 맞았나?"를 누르면 그때 보였던 만큼만 나온다.'}</p></div>`}
 async function cross(){T=null;FIND=null;AG=null;REVEAL=false;$('#open').textContent='가린 것 열기 → 2026';$('#plan').innerHTML='';
   document.querySelectorAll('.step').forEach(e=>{e.classList.remove('on');e.querySelector('span').textContent=''});
   $('#out').innerHTML='<p class="note">불러오는 중…</p>';
@@ -241,7 +250,7 @@ function renderFind(){
       </div><div class="note" style="margin-top:6px">실제로 그때 추적한 기록이 아니다. 오늘 모은 기록에서 ${f.past.cutoff}년 뒤를 가리고 돌린 결과다. 맞은 것과 틀린 것을 같이 보여준다.</div></div>`:''}
     <div class="cards">${act.map(card).join('')}</div>
     <div class="card" style="margin-top:16px"><p class="note" style="margin:0 0 4px">${f.labeled?`제목에서 뽑은 낱말 중 일반 낱말 ${f.removed}개는 LLM이 걸러냈다.`:'LLM이 없어 일반 낱말이 섞여 있다.'}
-    ${canOpen?(REVEAL?'':'<b>"가린 것 열기"</b>를 누르면 이 후보들이 3년 뒤 실제로 커졌는지 카드마다 나온다.'):`이 후보들이 맞을지는 3년 뒤에야 안다. 그래서 같은 방법을 과거에 돌려 본 성적을 같이 준다: <a href="#" id="goback">2023년으로 돌아가 검증하기</a>`}</p>
+    ${canOpen?(REVEAL?'':'<b>"가린 것 열기"</b>를 누르면 이 후보들이 3년 뒤 실제로 커졌는지 카드마다 나온다.'):`이 후보들이 맞을지는 3년 뒤에야 안다. 그래서 같은 방법을 과거에 돌려 본 성적을 같이 준다: <a href="#" id="goback">이 방법이 과거에 맞았는지 보기</a>`}</p>
     <div style="background:var(--panel);border-radius:10px;padding:12px 16px;margin:10px 0"><b style="font-size:14px">이 중 어느 것이 될까 — 과거에 커진 후보의 특징을 세어 봤다</b>
       <div class="note">과거 세 시점의 후보 ${tr.total[1]}개 중 3년 뒤 커진 것은 ${tr.total[0]}개였다.</div>
       <table style="margin-top:4px"><tr><th>그때 이런 후보였다면</th><th>그랬던 후보</th><th>아니었던 후보</th></tr>
@@ -254,7 +263,7 @@ function renderFind(){
   st('#s3',`후보마다 최근 3년에 발표한 기관과, 그중 새로 들어온 기관을 셌다.`);
   st('#s4',`같은 방법을 과거 세 시점에 돌렸다. 후보 ${f.traits.total[1]}개 중 ${f.traits.total[0]}개가 3년 뒤 커졌다.`);
   $('#plan').innerHTML=`<div class="note" style="padding:0 0 8px">${f.labeled?`LLM: 일반 낱말 ${f.removed}개를 거르고, 주제 이름과 설명을 붙였다.`:''}</div>`;
-  const gb=$('#goback');if(gb)gb.onclick=e=>{e.preventDefault();$('#c').value=2023;sync();find()};
+  const gb=$('#goback');if(gb)gb.onclick=e=>{e.preventDefault();goto(2023)};
   document.querySelectorAll('[data-go]').forEach(a=>a.onclick=e=>{e.preventDefault();$('#q').value=a.dataset.go;window.scrollTo(0,0);run()})}
 async function find(){
   VIEW='find';CROSS=null;const c=Number($('#c').value);REVEAL=false;T=null;AG=null;$('#open').textContent='가린 것 열기 → 2026';$('#plan').innerHTML='';
@@ -277,6 +286,16 @@ function wire(c,show){
       <td><b>${r.years[y].terms.join(' · ')}</b></td><td><details><summary class="note">제목 ${r.years[y].n}편 보기</summary>${r.years[y].papers.map(p=>`<div style="padding:2px 0">${p.doi?`<a href="${p.doi}" target="_blank" rel="noopener">${p.t}</a>`:p.t}</div>`).join('')}</details></td></tr>`).join('')}</table>
       <div class="note">이름은 공개 기록의 표기 기준이다. 같은 이름의 다른 사람이 섞일 수 있다.</div></div>`;
     $('#who').scrollIntoView({behavior:'smooth',block:'nearest'})});
+  $('#draftbtn').onclick=async()=>{$('#draftout').innerHTML='<p class="note">쓰는 중…</p>';
+    let g;try{g=await (await fetch(`/api/draft?venue=ectc&c=${c}&q=`+encodeURIComponent(T.topic))).json()}catch(e){g={error:String(e)}}
+    if(g.error){$('#draftout').innerHTML=`<p class="err">${g.error}</p>`;return}
+    const ref=x=>typeof x=='number'?`<a href="#ref${x}" style="text-decoration:none">[${x}]</a>`:`<span class="note">[${NAMES[x]||x}]</span>`;
+    $('#draftout').innerHTML=`<div id="drafttext" style="background:var(--panel);border-radius:10px;padding:16px 20px;margin-top:10px">
+      ${g.paragraphs.map(p=>`<p style="margin:0 0 4px;font-weight:800">${p.title}</p><p style="margin:0 0 12px;font-size:15px;line-height:1.7">${p.sentences.map(s=>s.text+' '+s.refs.map(ref).join('')).join(' ')}</p>`).join('')}
+      <p style="margin:6px 0 4px;font-weight:800">근거 문헌</p>${g.papers.map(p=>`<div id="ref${p.no}" style="font-size:13px;padding:2px 0">[${p.no}] ${p.institutions.join(', ')||''} (${p.year}). ${p.doi?`<a href="${p.doi}" target="_blank" rel="noopener">${p.title}</a>`:p.title}. ${META.meta.name}.</div>`).join('')}</div>
+      <p class="note" style="margin-top:8px">${g.cutoff==NOW?'':g.cutoff+'년까지의 기록만 썼다 · '}근거 논문 ${g.papers_given}편을 재료로 줬고 ${g.papers.length}편이 인용됐다 · 버린 문장 ${g.dropped.length}개${g.dropped.map(d=>`<br><s>${d.text}</s> (${d.why})`).join('')} · ${g.model}
+      · 초안이다. 연구자가 읽고 고쳐 쓴다. <button class="ghost" id="copyd" style="padding:3px 10px;font-size:12px">글 복사</button></p>`;
+    $('#copyd').onclick=()=>{navigator.clipboard.writeText($('#drafttext').innerText);$('#copyd').textContent='복사됨'}};
   $('#gapbtn').onclick=async()=>{$('#gapout').innerHTML='<p class="note">분류하는 중…</p>';
     let g;try{g=await (await fetch(`/api/gap?venue=ectc&c=${c}&q=`+encodeURIComponent(T.topic))).json()}catch(e){g={error:String(e)}}
     if(g.error){$('#gapout').innerHTML=`<p class="err">${g.error}</p>`;return}
@@ -312,6 +331,7 @@ async function run(){
   await say('#s3',`${c}년까지 이 주제를 발표한 기관 ${ps.inst.length}곳, 저자 ${ps.auth.length}명을 찾았다.`);
   await say('#s4',`${bt.cutoff}년으로 돌아가 같은 방법을 돌렸다. 신호가 켜진 활발한 주제 ${bt.hot_lit}개 중 ${bt.hot_lit_grew}개가 3년 뒤 커졌다.`);
   render(c)}
+$('#past').onclick=()=>goto(2023);$('#back').onclick=()=>goto(NOW);document.querySelectorAll('[data-y]').forEach(a=>a.onclick=e=>{e.preventDefault();goto(a.dataset.y)});
 $('#run').onclick=run;$('#find').onclick=find;$('#cross').onclick=cross;$('#open').onclick=()=>{if(VIEW=='cross'&&CROSS&&!CROSS.error){REVEAL=!REVEAL;$('#open').textContent=REVEAL?'다시 가리기':'가린 것 열기 → 2026';renderCross();return}if(!T&&FIND&&!FIND.error){REVEAL=!REVEAL;$('#open').textContent=REVEAL?'다시 가리기':'가린 것 열기 → 2026';renderFind();return}if(!T||T.error)return;REVEAL=!REVEAL;$('#open').textContent=REVEAL?'다시 가리기':'가린 것 열기 → 2026';render(Number($('#c').value))};
 $('#q').addEventListener('keydown',e=>{if(e.key==='Enter')run()});
 init().then(async()=>{const u=new URLSearchParams(location.search);if(u.get('c')){$('#c').value=u.get('c');sync()}if(u.get('view')=='cross'){await cross();if(u.get('open'))$('#open').click();return}if(!u.get('q')){$('#q').value='';await find();if(u.get('open'))$('#open').click();return}

@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import agent
+import draft
 import gaps
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -30,6 +31,7 @@ def upstream(topic):
 def handle(path, q, derived):
     importlib.reload(agent)
     importlib.reload(gaps)
+    importlib.reload(draft)
     d = derived(q.get("venue", "ectc"))
     if path == "/api/meta":
         top = sorted(((t, v["n"]) for t, v in d["topics"].items()), key=lambda x: -x[1])
@@ -99,6 +101,8 @@ def handle(path, q, derived):
                              "base": round(b, 2), "doubled": dy, "n": tp["n"]})
         return {"label": link["label"], "field": link["field"], "why": link["why"], "milestones": link.get("milestones", []),
                 "other": other, "here": here, "venue": d["meta"]["name"], "collected_at": raw["collected_at"]}, 200
+    if path == "/api/draft":
+        return draft.write(q.get("q", "").strip().lower(), int(q.get("c", 2026)), d, events(), upstream), 200
     if path == "/api/has_llm":
         return {"llm": bool(agent.api_key()), "model": agent.MODEL}, 200
     return {"error": "없는 주소"}, 404

@@ -21,6 +21,10 @@ VENUES = {
     "pvsc": {"name": "PVSC (태양광 전문가 학회)", "doi": "10.1109/pvsc", "field": "태양광"},
     "iedm": {"name": "IEDM (국제전자소자회의)", "doi": "10.1109/iedm", "field": "반도체 소자"},
     "irps": {"name": "IRPS (신뢰성 물리 심포지엄)", "doi": "10.1109/irps", "field": "반도체 신뢰성"},
+    "eptc": {"name": "EPTC (전자패키징기술학회)", "doi": "10.1109/eptc", "field": "반도체 패키징"},
+    "icept": {"name": "ICEPT (전자패키징기술 국제학회)", "doi": "10.1109/icept", "field": "반도체 패키징"},
+    "estc": {"name": "ESTC (전자시스템통합기술학회)", "doi": "10.1109/estc", "field": "반도체 패키징"},
+    "itherm": {"name": "ITherm (열 · 열기계 현상 학회)", "doi": "10.1109/itherm", "field": "패키징 열 설계"},
 }
 YEARS = "2018-2026"
 OUT = Path(__file__).resolve().parent.parent / "data" / "raw"

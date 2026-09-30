@@ -48,8 +48,29 @@ def terms(title):
     return out
 
 
+# 여러 학회를 합쳐 한 분야로 볼 때 쓰는 묶음
+GROUPS = {"pkg": {"name": "반도체 패키징 학회 5곳 (ECTC · EPTC · ICEPT · ESTC · ITherm)", "field": "반도체 패키징",
+                  "members": ["ectc", "eptc", "icept", "estc", "itherm"]}}
+
+
 def load(key):
+    if key in GROUPS:
+        seen, rows = set(), []
+        for m in GROUPS[key]["members"]:
+            for r in load(m):
+                if r["id"] not in seen:
+                    seen.add(r["id"])
+                    rows.append(r)
+        return rows
     return [json.loads(l) for l in open(ROOT / "data" / "raw" / f"{key}.jsonl", encoding="utf-8")]
+
+
+def load_meta(key):
+    if key in GROUPS:
+        ms = [load_meta(m) for m in GROUPS[key]["members"]]
+        return {"venue": key, "name": GROUPS[key]["name"], "field": GROUPS[key]["field"], "source": "OpenAlex",
+                "years": ms[0]["years"], "count": sum(m["count"] for m in ms), "collected_at": max(m["collected_at"] for m in ms)}
+    return json.loads((ROOT / "data" / "raw" / f"{key}.meta.json").read_text(encoding="utf-8"))
 
 
 def build(key):
@@ -172,7 +193,7 @@ def build(key):
     who = {"auth": flow("auth"), "inst": flow("inst")}
     all_inst = {ins["id"] for r in rows for a in r["authors"] for ins in a["inst"] if ins["id"]}
     all_auth = {a["id"] for r in rows for a in r["authors"] if a["id"]}
-    meta = json.loads((ROOT / "data" / "raw" / f"{key}.meta.json").read_text(encoding="utf-8"))
+    meta = load_meta(key)
     out = {"meta": meta, "years": years, "total": [total[y] for y in years],
            "n_papers": len(rows), "n_inst": len(all_inst), "n_auth": len(all_auth), "n_topics": len(topics),
            "rules": {"min_docs": MIN_DOCS, "min_recent": MIN_RECENT, "signal_rise": SIGNAL_RISE, "grow": GROW,
