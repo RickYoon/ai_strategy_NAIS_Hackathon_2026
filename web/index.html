@@ -248,6 +248,11 @@ body.dataview .ask{display:none}body.browse aside.log{display:none}body.browse m
 #vslot .seg{display:flex!important;width:100%;margin-bottom:8px}#vslot .seg button{flex:1;font-size:12px;padding:6px 6px;white-space:nowrap}
 .card[style*='grid-column'] .plist,.card[style*='grid-column'] ul.papers{columns:2;column-gap:28px}.card[style*='grid-column'] .plist>*,.card[style*='grid-column'] ul.papers>li{break-inside:avoid}
 .card[style*='grid-column'] .sigrow{display:flex;gap:28px;align-items:flex-start}
+.wsteps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}.wstep{display:flex;gap:10px;background:var(--panel);border-radius:10px;padding:10px 12px}.wstep>b{width:22px;height:22px;border-radius:11px;background:var(--pri);color:var(--card);font-size:12px;display:grid;place-items:center;flex:none}.wstep .wt{font-weight:600;font-size:13.5px;color:var(--ink)}
+mark{background:rgba(227,169,76,.28);color:inherit;border-radius:3px;padding:0 2px}
+.mlist{margin-top:8px}.mrow{display:grid;grid-template-columns:76px 1fr auto;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}.mrow:last-child{border-bottom:0}.md{color:var(--amb);font-weight:700}.mt em{color:var(--sub);font-style:normal}.mn{white-space:nowrap;color:var(--sub);font-size:12.5px}
+.srow{display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}.srow:last-child{border-bottom:0}.srow>span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.srow b{white-space:nowrap}.srow small{color:var(--mute);white-space:nowrap}.newtag{font-style:normal;font-size:11px;color:var(--grn);font-weight:700;margin-left:4px}
+@media(max-width:1100px){.wsteps{grid-template-columns:1fr 1fr}}
 .grp{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:10px}.gb{background:var(--panel);border-radius:12px;padding:12px 14px}.gh{font-weight:800;font-size:15px}.gb .chips small{font-weight:600;opacity:.7}
 .why{background:var(--panel);border-radius:12px;padding:14px 16px;margin:6px 0 14px}
 .wh,.wr{display:grid;grid-template-columns:minmax(150px,1.3fr) 92px 1.4fr 44px;gap:10px;align-items:center}
@@ -552,6 +557,43 @@ function whyCard(R){
     <div class="chips">${P.picks.map(x=>`<span class="${x.grew?'ok':'gr'}">${x.grew?'✓ ':''}${x.ko}</span>`).join('')}</div>
     <div class="note" style="margin-top:6px">${P.cutoff}년 뒤 기록을 가리고, 그 전 기록으로만 배운 모델이다. 배운 적 없는 다른 학회에서는 위 20%의 ${META.learned?Math.round(100*META.learned.venue.top[0]/META.learned.venue.top[1]):''}%가 성장했다 (아무렇게나 ${META.learned?Math.round(100*META.learned.venue.base[0]/META.learned.venue.base[1]):''}%).</div></div>`}
 
+
+/* 근거 탭 — 에이전트 넷이 각각 한 일 */
+const PWORDS=[['reliab','신뢰성'],['failure','고장'],['fatigue','피로'],['stress','응력'],['warpage','휨'],['crack','균열'],['void','보이드'],['delaminat','박리'],['defect','결함'],['degrad','열화'],['lifetime','수명'],['yield','수율'],['thermal cycl','열 사이클'],['electromigration','일렉트로마이그레이션'],['moisture','습기'],['drop test','낙하 시험'],['aging','노화']];
+const PRX=new RegExp('('+PWORDS.map(w=>w[0].replace(' ','\\\\s+')).join('|')+')[a-z]*','ig');
+function hl(t){return t.replace(PRX,m=>`<mark>${m}</mark>`)}
+function readCard(c,show,j,sig){
+  const docs=upto(c),bef=docs.filter(p=>p.y<=c-3),rec=docs.filter(p=>p.y>=c-2),hit=rec.filter(p=>p.p);
+  const cnt={};for(const p of rec){for(const m of (p.t.match(PRX)||[]))for(const [k,ko] of PWORDS)if(m.toLowerCase().startsWith(k.split(' ')[0])){cnt[ko]=(cnt[ko]||0)+1;break}}
+  const words=Object.entries(cnt).sort((a,b)=>b[1]-a[1]),wstr=words.length?words.map(([k,n])=>k+' '+n).join(' · '):'없다',pick=j&&j.lit?'골랐다':'고르지 않았다';
+  const step=(n,t,d)=>`<div class="wstep"><b>${n}</b><div><div class="wt">${t}</div><div class="note">${d}</div></div></div>`;
+  return `<div class="card" style="grid-column:1/-1"><h2>읽기 에이전트 · 내용이 바뀌었나<small>제목만 읽는다 · 양산 문제 낱말 17개가 제목에 있으면 "양산 문제를 다룬 발표"로 센다</small></h2>
+    <div class="wsteps">
+      ${step('1','발표 '+META.n_papers.toLocaleString()+'편의 제목을 읽었다',META.meta.name+' · '+META.years[0]+'~'+c)}
+      ${step('2','"'+T.topic+'"가 든 발표 '+docs.length+'편','그 전('+META.years[0]+'~'+(c-3)+') '+bef.length+'편 · 최근 3년('+(c-2)+'~'+c+') '+rec.length+'편')}
+      ${step('3','최근 3년 '+rec.length+'편 중 양산 문제 낱말이 든 것 '+hit.length+'편',wstr)}
+      ${step('4','비중 '+pct(j&&j.p_before||0)+' → '+pct(j&&j.p_recent||0),'10%p 넘게 오르면 이 방법이 고른다 · '+pick)}
+    </div>
+    <details class="fine" style="margin-top:12px"><summary>양산 문제 낱말 17개 (코드에 적힌 그대로)</summary><div class="chips" style="margin-top:8px">${PWORDS.map(([k,ko])=>`<span class="${cnt[ko]?'ok':'gr'}">${ko} <small>${k}</small></span>`).join('')}</div></details>
+    <div class="lbl" style="margin-top:14px">최근 3년에 양산 문제를 다룬 발표 ${hit.length}편 <span class="note">· 노란 표시 = 코드가 잡은 낱말</span></div>
+    <div class="plist">${hit.slice().reverse().map(p=>`<div class="row p">${p.y} · ${p.doi?`<a href="${p.doi}" target="_blank" rel="noopener">${hl(p.t)}</a>`:hl(p.t)}</div>`).join('')||'<div class="note">없다</div>'}</div></div>`}
+function matchCard(c,show,ev){
+  const S=T.series&&T.series.papers,Y=META.years,at=y=>{const i=Y.indexOf(y);return S&&i>=0?S[i]:null};
+  const rows=ev.map(e=>{const y=Number(e.date.slice(0,4));const a=at(y),b=at(y+1);return `<div class="mrow"><div class="md">${e.date}</div><div class="mt">${e.text} <em>(${e.url?`<a href="${e.url}" target="_blank" rel="noopener">${e.source}</a>`:e.source})</em></div><div class="mn">${a==null?'':`그해 ${a}편`}${b==null?'':` → 다음 해 ${b}편`}</div></div>`}).join('');
+  return `<div class="card"><h2>대조 에이전트 · 산업은 언제 움직였나<small>사람이 출처를 열어 확인해 적은 사건만 · 발표 그림의 같은 시간축에 놓는다</small></h2>
+    ${ev.length?`<div class="mlist">${rows}</div><div class="note" style="margin-top:8px">사건 ${ev.length}건 · 오른쪽 숫자 = 그해와 다음 해 이 주제 발표 수 (앞뒤 관계를 눈으로 본다 · 인과가 아니다)</div>`
+      :`<div class="note">이 주제의 산업 사건은 아직 적어 두지 않았다. 사건 목록은 사람이 출처를 확인해 적는다 — 없다는 뜻이 아니다. 지금 목록: 주제 10개 · 26건.</div>`}</div>`}
+function seekCard(c,ps){
+  const docs=upto(c),first={},rc={},fa={},ra={};
+  for(const p of docs){for(const n of p.inst){first[n]=Math.min(first[n]||9999,p.y);if(p.y>=c-2)rc[n]=(rc[n]||0)+1}for(const n of p.auth){fa[n]=Math.min(fa[n]||9999,p.y);if(p.y>=c-2)ra[n]=(ra[n]||0)+1}}
+  const insts=Object.entries(rc).sort((a,b)=>b[1]-a[1]),newI=insts.filter(([n])=>first[n]>=c-2),auths=Object.entries(ra).sort((a,b)=>b[1]-a[1]);
+  const row=(n,k,f)=>`<div class="srow"><span>${n}${f>=c-2?' <em class="newtag">새로</em>':''}</span><b>${k}편</b><small>${f}년부터</small></div>`;
+  return `<div class="card"><h2>탐색 에이전트 · 누가 하고 있나<small>최근 3년(${c-2}~${c}) 발표 기준 · "새로" = 이 주제로 처음 발표한 곳</small></h2>
+    <div class="two" style="gap:16px">
+      <div><div class="lbl">기관 ${insts.length}곳 중 상위 · 새로 들어온 곳 ${newI.length}곳</div>${insts.slice(0,6).map(([n,k])=>row(n,k,first[n])).join('')||'<div class="note">없다</div>'}</div>
+      <div><div class="lbl">저자 ${auths.length}명 중 상위</div>${auths.slice(0,6).map(([n,k])=>row(n,k,fa[n])).join('')||'<div class="note">없다</div>'}</div>
+    </div>
+    <div class="note" style="margin-top:8px">전체 목록과 기관별 흐름은 "사람과 기관" 탭 · 기관 — 저자 — 학회 관계는 "관계" 탭</div></div>`}
 /* 04 검증한다 — 이 방법을 믿어도 되나 */
 function verCard(bt,c){
   const r=(a,b)=>b?Math.round(a/b*100):0,dots=(k,n)=>`<div class="dots">${Array.from({length:n},(_,i)=>`<i class="${i<k?'g':''}"></i>`).join('')}</div>`;
@@ -600,9 +642,9 @@ function render(c){
   <div class="pane" data-pane="ev">
     ${upcard(c,show)}
     <div class="grid">
-      <div class="card" style="grid-column:1/-1"><h2>읽기 에이전트 · 내용이 바뀌었나</h2>${sig}
-        <div class="lbl" style="margin-top:16px">최근 3년에 양산 문제를 다룬 발표</div>
-        <div class="plist">${recent.map(p=>`<div class="row p">${p.y} · ${ttl(p)}</div>`).join('')||'<div class="note">없다</div>'}</div></div>
+      ${readCard(c,show,j,sig)}
+      ${matchCard(c,show,ev)}
+      ${seekCard(c,ps)}
       ${verCard(bt,c)}
     </div>
     <div class="card"><div class="ch"><h2>근거 원문 — ${c}년까지 ${docs.length}편<small>주황 = 양산 문제를 다룬 제목 · 제목을 누르면 원문으로 간다</small></h2>

@@ -19,9 +19,9 @@ ROOT = Path(__file__).resolve().parent.parent
 LAST = 2026
 
 # 양산 단계에서 나오는 문제를 가리키는 단어 (제목 기준)
-PROBLEM = re.compile(
-    r"reliab|failure|fatigue|stress|warpage|crack|void|delaminat|defect|degrad|lifetime|yield|thermal cycl|"
-    r"electromigration|moisture|drop test|aging", re.I)
+PROBLEM = re.compile(  # 낱말 앞에 경계를 둔다 — 10/1 정정: 'aging'이 'packaging'을 잡아 양산 문제 집계의 30%가 오탐이었다
+    r"\b(?:reliab|failure|fatigue|stress|warpage|crack|void|delaminat|defect|degrad|lifetime|yield|thermal cycl|"
+    r"electromigration|moisture|drop test|aging)", re.I)
 
 STOP = set("""a an the of for and in on with to by using via from at as is are be its their into over under between
 based new novel high low ultra advanced study analysis investigation development evaluation characterization
