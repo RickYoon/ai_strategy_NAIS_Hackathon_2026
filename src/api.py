@@ -131,6 +131,26 @@ def ontology(topic, cutoff, d, derived):
             "totals": {"inst": len(inst), "auth": len(auth)}}
 
 
+def model_scores(venue, d, topics, c, vy):
+    """src/learn.py 와 같은 특징 · 같은 모델로, 과거 세 시점 전부를 배워 지금 후보에 점수를 매긴다."""
+    import learn
+    import research
+    cache = combo.__dict__.setdefault("_model", {})
+    if venue not in cache:
+        labels = json.loads(agent.LABELS.read_text(encoding="utf-8")) if agent.LABELS.exists() else {}
+        X, y, _, _ = learn.dataset(venue, labels, vy)
+        predict, _ = learn.fit_logistic(X, y)
+        cache[venue] = (predict, research.raw_index(venue))
+    predict, (rows, idx, total) = cache[venue]
+    import numpy as np
+    out = {}
+    for tp in topics:
+        f = learn.feats(rows, idx, total, tp, c, vy, d["years"][0])
+        if f is not None:
+            out[tp] = float(predict(np.array([f], float))[0])
+    return out
+
+
 def combo_result(venue):
     """지표를 겹친 개수별 과거 성적 (src/combo.py 가 계산해 둔 것)."""
     f = ROOT / "data" / "derived" / "combo.json"
@@ -177,6 +197,18 @@ def handle(path, q, derived):
             x["signals"] = dict(zip(combo.NAMES, s))
             x["signals_on"] = sum(s)
         shown.sort(key=lambda x: (-x["active"], -x["signals_on"], -(x["problem_recent_percent"] - x["problem_before_percent"])))
+        # 배운 점수: 과거 세 시점의 결과로 배운 모델의 점수(지금 시점에서만 — 과거로 돌아간 화면에서는 미래가 섞이므로 쓰지 않는다)
+        if c == d["years"][-1]:
+            try:
+                ms = model_scores(q.get("venue", "ectc"), d, [x["topic"] for x in shown], c, vy)
+                act = {x["topic"] for x in shown if x["active"]}
+                ranked = sorted([k for k in ms if k in act], key=lambda k: -ms[k]) + sorted([k for k in ms if k not in act], key=lambda k: -ms[k])
+                for x in shown:
+                    if x["topic"] in ms:
+                        x["model_score"] = round(ms[x["topic"]], 3)
+                        x["model_rank"] = ranked.index(x["topic"]) + 1
+            except Exception:
+                pass
         ev = events()
         desc = agent.describe_topics([x["topic"] for x in shown if x["active"]])
         for x in shown:
