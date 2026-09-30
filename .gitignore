@@ -8,6 +8,8 @@ __pycache__/
 # OS
 .DS_Store
 # 계산 결과는 analyze.py 로 다시 만든다
-data/derived/
-data/derived/agent_cache/
+data/derived/*
+!data/derived/topic_labels.json
+!data/derived/agent_cache/
+!data/derived/gaps/
 data/derived.bak*/

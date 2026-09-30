@@ -56,4 +56,5 @@ if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", "8790"))
     print(f"http://127.0.0.1:{port}")
-    ThreadingHTTPServer(("127.0.0.1", port), H).serve_forever()
+    host = os.environ.get("HOST", "127.0.0.1")  # 배포(Render)에서는 HOST=0.0.0.0
+    ThreadingHTTPServer((host, port), H).serve_forever()

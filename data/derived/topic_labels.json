@@ -1,0 +1,4306 @@
+{
+ "glass core": {
+  "keep": true,
+  "ko": "유리 코어",
+  "desc": "패키지 기판의 중심층을 기존 수지 대신 유리로 만든 구조."
+ },
+ "semiconductor": {
+  "keep": false
+ },
+ "core": {
+  "keep": false
+ },
+ "automotive": {
+  "keep": true,
+  "ko": "차량용",
+  "desc": "자동차에 들어가는 반도체 부품의 패키징을 다루는 응용 분야."
+ },
+ "tgv": {
+  "keep": true,
+  "ko": "유리관통전극(TGV)",
+  "desc": "유리 기판을 수직으로 뚫은 구멍에 금속을 채워 전기가 통하게 하는 기술."
+ },
+ "influence": {
+  "keep": false
+ },
+ "hpc": {
+  "keep": true,
+  "ko": "고성능 컴퓨팅",
+  "desc": "대규모 계산을 빠르게 처리하는 슈퍼컴퓨터 같은 고성능 컴퓨팅 분야."
+ },
+ "behavior": {
+  "keep": false
+ },
+ "substrates": {
+  "keep": true,
+  "ko": "기판",
+  "desc": "칩을 올려놓고 외부 회로와 전기적으로 이어 주는 받침 역할의 기판."
+ },
+ "bridge": {
+  "keep": true,
+  "ko": "브리지",
+  "desc": "나란히 놓인 칩 사이를 잇기 위해 기판에 넣는 작은 연결용 부품."
+ },
+ "properties": {
+  "keep": false
+ },
+ "computing": {
+  "keep": false
+ },
+ "fiber": {
+  "keep": true,
+  "ko": "광섬유",
+  "desc": "빛 신호를 전달하거나 소재를 보강하는 데 쓰는 가느다란 실 모양 재료."
+ },
+ "side": {
+  "keep": false
+ },
+ "glass": {
+  "keep": true,
+  "ko": "유리",
+  "desc": "투명하고 단단하며 표면이 매끈해 기판 재료로 쓰이는 소재."
+ },
+ "layers": {
+  "keep": false
+ },
+ "edge": {
+  "keep": false
+ },
+ "thermo mechanical": {
+  "keep": true,
+  "ko": "열기계",
+  "desc": "열 때문에 부품이 늘고 줄며 생기는 힘과 변형을 다루는 분야."
+ },
+ "memory": {
+  "keep": true,
+  "ko": "메모리",
+  "desc": "데이터를 저장하는 반도체 칩으로, 패키지 안에서 프로세서와 함께 배치됨."
+ },
+ "dielectric": {
+  "keep": true,
+  "ko": "유전체",
+  "desc": "전기가 흐르지 않아 배선 사이를 떼어 놓는 절연 재료."
+ },
+ "material": {
+  "keep": false
+ },
+ "thermo": {
+  "keep": false
+ },
+ "assisted": {
+  "keep": false
+ },
+ "bandwidth": {
+  "keep": false
+ },
+ "management": {
+  "keep": false
+ },
+ "polymer": {
+  "keep": true,
+  "ko": "폴리머",
+  "desc": "절연, 접착, 보호 등에 쓰이는 긴 분자 사슬 구조의 플라스틱 계열 소재."
+ },
+ "interface": {
+  "keep": false
+ },
+ "metal": {
+  "keep": true,
+  "ko": "금속",
+  "desc": "구리처럼 전기가 잘 통해 배선과 연결부를 만드는 데 쓰는 재료."
+ },
+ "hybrid bonding": {
+  "keep": true,
+  "ko": "하이브리드 본딩",
+  "desc": "절연막과 구리 접점을 동시에 맞붙여 땜납 없이 칩을 잇는 접합 기술."
+ },
+ "effective": {
+  "keep": false
+ },
+ "rdl": {
+  "keep": true,
+  "ko": "재배선층(RDL)",
+  "desc": "칩의 접점 위치를 원하는 곳으로 옮기기 위해 덧입히는 얇은 재배선층."
+ },
+ "wafer hybrid": {
+  "keep": true,
+  "ko": "웨이퍼 하이브리드 본딩",
+  "desc": "웨이퍼 전체를 다른 웨이퍼에 하이브리드 본딩으로 통째로 붙이는 방식."
+ },
+ "materials": {
+  "keep": false
+ },
+ "die wafer": {
+  "keep": true,
+  "ko": "다이-웨이퍼 본딩",
+  "desc": "잘라낸 칩을 웨이퍼 위에 올려 하이브리드 본딩으로 붙이는 방식."
+ },
+ "pitch hybrid": {
+  "keep": true,
+  "ko": "미세피치 하이브리드 본딩",
+  "desc": "하이브리드 본딩에서 접점 사이 간격을 더 촘촘하게 만드는 미세화 주제."
+ },
+ "microstructure": {
+  "keep": true,
+  "ko": "미세구조",
+  "desc": "금속 등 소재 내부의 눈에 보이지 않는 작은 결정과 조직의 모양."
+ },
+ "coupling": {
+  "keep": false
+ },
+ "ray": {
+  "keep": true,
+  "ko": "X선",
+  "desc": "엑스선 같은 빛을 이용해 패키지 내부를 들여다보는 검사 방식이다."
+ },
+ "thermomechanical": {
+  "keep": true,
+  "ko": "열기계",
+  "desc": "열로 인해 재료가 팽창하고 수축하며 생기는 힘과 변형을 다루는 분야다."
+ },
+ "assemblies": {
+  "keep": false
+ },
+ "spectroscopy": {
+  "keep": true,
+  "ko": "분광법"
+ },
+ "robust": {
+  "keep": false
+ },
+ "improvement": {
+  "keep": false
+ },
+ "techniques": {
+  "keep": false
+ },
+ "wide": {
+  "keep": false
+ },
+ "nano": {
+  "keep": true,
+  "ko": "나노"
+ },
+ "damage": {
+  "keep": false
+ },
+ "aluminum": {
+  "keep": true,
+  "ko": "알루미늄",
+  "desc": "가볍고 열을 잘 전달해 방열판과 배선에 쓰이는 금속이다."
+ },
+ "stability": {
+  "keep": false
+ },
+ "fluxless": {
+  "keep": true,
+  "ko": "무플럭스"
+ },
+ "networks": {
+  "keep": false
+ },
+ "detection": {
+  "keep": false
+ },
+ "sic": {
+  "keep": true,
+  "ko": "탄화규소(SiC)",
+  "desc": "열과 전압에 강해 전력 반도체에 쓰이는 탄화규소 소재다."
+ },
+ "cte": {
+  "keep": true,
+  "ko": "열팽창계수(CTE)"
+ },
+ "alloy": {
+  "keep": true,
+  "ko": "합금",
+  "desc": "두 가지 이상의 금속을 섞어 성질을 조절한 합금이다."
+ },
+ "vapor": {
+  "keep": true,
+  "ko": "증기(증착)",
+  "desc": "기체 상태의 물질로, 박막 증착이나 열 전달 기술에 이용된다."
+ },
+ "circuit": {
+  "keep": false
+ },
+ "strain": {
+  "keep": true,
+  "ko": "변형률",
+  "desc": "외력이나 열 때문에 재료가 늘거나 줄어드는 변형 정도를 뜻한다."
+ },
+ "additive": {
+  "keep": true,
+  "ko": "적층 제조",
+  "desc": "재료를 층층이 쌓아 원하는 모양을 만드는 적층 제조 방식이다."
+ },
+ "mechanisms": {
+  "keep": false
+ },
+ "sintered": {
+  "keep": true,
+  "ko": "소결"
+ },
+ "paste": {
+  "keep": true,
+  "ko": "페이스트",
+  "desc": "접합이나 열 전달을 위해 바르거나 찍어 쓰는 끈적한 재료다."
+ },
+ "aerosol": {
+  "keep": true,
+  "ko": "에어로졸"
+ },
+ "thermal conductivity": {
+  "keep": true,
+  "ko": "열전도도",
+  "desc": "재료가 열을 얼마나 잘 전달하는지를 나타내는 성질이다."
+ },
+ "aware": {
+  "keep": false
+ },
+ "stack": {
+  "keep": true,
+  "ko": "적층(스택)"
+ },
+ "enhancement": {
+  "keep": false
+ },
+ "die die": {
+  "keep": true,
+  "ko": "다이-다이 본딩"
+ },
+ "glass vias": {
+  "keep": true,
+  "ko": "유리 비아"
+ },
+ "engine": {
+  "keep": false
+ },
+ "interface materials": {
+  "keep": true,
+  "ko": "계면 소재",
+  "desc": "서로 다른 부품이 맞닿는 면에서 열이나 전기를 잘 전달하도록 넣는 재료다."
+ },
+ "coating": {
+  "keep": true,
+  "ko": "코팅"
+ },
+ "gan": {
+  "keep": true,
+  "ko": "질화갈륨(GaN)",
+  "desc": "고주파와 고효율 전력 소자에 쓰이는 질화갈륨 반도체 소재다."
+ },
+ "anisotropic": {
+  "keep": true,
+  "ko": "이방성"
+ },
+ "complex": {
+  "keep": false
+ },
+ "cryogenic": {
+  "keep": true,
+  "ko": "극저온"
+ },
+ "enhancing": {
+  "keep": false
+ },
+ "optimized": {
+  "keep": false
+ },
+ "bandwidth memory": {
+  "keep": true,
+  "ko": "고대역폭 메모리(HBM)"
+ },
+ "liquid metal": {
+  "keep": true,
+  "ko": "액체금속",
+  "desc": "상온 부근에서 액체 상태인 금속으로, 열을 잘 전달하는 재료로 쓰인다."
+ },
+ "conductivity": {
+  "keep": true,
+  "ko": "전도도",
+  "desc": "재료가 전기나 열을 얼마나 잘 통하게 하는지를 나타내는 성질이다."
+ },
+ "chip package": {
+  "keep": true,
+  "ko": "칩 패키지"
+ },
+ "polyimide": {
+  "keep": true,
+  "ko": "폴리이미드",
+  "desc": "열에 강하고 유연해 절연막과 기판에 쓰이는 고분자 소재다."
+ },
+ "cure": {
+  "keep": true,
+  "ko": "경화"
+ },
+ "sac305": {
+  "keep": true,
+  "ko": "SAC305 솔더"
+ },
+ "characteristics": {
+  "keep": false
+ },
+ "gap": {
+  "keep": false
+ },
+ "vacuum": {
+  "keep": true,
+  "ko": "진공"
+ },
+ "drop": {
+  "keep": true,
+  "ko": "낙하",
+  "desc": "제품이 떨어질 때 받는 충격에 패키지가 견디는지 보는 낙하 시험이다."
+ },
+ "thermal management": {
+  "keep": true,
+  "ko": "열관리"
+ },
+ "transceiver": {
+  "keep": true,
+  "ko": "트랜시버"
+ },
+ "activation": {
+  "keep": true,
+  "ko": "표면 활성화",
+  "desc": "표면을 처리해 반응성을 높여 접합이 잘되게 하는 과정이다."
+ },
+ "polymer hybrid": {
+  "keep": true,
+  "ko": "폴리머 하이브리드 본딩"
+ },
+ "numerical": {
+  "keep": false
+ },
+ "voltage": {
+  "keep": false
+ },
+ "room": {
+  "keep": false
+ },
+ "room temperature": {
+  "keep": true,
+  "ko": "상온"
+ },
+ "efficiency": {
+  "keep": false
+ },
+ "miniaturized": {
+  "keep": false
+ },
+ "era": {
+  "keep": false
+ },
+ "laser assisted": {
+  "keep": true,
+  "ko": "레이저 보조"
+ },
+ "physics": {
+  "keep": false
+ },
+ "die attach": {
+  "keep": true,
+  "ko": "다이 어태치",
+  "desc": "잘라낸 칩을 기판이나 프레임 위에 붙여 고정하는 공정이다."
+ },
+ "utilizing": {
+  "keep": false
+ },
+ "ceramic": {
+  "keep": true,
+  "ko": "세라믹"
+ },
+ "quality": {
+  "keep": false
+ },
+ "time": {
+  "keep": false
+ },
+ "cowos": {
+  "keep": true,
+  "ko": "CoWoS",
+  "desc": "실리콘 중간판 위에 여러 칩을 나란히 붙이는 TSMC의 첨단 패키징 기술이다."
+ },
+ "temperature solder": {
+  "keep": true,
+  "ko": "저온 솔더"
+ },
+ "tcb": {
+  "keep": true,
+  "ko": "열압착 본딩(TCB)"
+ },
+ "shock": {
+  "keep": true,
+  "ko": "충격"
+ },
+ "particle": {
+  "keep": true,
+  "ko": "입자",
+  "desc": "공정 중 표면에 붙어 불량을 일으킬 수 있는 아주 작은 먼지나 이물질 알갱이이다."
+ },
+ "sac": {
+  "keep": true,
+  "ko": "SAC 솔더"
+ },
+ "inter": {
+  "keep": false
+ },
+ "multilayer": {
+  "keep": true,
+  "ko": "다층"
+ },
+ "condition": {
+  "keep": false
+ },
+ "additive manufacturing": {
+  "keep": true,
+  "ko": "적층 제조(3D 프린팅)"
+ },
+ "indium": {
+  "keep": true,
+  "ko": "인듐",
+  "desc": "부드럽고 녹는점이 낮아 열 접촉 재료와 접합에 쓰이는 금속이다."
+ },
+ "dual": {
+  "keep": false
+ },
+ "photosensitive": {
+  "keep": true,
+  "ko": "감광성"
+ },
+ "assisted bonding": {
+  "keep": true,
+  "ko": "보조 본딩",
+  "desc": "열, 압력, 초음파 등의 도움을 받아 부품을 접합하는 방식이다."
+ },
+ "components": {
+  "keep": false
+ },
+ "thick": {
+  "keep": false
+ },
+ "thinning": {
+  "keep": true,
+  "ko": "박막화(씨닝)"
+ },
+ "thermal interface": {
+  "keep": true,
+  "ko": "열계면",
+  "desc": "발열체와 방열부품 사이에서 열이 잘 넘어가게 하는 접촉면 구조다."
+ },
+ "temperature hybrid": {
+  "keep": true,
+  "ko": "저온 하이브리드 본딩"
+ },
+ "oxide": {
+  "keep": true,
+  "ko": "산화물",
+  "desc": "금속이나 실리콘이 산소와 결합해 생긴 화합물로, 절연막 등에 쓰인다."
+ },
+ "space": {
+  "keep": false
+ },
+ "annealing": {
+  "keep": true,
+  "ko": "어닐링"
+ },
+ "diamond": {
+  "keep": true,
+  "ko": "다이아몬드",
+  "desc": "열을 매우 잘 전달해 방열 소재로 연구되는 탄소 결정이다."
+ },
+ "power integrity": {
+  "keep": true,
+  "ko": "전력 무결성"
+ },
+ "dies": {
+  "keep": true,
+  "ko": "다이"
+ },
+ "image": {
+  "keep": false
+ },
+ "frequency": {
+  "keep": false
+ },
+ "reflow": {
+  "keep": true,
+  "ko": "리플로우",
+  "desc": "솔더를 가열로에서 녹였다 굳혀 부품을 기판에 붙이는 공정이다."
+ },
+ "printing": {
+  "keep": true,
+  "ko": "인쇄",
+  "desc": "잉크나 페이스트를 원하는 모양으로 찍어 회로나 접합 재료를 기판에 입히는 방법이다."
+ },
+ "evolution": {
+  "keep": false
+ },
+ "cmp": {
+  "keep": true,
+  "ko": "화학기계연마(CMP)"
+ },
+ "thermal expansion": {
+  "keep": true,
+  "ko": "열팽창",
+  "desc": "온도가 오르내릴 때 재료의 크기가 늘거나 줄어드는 성질로 소재마다 정도가 다르다."
+ },
+ "cost effective": {
+  "keep": false
+ },
+ "measurement": {
+  "keep": false
+ },
+ "efficient": {
+  "keep": false
+ },
+ "structures": {
+  "keep": false
+ },
+ "delivery network": {
+  "keep": true,
+  "ko": "전력 공급망"
+ },
+ "neural": {
+  "keep": true,
+  "ko": "신경망"
+ },
+ "processes": {
+  "keep": false
+ },
+ "superconducting": {
+  "keep": true,
+  "ko": "초전도",
+  "desc": "특정 조건에서 전기저항이 사라지는 초전도 성질을 이용한 회로나 소재다."
+ },
+ "interfaces": {
+  "keep": false
+ },
+ "photonics": {
+  "keep": true,
+  "ko": "포토닉스"
+ },
+ "type": {
+  "keep": false
+ },
+ "silver": {
+  "keep": true,
+  "ko": "은"
+ },
+ "field": {
+  "keep": false
+ },
+ "term": {
+  "keep": false
+ },
+ "long term": {
+  "keep": false
+ },
+ "deep learning": {
+  "keep": true,
+  "ko": "딥러닝"
+ },
+ "signal": {
+  "keep": false
+ },
+ "panel": {
+  "keep": true,
+  "ko": "패널",
+  "desc": "둥근 웨이퍼 대신 네모난 큰 판 위에서 패키징 공정을 진행하는 기판 형태"
+ },
+ "chiplet": {
+  "keep": true,
+  "ko": "칩렛",
+  "desc": "하나의 큰 칩을 기능별 작은 칩으로 나눠 만든 뒤 하나로 연결해 쓰는 방식"
+ },
+ "optical": {
+  "keep": true,
+  "ko": "광학",
+  "desc": "전기 신호 대신 빛을 이용해 정보를 주고받거나 처리하는 것과 관련된 기술"
+ },
+ "photonic": {
+  "keep": true,
+  "ko": "포토닉",
+  "desc": "빛 입자인 광자를 이용해 신호를 만들고 전달하고 처리하는 기술 분야"
+ },
+ "interconnect": {
+  "keep": true,
+  "ko": "인터커넥트",
+  "desc": "칩과 칩, 칩과 기판 사이에서 전기 신호가 오가도록 이어 주는 배선 연결부"
+ },
+ "challenges": {
+  "keep": false
+ },
+ "panel level": {
+  "keep": true,
+  "ko": "패널 레벨",
+  "desc": "네모난 큰 판 단위로 여러 칩을 한꺼번에 패키징하는 공정 방식"
+ },
+ "epoxy": {
+  "keep": true,
+  "ko": "에폭시",
+  "desc": "칩을 고정하거나 감싸 보호하는 데 쓰이는, 굳으면 단단해지는 접착성 수지"
+ },
+ "packages": {
+  "keep": false
+ },
+ "fabrication": {
+  "keep": false
+ },
+ "optimization": {
+  "keep": false
+ },
+ "flip": {
+  "keep": true,
+  "ko": "플립",
+  "desc": "칩을 뒤집어 접합면이 아래쪽 기판을 향하게 놓고 연결하는 동작이나 방식"
+ },
+ "flip chip": {
+  "keep": true,
+  "ko": "플립칩",
+  "desc": "칩을 뒤집어 작은 범프로 기판에 직접 붙여 전기적으로 연결하는 패키징 방식"
+ },
+ "out wafer": {
+  "keep": true,
+  "ko": "팬아웃 웨이퍼",
+  "desc": "웨이퍼 단위 패키징에서 칩 바깥 영역까지 배선을 넓혀 단자를 만드는 팬아웃 방식"
+ },
+ "wearable": {
+  "keep": true,
+  "ko": "웨어러블",
+  "desc": "시계나 패치처럼 몸에 착용해 건강 정보 등을 측정하는 작고 가벼운 전자기기"
+ },
+ "demonstration": {
+  "keep": false
+ },
+ "monitoring": {
+  "keep": false
+ },
+ "control": {
+  "keep": false
+ },
+ "coupled": {
+  "keep": false
+ },
+ "manufacturing": {
+  "keep": false
+ },
+ "lithography": {
+  "keep": true,
+  "ko": "리소그래피"
+ },
+ "magnetic": {
+  "keep": true,
+  "ko": "자성",
+  "desc": "자성을 띠는 재료나 자기장을 이용하는 부품과 기술이다."
+ },
+ "solid": {
+  "keep": false
+ },
+ "heat": {
+  "keep": true,
+  "ko": "열(방열)"
+ },
+ "chiplets": {
+  "keep": true,
+  "ko": "칩렛",
+  "desc": "여러 기능의 작은 반도체 조각을 따로 만든 뒤 하나의 패키지에 모아 큰 칩처럼 작동하게 하는 기술"
+ },
+ "exposure": {
+  "keep": true,
+  "ko": "노광"
+ },
+ "area": {
+  "keep": false
+ },
+ "sensing": {
+  "keep": true,
+  "ko": "센싱"
+ },
+ "coated": {
+  "keep": false
+ },
+ "chip wafer": {
+  "keep": true,
+  "ko": "칩-웨이퍼"
+ },
+ "size": {
+  "keep": false
+ },
+ "sicn": {
+  "keep": true,
+  "ko": "SiCN(실리콘 카보나이트라이드)"
+ },
+ "build": {
+  "keep": false
+ },
+ "long": {
+  "keep": false
+ },
+ "data": {
+  "keep": false
+ },
+ "dicing": {
+  "keep": true,
+  "ko": "다이싱",
+  "desc": "웨이퍼를 잘라 개별 칩으로 나누는 공정이다."
+ },
+ "factor": {
+  "keep": false
+ },
+ "self": {
+  "keep": false
+ },
+ "circuits": {
+  "keep": false
+ },
+ "out package": {
+  "keep": true,
+  "ko": "팬아웃 패키지"
+ },
+ "plating": {
+  "keep": true,
+  "ko": "도금"
+ },
+ "extremely": {
+  "keep": false
+ },
+ "compression bonding": {
+  "keep": true,
+  "ko": "열압착 본딩"
+ },
+ "inorganic": {
+  "keep": true,
+  "ko": "무기물"
+ },
+ "electrical": {
+  "keep": false
+ },
+ "density fan": {
+  "keep": true,
+  "ko": "고밀도 팬아웃"
+ },
+ "foplp": {
+  "keep": true,
+  "ko": "팬아웃 패널레벨 패키지(FOPLP)"
+ },
+ "interconnection": {
+  "keep": true,
+  "ko": "상호연결",
+  "desc": "칩과 기판, 부품 사이를 전기적으로 이어 주는 연결 구조다."
+ },
+ "redistribution layer": {
+  "keep": true,
+  "ko": "재배선층"
+ },
+ "scaling": {
+  "keep": false
+ },
+ "thermal compression": {
+  "keep": true,
+  "ko": "열압착"
+ },
+ "ink": {
+  "keep": true,
+  "ko": "잉크"
+ },
+ "band": {
+  "keep": false
+ },
+ "chip last": {
+  "keep": true,
+  "ko": "칩 라스트"
+ },
+ "stretchable": {
+  "keep": true,
+  "ko": "신축성(스트레처블)"
+ },
+ "temperature bonding": {
+  "keep": true,
+  "ko": "저온 본딩"
+ },
+ "arrays": {
+  "keep": false
+ },
+ "vertical": {
+  "keep": false
+ },
+ "jet": {
+  "keep": true,
+  "ko": "제트(잉크젯)"
+ },
+ "level package": {
+  "keep": true,
+  "ko": "레벨 패키지"
+ },
+ "extreme": {
+  "keep": false
+ },
+ "waveguide": {
+  "keep": true,
+  "ko": "도파관"
+ },
+ "profile": {
+  "keep": false
+ },
+ "production": {
+  "keep": false
+ },
+ "deposition": {
+  "keep": true,
+  "ko": "증착"
+ },
+ "last": {
+  "keep": false
+ },
+ "property": {
+  "keep": false
+ },
+ "tsvs": {
+  "keep": true,
+  "ko": "TSV(실리콘 관통 전극)"
+ },
+ "mems": {
+  "keep": true,
+  "ko": "MEMS"
+ },
+ "interconnections": {
+  "keep": true,
+  "ko": "상호연결",
+  "desc": "칩과 칩, 칩과 기판 사이를 전기 신호가 오가도록 이어 주는 배선과 접속 구조이다."
+ },
+ "all": {
+  "keep": false
+ },
+ "ieee": {
+  "keep": false
+ },
+ "system package": {
+  "keep": true,
+  "ko": "시스템 패키지"
+ },
+ "embedding": {
+  "keep": true,
+  "ko": "임베딩"
+ },
+ "throughput": {
+  "keep": false
+ },
+ "sip": {
+  "keep": true,
+  "ko": "SiP(시스템 인 패키지)",
+  "desc": "여러 칩과 부품을 하나의 패키지에 담아 시스템처럼 동작하게 하는 방식이다."
+ },
+ "comprehensive": {
+  "keep": false
+ },
+ "passive": {
+  "keep": true,
+  "ko": "수동소자"
+ },
+ "film": {
+  "keep": true,
+  "ko": "필름"
+ },
+ "vias": {
+  "keep": true,
+  "ko": "비아"
+ },
+ "signal integrity": {
+  "keep": true,
+  "ko": "신호 무결성"
+ },
+ "mode": {
+  "keep": false
+ },
+ "films": {
+  "keep": true,
+  "ko": "박막/필름"
+ },
+ "mobile": {
+  "keep": true,
+  "ko": "모바일"
+ },
+ "aip": {
+  "keep": true,
+  "ko": "AiP(안테나 인 패키지)"
+ },
+ "silicon vias": {
+  "keep": true,
+  "ko": "실리콘 비아(TSV, 실리콘 관통 전극)"
+ },
+ "tsv": {
+  "keep": true,
+  "ko": "실리콘 관통 전극(TSV)",
+  "desc": "실리콘 칩을 수직으로 관통하는 미세한 구멍에 금속을 채워, 위아래로 쌓은 칩끼리 전기 신호를 주고받게 하는 기술"
+ },
+ "layer": {
+  "keep": false
+ },
+ "electronic": {
+  "keep": false
+ },
+ "interposer": {
+  "keep": true,
+  "ko": "인터포저",
+  "desc": "여러 칩을 나란히 올려 서로 연결해 주면서 아래 기판과도 이어 주는, 칩과 기판 사이의 얇은 중간 연결판"
+ },
+ "fowlp": {
+  "keep": true,
+  "ko": "팬아웃 웨이퍼레벨 패키지(FOWLP)",
+  "desc": "칩 바깥 영역까지 배선을 넓게 펼쳐 연결 단자를 만들어, 별도 기판 없이 얇게 패키징하는 방식"
+ },
+ "conductive": {
+  "keep": false
+ },
+ "redistribution": {
+  "keep": true,
+  "ko": "재배선(RDL)"
+ },
+ "free solder": {
+  "keep": true,
+  "ko": "무연 솔더"
+ },
+ "lead free": {
+  "keep": true,
+  "ko": "무연(납 프리)"
+ },
+ "ratio": {
+  "keep": false
+ },
+ "composite": {
+  "keep": true,
+  "ko": "복합재료",
+  "desc": "두 가지 이상의 재료를 합쳐 성질을 개선한 복합 재료다."
+ },
+ "solders": {
+  "keep": true,
+  "ko": "솔더"
+ },
+ "pressure": {
+  "keep": false
+ },
+ "structure": {
+  "keep": false
+ },
+ "lines": {
+  "keep": false
+ },
+ "advances": {
+  "keep": false
+ },
+ "capacitors": {
+  "keep": true,
+  "ko": "커패시터"
+ },
+ "radar": {
+  "keep": true,
+  "ko": "레이다"
+ },
+ "interfacial": {
+  "keep": true,
+  "ko": "계면",
+  "desc": "서로 다른 재료가 맞닿는 경계면에서 나타나는 성질을 가리킨다."
+ },
+ "sub": {
+  "keep": false
+ },
+ "processing": {
+  "keep": false
+ },
+ "aspect ratio": {
+  "keep": true,
+  "ko": "종횡비",
+  "desc": "구멍이나 기둥의 깊이 또는 높이를 너비로 나눈 비율을 말한다."
+ },
+ "aspect": {
+  "keep": false
+ },
+ "sintering": {
+  "keep": true,
+  "ko": "소결",
+  "desc": "금속 분말을 녹이기 전 온도에서 가열해 서로 단단히 붙이는 공정이다."
+ },
+ "wlp": {
+  "keep": true,
+  "ko": "웨이퍼레벨 패키지(WLP)"
+ },
+ "intermetallic": {
+  "keep": true,
+  "ko": "금속간화합물"
+ },
+ "lead": {
+  "keep": false
+ },
+ "iot": {
+  "keep": true,
+  "ko": "사물인터넷(IoT)"
+ },
+ "filter": {
+  "keep": true,
+  "ko": "필터"
+ },
+ "direct bonding": {
+  "keep": true,
+  "ko": "직접 접합",
+  "desc": "칩이나 웨이퍼의 표면을 납땜 재료 없이 맞붙여 직접 접합하는 기술이다."
+ },
+ "systems": {
+  "keep": false
+ },
+ "fully": {
+  "keep": false
+ },
+ "active": {
+  "keep": false
+ },
+ "testing": {
+  "keep": false
+ },
+ "dielectric material": {
+  "keep": true,
+  "ko": "유전체 재료"
+ },
+ "inductors": {
+  "keep": true,
+  "ko": "인덕터"
+ },
+ "cost": {
+  "keep": false
+ },
+ "less": {
+  "keep": false
+ },
+ "formation": {
+  "keep": false
+ },
+ "emi": {
+  "keep": true,
+  "ko": "전자파 간섭(EMI)"
+ },
+ "shielding": {
+  "keep": true,
+  "ko": "차폐"
+ },
+ "antenna package": {
+  "keep": true,
+  "ko": "안테나 패키지"
+ },
+ "interconnect fabric": {
+  "keep": true,
+  "ko": "인터커넥트 패브릭"
+ },
+ "plasma": {
+  "keep": true,
+  "ko": "플라즈마",
+  "desc": "기체에 에너지를 가해 이온과 전자가 섞인 상태로 만들어 표면을 세정하거나 깎는 데 쓰는 공정 기술"
+ },
+ "hbm": {
+  "keep": true,
+  "ko": "고대역폭 메모리(HBM)"
+ },
+ "power delivery": {
+  "keep": true,
+  "ko": "전력 전달"
+ },
+ "cooling": {
+  "keep": true,
+  "ko": "냉각"
+ },
+ "methodology": {
+  "keep": false
+ },
+ "integrity": {
+  "keep": false
+ },
+ "devices": {
+  "keep": false
+ },
+ "deep": {
+  "keep": false
+ },
+ "loading": {
+  "keep": false
+ },
+ "fcbga": {
+  "keep": true,
+  "ko": "플립칩 BGA",
+  "desc": "칩을 뒤집어 붙이고 바닥의 솔더볼로 기판에 연결하는 패키지 형태다."
+ },
+ "passivation": {
+  "keep": true,
+  "ko": "패시베이션(보호막)"
+ },
+ "mechanical behavior": {
+  "keep": true,
+  "ko": "기계적 거동"
+ },
+ "temperatures": {
+  "keep": false
+ },
+ "full": {
+  "keep": false
+ },
+ "interaction": {
+  "keep": false
+ },
+ "heterogenous": {
+  "keep": true,
+  "ko": "이종 집적"
+ },
+ "artificial": {
+  "keep": false
+ },
+ "digital": {
+  "keep": false
+ },
+ "resistance": {
+  "keep": false
+ },
+ "mmwave": {
+  "keep": true,
+  "ko": "밀리미터파"
+ },
+ "architecture": {
+  "keep": false
+ },
+ "manufactured": {
+  "keep": false
+ },
+ "silicon photonic": {
+  "keep": true,
+  "ko": "실리콘 포토닉스"
+ },
+ "compression": {
+  "keep": true,
+  "ko": "열압착(컴프레션 본딩)"
+ },
+ "applied": {
+  "keep": false
+ },
+ "technique": {
+  "keep": false
+ },
+ "ghz": {
+  "keep": true,
+  "ko": "GHz 고주파 대역",
+  "desc": "초고주파 신호의 주파수를 나타내는 단위로, 고속 통신 특성과 관련된다."
+ },
+ "modules": {
+  "keep": false
+ },
+ "ion": {
+  "keep": true,
+  "ko": "이온"
+ },
+ "beam": {
+  "keep": true,
+  "ko": "이온빔"
+ },
+ "redistribution layers": {
+  "keep": true,
+  "ko": "재배선층(RDL)"
+ },
+ "loss": {
+  "keep": false
+ },
+ "reduction": {
+  "keep": false
+ },
+ "metallization": {
+  "keep": true,
+  "ko": "금속배선(메탈라이제이션)",
+  "desc": "칩이나 기판 표면에 금속 막을 입혀 전기가 흐르는 길이나 접합면을 만드는 공정이다."
+ },
+ "wire": {
+  "keep": true,
+  "ko": "와이어 본딩"
+ },
+ "temporary": {
+  "keep": false
+ },
+ "machine learning": {
+  "keep": true,
+  "ko": "머신러닝"
+ },
+ "machine": {
+  "keep": false
+ },
+ "antenna": {
+  "keep": true,
+  "ko": "안테나"
+ },
+ "array": {
+  "keep": true,
+  "ko": "어레이"
+ },
+ "assembly": {
+  "keep": true,
+  "ko": "조립(어셈블리)"
+ },
+ "board": {
+  "keep": true,
+  "ko": "보드(회로기판)"
+ },
+ "board level": {
+  "keep": true,
+  "ko": "보드 레벨"
+ },
+ "bonded": {
+  "keep": true,
+  "ko": "접합된(본디드)"
+ },
+ "bonding": {
+  "keep": true,
+  "ko": "본딩(접합)"
+ },
+ "chip": {
+  "keep": true,
+  "ko": "칩"
+ },
+ "copper": {
+  "keep": true,
+  "ko": "구리",
+  "desc": "전기와 열이 잘 통해 배선과 접합에 널리 쓰이는 금속이다."
+ },
+ "cycling": {
+  "keep": true,
+  "ko": "온도 사이클링"
+ },
+ "density": {
+  "keep": false
+ },
+ "device": {
+  "keep": false
+ },
+ "die": {
+  "keep": true,
+  "ko": "다이"
+ },
+ "direct": {
+  "keep": false
+ },
+ "ectc": {
+  "keep": false
+ },
+ "electromigration": {
+  "keep": true,
+  "ko": "전자이동(일렉트로마이그레이션)"
+ },
+ "electronics": {
+  "keep": true,
+  "ko": "전자부품(전자공학)",
+  "desc": "전기 신호로 정보를 처리하고 제어하는 기기와 부품 분야다."
+ },
+ "embedded": {
+  "keep": true,
+  "ko": "임베디드(내장형)"
+ },
+ "fan": {
+  "keep": true,
+  "ko": "팬",
+  "desc": "주제명이 잘린 것일 수 있으며, 단독으로는 바람으로 열을 식히는 냉각 장치를 뜻한다."
+ },
+ "fan out": {
+  "keep": true,
+  "ko": "팬아웃",
+  "desc": "칩 바깥 영역까지 배선을 넓게 펼쳐 연결 단자를 배치하는 패키징 방식이다."
+ },
+ "flexible": {
+  "keep": true,
+  "ko": "플렉서블(유연)"
+ },
+ "free": {
+  "keep": false
+ },
+ "heterogeneous": {
+  "keep": true,
+  "ko": "이종(헤테로지니어스)"
+ },
+ "heterogeneous integration": {
+  "keep": true,
+  "ko": "이종 집적",
+  "desc": "서로 다른 종류나 공정으로 만든 칩을 하나의 패키지로 묶어 함께 동작하게 하는 기술이다."
+ },
+ "hybrid": {
+  "keep": true,
+  "ko": "하이브리드(하이브리드 본딩)"
+ },
+ "impact": {
+  "keep": false
+ },
+ "integrated": {
+  "keep": false
+ },
+ "integration": {
+  "keep": true,
+  "ko": "집적(인테그레이션)"
+ },
+ "interconnects": {
+  "keep": true,
+  "ko": "인터커넥트(상호연결)",
+  "desc": "칩 안팎에서 전기 신호를 전달하는 배선과 연결부들이다."
+ },
+ "joint": {
+  "keep": true,
+  "ko": "접합부",
+  "desc": "부품이 서로 이어 붙은 접합 부위를 말한다."
+ },
+ "joints": {
+  "keep": true,
+  "ko": "접합부"
+ },
+ "laser": {
+  "keep": true,
+  "ko": "레이저"
+ },
+ "learning": {
+  "keep": true,
+  "ko": "머신러닝(학습)"
+ },
+ "level": {
+  "keep": false
+ },
+ "level packaging": {
+  "keep": true,
+  "ko": "레벨 패키징"
+ },
+ "liquid": {
+  "keep": true,
+  "ko": "액체(액체 냉각)"
+ },
+ "mechanical": {
+  "keep": true,
+  "ko": "기계적 특성",
+  "desc": "힘과 변형, 진동 등 물리적인 작용과 관련된 성질이다."
+ },
+ "micro": {
+  "keep": true,
+  "ko": "마이크로"
+ },
+ "millimeter": {
+  "keep": true,
+  "ko": "밀리미터"
+ },
+ "millimeter wave": {
+  "keep": true,
+  "ko": "밀리미터파"
+ },
+ "modeling": {
+  "keep": false
+ },
+ "module": {
+  "keep": true,
+  "ko": "모듈"
+ },
+ "organic": {
+  "keep": true,
+  "ko": "유기(유기 기판)"
+ },
+ "out": {
+  "keep": false
+ },
+ "package": {
+  "keep": true,
+  "ko": "패키지"
+ },
+ "packaging": {
+  "keep": true,
+  "ko": "패키징"
+ },
+ "pitch": {
+  "keep": true,
+  "ko": "피치(미세 피치)"
+ },
+ "platform": {
+  "keep": false
+ },
+ "power": {
+  "keep": true,
+  "ko": "전력(파워)"
+ },
+ "printed": {
+  "keep": true,
+  "ko": "인쇄(프린티드)",
+  "desc": "회로나 구조를 인쇄하듯 찍어서 만드는 제조 방식이다."
+ },
+ "reliability": {
+  "keep": true,
+  "ko": "신뢰성"
+ },
+ "scale": {
+  "keep": false
+ },
+ "sensor": {
+  "keep": true,
+  "ko": "센서"
+ },
+ "silicon": {
+  "keep": true,
+  "ko": "실리콘"
+ },
+ "simulation": {
+  "keep": false
+ },
+ "solder": {
+  "keep": true,
+  "ko": "솔더"
+ },
+ "solder joint": {
+  "keep": true,
+  "ko": "솔더 접합부",
+  "desc": "솔더로 부품과 기판을 이어 붙인 접합부로, 열 변형에 의한 균열이 문제가 된다."
+ },
+ "solder joints": {
+  "keep": true,
+  "ko": "솔더 접합부"
+ },
+ "solution": {
+  "keep": false
+ },
+ "stacking": {
+  "keep": true,
+  "ko": "적층(스태킹)"
+ },
+ "stress": {
+  "keep": true,
+  "ko": "응력"
+ },
+ "substrate": {
+  "keep": true,
+  "ko": "기판(서브스트레이트)"
+ },
+ "surface": {
+  "keep": false
+ },
+ "system": {
+  "keep": false
+ },
+ "temperature": {
+  "keep": true,
+  "ko": "온도"
+ },
+ "thermal": {
+  "keep": true,
+  "ko": "열(열 관리)"
+ },
+ "thin": {
+  "keep": true,
+  "ko": "박형(씬)"
+ },
+ "underfill": {
+  "keep": true,
+  "ko": "언더필"
+ },
+ "wafer": {
+  "keep": true,
+  "ko": "웨이퍼"
+ },
+ "wafer level": {
+  "keep": true,
+  "ko": "웨이퍼 레벨"
+ },
+ "wafer wafer": {
+  "keep": true,
+  "ko": "웨이퍼 대 웨이퍼"
+ },
+ "warpage": {
+  "keep": true,
+  "ko": "휨(워페이지)"
+ },
+ "wave": {
+  "keep": true,
+  "ko": "파(웨이브)"
+ },
+ "absorber": {
+  "keep": true,
+  "ko": "흡수층"
+ },
+ "absorbers": {
+  "keep": true,
+  "ko": "흡수층"
+ },
+ "accelerated": {
+  "keep": false
+ },
+ "albedo": {
+  "keep": true,
+  "ko": "알베도(지면 반사율)"
+ },
+ "anti": {
+  "keep": false
+ },
+ "assessment": {
+  "keep": false
+ },
+ "axis": {
+  "keep": false
+ },
+ "back": {
+  "keep": false
+ },
+ "back contact": {
+  "keep": true,
+  "ko": "후면 접촉(후면 전극)"
+ },
+ "bandgap": {
+  "keep": true,
+  "ko": "밴드갭"
+ },
+ "bifacial": {
+  "keep": true,
+  "ko": "양면 수광형"
+ },
+ "buffer": {
+  "keep": true,
+  "ko": "버퍼층"
+ },
+ "carrier": {
+  "keep": true,
+  "ko": "캐리어(전하 운반자)"
+ },
+ "cdse": {
+  "keep": true,
+  "ko": "카드뮴 셀레나이드(CdSe)"
+ },
+ "cdsete": {
+  "keep": true,
+  "ko": "카드뮴 셀레늄 텔루라이드(CdSeTe)"
+ },
+ "cdte": {
+  "keep": true,
+  "ko": "카드뮴 텔루라이드(CdTe)"
+ },
+ "cdte solar": {
+  "keep": true,
+  "ko": "CdTe 태양전지"
+ },
+ "cell": {
+  "keep": true,
+  "ko": "태양전지 셀"
+ },
+ "cells": {
+  "keep": true,
+  "ko": "태양전지 셀"
+ },
+ "cigs": {
+  "keep": true,
+  "ko": "CIGS(구리·인듐·갈륨·셀레늄) 박막"
+ },
+ "comparison": {
+  "keep": false
+ },
+ "concentrator": {
+  "keep": true,
+  "ko": "집광형"
+ },
+ "conditions": {
+  "keep": false
+ },
+ "contact": {
+  "keep": true,
+  "ko": "접촉(전극)"
+ },
+ "contacts": {
+  "keep": true,
+  "ko": "접촉(전극)"
+ },
+ "conversion": {
+  "keep": false
+ },
+ "crystalline": {
+  "keep": true,
+  "ko": "결정질"
+ },
+ "crystalline silicon": {
+  "keep": true,
+  "ko": "결정질 실리콘"
+ },
+ "current": {
+  "keep": false
+ },
+ "defect": {
+  "keep": true,
+  "ko": "결함"
+ },
+ "defects": {
+  "keep": true,
+  "ko": "결함"
+ },
+ "degradation": {
+  "keep": true,
+  "ko": "열화"
+ },
+ "dependent": {
+  "keep": false
+ },
+ "distributed": {
+  "keep": false
+ },
+ "distribution": {
+  "keep": false
+ },
+ "doped": {
+  "keep": true,
+  "ko": "도핑"
+ },
+ "doping": {
+  "keep": true,
+  "ko": "도핑"
+ },
+ "double": {
+  "keep": false
+ },
+ "electroluminescence": {
+  "keep": true,
+  "ko": "전계발광(EL)"
+ },
+ "electron": {
+  "keep": true,
+  "ko": "전자"
+ },
+ "energy": {
+  "keep": false
+ },
+ "epitaxial": {
+  "keep": true,
+  "ko": "에피택셜"
+ },
+ "estimation": {
+  "keep": false
+ },
+ "evaluating": {
+  "keep": false
+ },
+ "film solar": {
+  "keep": true,
+  "ko": "박막 태양전지"
+ },
+ "forecasting": {
+  "keep": true,
+  "ko": "발전량 예측"
+ },
+ "front": {
+  "keep": false
+ },
+ "gaas": {
+  "keep": true,
+  "ko": "갈륨비소(GaAs)"
+ },
+ "gaas solar": {
+  "keep": true,
+  "ko": "GaAs 태양전지"
+ },
+ "germanium": {
+  "keep": true,
+  "ko": "게르마늄"
+ },
+ "global": {
+  "keep": false
+ },
+ "grid": {
+  "keep": true,
+  "ko": "전력망(그리드)"
+ },
+ "grown": {
+  "keep": false
+ },
+ "growth": {
+  "keep": false
+ },
+ "halide": {
+  "keep": true,
+  "ko": "할라이드"
+ },
+ "heterojunction": {
+  "keep": true,
+  "ko": "이종접합"
+ },
+ "heterojunction solar": {
+  "keep": true,
+  "ko": "이종접합 태양전지"
+ },
+ "hole": {
+  "keep": true,
+  "ko": "정공"
+ },
+ "hydrogen": {
+  "keep": true,
+  "ko": "수소"
+ },
+ "iii": {
+  "keep": true,
+  "ko": "III-V족 화합물 반도체"
+ },
+ "imaging": {
+  "keep": true,
+  "ko": "이미징(영상 진단)"
+ },
+ "induced": {
+  "keep": false
+ },
+ "induced degradation": {
+  "keep": true,
+  "ko": "유발 열화(LID/PID 등)"
+ },
+ "inverter": {
+  "keep": true,
+  "ko": "인버터"
+ },
+ "inverters": {
+  "keep": true,
+  "ko": "인버터"
+ },
+ "irradiance": {
+  "keep": true,
+  "ko": "일사량(복사조도)"
+ },
+ "junction": {
+  "keep": true,
+  "ko": "접합"
+ },
+ "junction solar": {
+  "keep": true,
+  "ko": "접합형 태양전지"
+ },
+ "life": {
+  "keep": false
+ },
+ "light": {
+  "keep": false
+ },
+ "losses": {
+  "keep": false
+ },
+ "luminescent": {
+  "keep": true,
+  "ko": "발광(루미네선스)"
+ },
+ "measurements": {
+  "keep": false
+ },
+ "model": {
+  "keep": false
+ },
+ "modelling": {
+  "keep": false
+ },
+ "models": {
+  "keep": false
+ },
+ "multijunction": {
+  "keep": true,
+  "ko": "다중접합"
+ },
+ "non": {
+  "keep": false
+ },
+ "off": {
+  "keep": false
+ },
+ "open": {
+  "keep": false
+ },
+ "optimizing": {
+  "keep": false
+ },
+ "outdoor": {
+  "keep": true,
+  "ko": "옥외 실증"
+ },
+ "panels": {
+  "keep": true,
+  "ko": "태양광 패널"
+ },
+ "passivated": {
+  "keep": true,
+  "ko": "패시베이션"
+ },
+ "passivating": {
+  "keep": true,
+  "ko": "패시베이션"
+ },
+ "passivating contacts": {
+  "keep": true,
+  "ko": "패시베이션 접촉"
+ },
+ "perc": {
+  "keep": true,
+  "ko": "PERC 태양전지"
+ },
+ "perovskite": {
+  "keep": true,
+  "ko": "페로브스카이트"
+ },
+ "perovskite silicon": {
+  "keep": true,
+  "ko": "페로브스카이트-실리콘"
+ },
+ "perovskite solar": {
+  "keep": true,
+  "ko": "페로브스카이트 태양전지"
+ },
+ "perovskite tandem": {
+  "keep": true,
+  "ko": "페로브스카이트 탠덤"
+ },
+ "perovskites": {
+  "keep": true,
+  "ko": "페로브스카이트"
+ },
+ "phase": {
+  "keep": false
+ },
+ "photoluminescence": {
+  "keep": true,
+  "ko": "광발광(PL)"
+ },
+ "photovoltaic": {
+  "keep": true,
+  "ko": "태양광 발전"
+ },
+ "photovoltaic module": {
+  "keep": true,
+  "ko": "태양광 모듈"
+ },
+ "photovoltaic modules": {
+  "keep": true,
+  "ko": "태양광 모듈"
+ },
+ "photovoltaic system": {
+  "keep": true,
+  "ko": "태양광 발전 시스템"
+ },
+ "photovoltaic systems": {
+  "keep": true,
+  "ko": "태양광 발전 시스템"
+ },
+ "photovoltaics": {
+  "keep": true,
+  "ko": "태양광 발전"
+ },
+ "plant": {
+  "keep": true,
+  "ko": "태양광 발전소"
+ },
+ "plants": {
+  "keep": true,
+  "ko": "태양광 발전소(복수)"
+ },
+ "poly": {
+  "keep": true,
+  "ko": "폴리실리콘(poly-Si)"
+ },
+ "post": {
+  "keep": false
+ },
+ "potential": {
+  "keep": false
+ },
+ "prediction": {
+  "keep": false
+ },
+ "processed": {
+  "keep": false
+ },
+ "quantum": {
+  "keep": true,
+  "ko": "양자(양자점·양자효과)",
+  "desc": "양자 현상을 이용하는 컴퓨터 칩과 이를 위한 패키징 기술이다."
+ },
+ "radiation": {
+  "keep": true,
+  "ko": "방사선·복사"
+ },
+ "real": {
+  "keep": false
+ },
+ "rear": {
+  "keep": true,
+  "ko": "후면"
+ },
+ "recombination": {
+  "keep": true,
+  "ko": "전하 재결합"
+ },
+ "resolved": {
+  "keep": false
+ },
+ "role": {
+  "keep": false
+ },
+ "se2": {
+  "keep": true,
+  "ko": "셀렌화물(CIGS의 Se2)"
+ },
+ "selective": {
+  "keep": true,
+  "ko": "선택적 접합(선택 접촉)",
+  "desc": "필요한 부분만 골라서 가공하거나 접합하는 방식이다."
+ },
+ "series": {
+  "keep": false
+ },
+ "silicon heterojunction": {
+  "keep": true,
+  "ko": "실리콘 이종접합(SHJ)"
+ },
+ "silicon solar": {
+  "keep": true,
+  "ko": "실리콘 태양전지"
+ },
+ "silicon tandem": {
+  "keep": true,
+  "ko": "실리콘 탠덤 태양전지"
+ },
+ "situ": {
+  "keep": false
+ },
+ "soiling": {
+  "keep": true,
+  "ko": "오염(먼지) 손실"
+ },
+ "solar": {
+  "keep": true,
+  "ko": "태양광"
+ },
+ "solar cell": {
+  "keep": true,
+  "ko": "태양전지"
+ },
+ "solar cells": {
+  "keep": true,
+  "ko": "태양전지(복수)"
+ },
+ "solar modules": {
+  "keep": true,
+  "ko": "태양광 모듈"
+ },
+ "solution processed": {
+  "keep": true,
+  "ko": "용액 공정"
+ },
+ "spectral": {
+  "keep": true,
+  "ko": "분광·스펙트럼"
+ },
+ "stable": {
+  "keep": false
+ },
+ "storage": {
+  "keep": true,
+  "ko": "에너지 저장"
+ },
+ "strategies": {
+  "keep": false
+ },
+ "tandem": {
+  "keep": true,
+  "ko": "탠덤 구조"
+ },
+ "tandem solar": {
+  "keep": true,
+  "ko": "탠덤 태양전지"
+ },
+ "terminal": {
+  "keep": true,
+  "ko": "단자 구조(2단자·4단자)"
+ },
+ "thin film": {
+  "keep": true,
+  "ko": "박막"
+ },
+ "thin films": {
+  "keep": true,
+  "ko": "박막(복수)"
+ },
+ "tin": {
+  "keep": true,
+  "ko": "주석(Sn)"
+ },
+ "topcon": {
+  "keep": true,
+  "ko": "TOPCon 태양전지"
+ },
+ "tracking": {
+  "keep": true,
+  "ko": "태양 추적"
+ },
+ "transparent": {
+  "keep": true,
+  "ko": "투명(투명 전극·투명 태양전지)"
+ },
+ "transport": {
+  "keep": true,
+  "ko": "전하 수송"
+ },
+ "treatment": {
+  "keep": false
+ },
+ "understanding": {
+  "keep": false
+ },
+ "utility": {
+  "keep": false
+ },
+ "utility scale": {
+  "keep": true,
+  "ko": "대규모 발전(유틸리티 규모)"
+ },
+ "yield": {
+  "keep": true,
+  "ko": "발전량(에너지 수율)"
+ },
+ "additively": {
+  "keep": false
+ },
+ "adhesion": {
+  "keep": true,
+  "ko": "접착력",
+  "desc": "두 재료가 서로 들러붙어 떨어지지 않는 정도를 뜻한다."
+ },
+ "adhesive": {
+  "keep": true,
+  "ko": "접착제",
+  "desc": "부품을 붙여 고정하는 데 쓰이는 접착 재료다."
+ },
+ "aging": {
+  "keep": true,
+  "ko": "열화(에이징)"
+ },
+ "air": {
+  "keep": false
+ },
+ "algorithm": {
+  "keep": false
+ },
+ "attach": {
+  "keep": true,
+  "ko": "다이 어태치(부착)",
+  "desc": "반도체 칩을 기판이나 패키지 위에 접착제나 솔더로 붙여 고정하는 공정이다."
+ },
+ "ball": {
+  "keep": true,
+  "ko": "솔더볼"
+ },
+ "battery": {
+  "keep": true,
+  "ko": "배터리"
+ },
+ "bga": {
+  "keep": true,
+  "ko": "BGA(볼 그리드 어레이)"
+ },
+ "bond": {
+  "keep": true,
+  "ko": "본드(접합)"
+ },
+ "bump": {
+  "keep": true,
+  "ko": "범프"
+ },
+ "bumps": {
+  "keep": true,
+  "ko": "범프(복수)"
+ },
+ "carbon": {
+  "keep": true,
+  "ko": "탄소"
+ },
+ "center": {
+  "keep": false
+ },
+ "channel": {
+  "keep": true,
+  "ko": "냉각 채널(유로)"
+ },
+ "chips": {
+  "keep": true,
+  "ko": "칩"
+ },
+ "cold": {
+  "keep": false
+ },
+ "compact": {
+  "keep": false
+ },
+ "comparative": {
+  "keep": false
+ },
+ "composites": {
+  "keep": true,
+  "ko": "복합재료",
+  "desc": "서로 다른 재료를 섞어 각각의 장점을 얻도록 만든 복합 재료다."
+ },
+ "compound": {
+  "keep": false
+ },
+ "conference": {
+  "keep": false
+ },
+ "considering": {
+  "keep": false
+ },
+ "crack": {
+  "keep": true,
+  "ko": "균열"
+ },
+ "crystal": {
+  "keep": true,
+  "ko": "결정"
+ },
+ "delamination": {
+  "keep": true,
+  "ko": "박리(층간분리)"
+ },
+ "dissipation": {
+  "keep": true,
+  "ko": "방열(소산)"
+ },
+ "dynamic": {
+  "keep": false
+ },
+ "electric": {
+  "keep": false
+ },
+ "electroless": {
+  "keep": true,
+  "ko": "무전해 도금"
+ },
+ "electromagnetic": {
+  "keep": true,
+  "ko": "전자기"
+ },
+ "electronic packaging": {
+  "keep": true,
+  "ko": "전자 패키징"
+ },
+ "electroplating": {
+  "keep": true,
+  "ko": "전해 도금",
+  "desc": "전기를 흘려 용액 속 금속 이온을 표면에 달라붙게 해 금속 막이나 배선을 만드는 방법이다."
+ },
+ "element": {
+  "keep": false
+ },
+ "encapsulation": {
+  "keep": true,
+  "ko": "봉지(인캡슐레이션)"
+ },
+ "experimental": {
+  "keep": false
+ },
+ "failure": {
+  "keep": true,
+  "ko": "고장/파손"
+ },
+ "fatigue": {
+  "keep": true,
+  "ko": "피로"
+ },
+ "finite": {
+  "keep": false
+ },
+ "finite element": {
+  "keep": true,
+  "ko": "유한요소해석"
+ },
+ "flow": {
+  "keep": false
+ },
+ "flux": {
+  "keep": true,
+  "ko": "플럭스"
+ },
+ "fracture": {
+  "keep": true,
+  "ko": "파괴"
+ },
+ "graphene": {
+  "keep": true,
+  "ko": "그래핀",
+  "desc": "탄소 원자가 한 층으로 배열된 얇고 열전도가 좋은 소재다."
+ },
+ "heat dissipation": {
+  "keep": true,
+  "ko": "방열"
+ },
+ "heat sink": {
+  "keep": true,
+  "ko": "히트싱크",
+  "desc": "부품에서 나오는 열을 흡수해 공기 중으로 내보내는 방열 구조물이다."
+ },
+ "heat transfer": {
+  "keep": true,
+  "ko": "열전달"
+ },
+ "igbt": {
+  "keep": true,
+  "ko": "IGBT",
+  "desc": "큰 전류를 제어하는 전력용 스위치 소자로 인버터 등에 쓰인다."
+ },
+ "led": {
+  "keep": true,
+  "ko": "LED"
+ },
+ "lifetime": {
+  "keep": true,
+  "ko": "수명"
+ },
+ "line": {
+  "keep": false
+ },
+ "liquid cooling": {
+  "keep": true,
+  "ko": "액체 냉각"
+ },
+ "mechanical properties": {
+  "keep": true,
+  "ko": "기계적 물성"
+ },
+ "mechanism": {
+  "keep": false
+ },
+ "methods": {
+  "keep": false
+ },
+ "microchannel": {
+  "keep": true,
+  "ko": "마이크로채널"
+ },
+ "microwave": {
+  "keep": true,
+  "ko": "마이크로파"
+ },
+ "mold": {
+  "keep": true,
+  "ko": "몰드",
+  "desc": "칩을 보호하려고 수지 등으로 감싸 굳히는 공정 또는 그때 쓰는 틀이다."
+ },
+ "molded": {
+  "keep": true,
+  "ko": "몰딩"
+ },
+ "molding": {
+  "keep": true,
+  "ko": "몰딩"
+ },
+ "molding compound": {
+  "keep": true,
+  "ko": "몰딩 컴파운드(EMC)"
+ },
+ "nanoparticles": {
+  "keep": true,
+  "ko": "나노입자"
+ },
+ "network": {
+  "keep": false
+ },
+ "out panel": {
+  "keep": true,
+  "ko": "팬아웃 패널 레벨"
+ },
+ "pad": {
+  "keep": true,
+  "ko": "패드"
+ },
+ "parameters": {
+  "keep": false
+ },
+ "particles": {
+  "keep": true,
+  "ko": "입자"
+ },
+ "pcb": {
+  "keep": true,
+  "ko": "PCB(인쇄회로기판)"
+ },
+ "power electronics": {
+  "keep": true,
+  "ko": "전력전자"
+ },
+ "power module": {
+  "keep": true,
+  "ko": "파워 모듈",
+  "desc": "여러 전력 반도체를 하나로 묶어 전력 변환을 맡게 한 부품이다."
+ },
+ "rate": {
+  "keep": false
+ },
+ "reaction": {
+  "keep": false
+ },
+ "research": {
+  "keep": false
+ },
+ "shear": {
+  "keep": true,
+  "ko": "전단"
+ },
+ "sided": {
+  "keep": false
+ },
+ "sink": {
+  "keep": true,
+  "ko": "히트싱크",
+  "desc": "열을 받아 밖으로 내보내는 방열 부품을 뜻한다."
+ },
+ "smart": {
+  "keep": false
+ },
+ "soldering": {
+  "keep": true,
+  "ko": "솔더링",
+  "desc": "녹는점이 낮은 금속을 녹여 부품을 전기적으로 이어 붙이는 공정이다."
+ },
+ "speed": {
+  "keep": false
+ },
+ "stacked": {
+  "keep": true,
+  "ko": "적층"
+ },
+ "strength": {
+  "keep": true,
+  "ko": "강도"
+ },
+ "subjected": {
+  "keep": false
+ },
+ "test": {
+  "keep": false
+ },
+ "thermal cycling": {
+  "keep": true,
+  "ko": "열 사이클링"
+ },
+ "transfer": {
+  "keep": false
+ },
+ "transient": {
+  "keep": false
+ },
+ "transmission": {
+  "keep": false
+ },
+ "vibration": {
+  "keep": true,
+  "ko": "진동"
+ },
+ "void": {
+  "keep": true,
+  "ko": "보이드"
+ },
+ "wafer bonding": {
+  "keep": true,
+  "ko": "웨이퍼 본딩"
+ },
+ "water": {
+  "keep": false
+ },
+ "wire bonding": {
+  "keep": true,
+  "ko": "와이어 본딩",
+  "desc": "칩과 기판을 가는 금속선으로 이어 전기가 통하게 하는 연결 공정이다."
+ },
+ "wireless": {
+  "keep": true,
+  "ko": "무선"
+ },
+ "sic power": {
+  "keep": true,
+  "ko": "SiC 전력소자",
+  "desc": "탄화규소 소재를 활용한 전력 변환용 반도체 기술이다."
+ },
+ "sic mosfets": {
+  "keep": true,
+  "ko": "SiC MOSFET",
+  "desc": "탄화규소로 만든 전력용 스위칭 반도체 소자로, 높은 전압과 열에서도 잘 동작한다."
+ },
+ "power device": {
+  "keep": true,
+  "ko": "전력 소자",
+  "desc": "전기 에너지를 변환하고 제어하는 데 쓰이는 큰 전류용 반도체 소자다."
+ },
+ "mosfets": {
+  "keep": true,
+  "ko": "MOSFET",
+  "desc": "전압으로 전류를 켜고 끄는 가장 흔한 트랜지스터 스위치 소자다."
+ },
+ "mechanical coupling": {
+  "keep": true,
+  "ko": "기계적 커플링",
+  "desc": "부품들이 힘이나 변형을 서로 주고받도록 물리적으로 연결된 상태를 말한다."
+ },
+ "validation": {
+  "keep": false
+ },
+ "modified": {
+  "keep": false
+ },
+ "capacitor": {
+  "keep": true,
+  "ko": "커패시터",
+  "desc": "전기를 잠시 모았다가 내보내 전원을 안정시키는 부품이다."
+ },
+ "verification": {
+  "keep": false
+ },
+ "wet": {
+  "keep": false
+ },
+ "electro": {
+  "keep": false
+ },
+ "thermal mechanical": {
+  "keep": true,
+  "ko": "열-기계",
+  "desc": "열과 기계적 힘이 함께 패키지에 미치는 영향을 다루는 분야다."
+ },
+ "filling": {
+  "keep": false
+ },
+ "framework": {
+  "keep": false
+ },
+ "molecular": {
+  "keep": false
+ },
+ "thermal resistance": {
+  "keep": true,
+  "ko": "열저항",
+  "desc": "열이 전달될 때 얼마나 막히는지를 나타내는 열 흐름의 저항이다."
+ },
+ "vehicle": {
+  "keep": true,
+  "ko": "차량(전장)",
+  "desc": "전기차 등 자동차에 들어가는 반도체와 그 패키징 분야를 뜻한다."
+ },
+ "mitigation": {
+  "keep": false
+ },
+ "aln": {
+  "keep": true,
+  "ko": "질화알루미늄(AlN)",
+  "desc": "열전도가 좋고 전기가 통하지 않아 기판에 쓰이는 질화알루미늄 세라믹이다."
+ },
+ "data center": {
+  "keep": true,
+  "ko": "데이터센터",
+  "desc": "많은 서버를 모아 운영하는 시설로, 전력과 발열 관리가 중요한 곳이다."
+ },
+ "electrochemical": {
+  "keep": true,
+  "ko": "전기화학",
+  "desc": "전기와 화학 반응을 이용해 도금이나 부식 등을 다루는 분야다."
+ },
+ "scalable": {
+  "keep": false
+ },
+ "filled": {
+  "keep": false
+ },
+ "power modules": {
+  "keep": true,
+  "ko": "전력 모듈",
+  "desc": "전력 반도체 여러 개를 하나로 묶어 전력 변환에 쓰는 부품들이다."
+ },
+ "molecular dynamics": {
+  "keep": true,
+  "ko": "분자동역학",
+  "desc": "원자와 분자의 움직임을 컴퓨터로 모의해 재료 성질을 예측하는 방법이다."
+ },
+ "dynamics": {
+  "keep": false
+ },
+ "humidity": {
+  "keep": true,
+  "ko": "습도",
+  "desc": "공기 중 수분 정도로, 패키지의 부식과 박리에 영향을 준다."
+ },
+ "mold electronics": {
+  "keep": true,
+  "ko": "인몰드 일렉트로닉스"
+ },
+ "experimental validation": {
+  "keep": false
+ },
+ "epoxy composites": {
+  "keep": true,
+  "ko": "에폭시 복합재"
+ },
+ "liner": {
+  "keep": true,
+  "ko": "라이너"
+ },
+ "pillars": {
+  "keep": true,
+  "ko": "필러"
+ },
+ "interconnect structures": {
+  "keep": true,
+  "ko": "인터커넥트 구조"
+ },
+ "silicon bridge": {
+  "keep": true,
+  "ko": "실리콘 브리지"
+ },
+ "synergistic": {
+  "keep": false
+ },
+ "screen printed": {
+  "keep": true,
+  "ko": "스크린 인쇄"
+ },
+ "acoustic": {
+  "keep": true,
+  "ko": "음향"
+ },
+ "filters": {
+  "keep": true,
+  "ko": "필터"
+ },
+ "bridge die": {
+  "keep": true,
+  "ko": "브리지 다이"
+ },
+ "construction": {
+  "keep": false
+ },
+ "mapping": {
+  "keep": false
+ },
+ "link": {
+  "keep": false
+ },
+ "quantitative": {
+  "keep": false
+ },
+ "reduced order": {
+  "keep": true,
+  "ko": "차수 축소 모델"
+ },
+ "thick film": {
+  "keep": true,
+  "ko": "후막"
+ },
+ "screen": {
+  "keep": false
+ },
+ "conductive paste": {
+  "keep": true,
+  "ko": "전도성 페이스트"
+ },
+ "printed electronics": {
+  "keep": true,
+  "ko": "인쇄전자"
+ },
+ "resonator": {
+  "keep": true,
+  "ko": "공진기"
+ },
+ "rfid": {
+  "keep": true,
+  "ko": "RFID"
+ },
+ "silica": {
+  "keep": true,
+  "ko": "실리카"
+ },
+ "encapsulant": {
+  "keep": true,
+  "ko": "봉지재"
+ },
+ "strategy": {
+  "keep": false
+ },
+ "engineering": {
+  "keep": false
+ },
+ "fill": {
+  "keep": false
+ },
+ "holes": {
+  "keep": false
+ },
+ "loads": {
+  "keep": false
+ },
+ "exploring": {
+  "keep": false
+ },
+ "gas": {
+  "keep": false
+ },
+ "automatic": {
+  "keep": false
+ },
+ "addition": {
+  "keep": false
+ },
+ "differential": {
+  "keep": false
+ },
+ "mesh": {
+  "keep": false
+ },
+ "coatings": {
+  "keep": true,
+  "ko": "코팅"
+ },
+ "ultraviolet": {
+  "keep": true,
+  "ko": "자외선"
+ },
+ "microscopy": {
+  "keep": true,
+  "ko": "현미경 분석"
+ },
+ "pop": {
+  "keep": true,
+  "ko": "PoP(패키지 온 패키지)"
+ },
+ "performances": {
+  "keep": false
+ },
+ "material properties": {
+  "keep": true,
+  "ko": "재료 물성"
+ },
+ "order": {
+  "keep": false
+ },
+ "solder alloys": {
+  "keep": true,
+  "ko": "솔더 합금"
+ },
+ "double side": {
+  "keep": true,
+  "ko": "양면 구조"
+ },
+ "half": {
+  "keep": false
+ },
+ "compensation": {
+  "keep": false
+ },
+ "bottom": {
+  "keep": false
+ },
+ "die attachment": {
+  "keep": true,
+  "ko": "다이 접합"
+ },
+ "non destructive": {
+  "keep": true,
+  "ko": "비파괴 검사"
+ },
+ "sac solder": {
+  "keep": true,
+  "ko": "SAC 솔더"
+ },
+ "anisotropic conductive": {
+  "keep": true,
+  "ko": "이방성 전도"
+ },
+ "internal": {
+  "keep": false
+ },
+ "additively printed": {
+  "keep": true,
+  "ko": "적층 인쇄"
+ },
+ "hot": {
+  "keep": false
+ },
+ "ltcc": {
+  "keep": true,
+  "ko": "LTCC(저온 동시소성 세라믹)"
+ },
+ "optical engine": {
+  "keep": true,
+  "ko": "광 엔진"
+ },
+ "destructive": {
+  "keep": false
+ },
+ "fidelity": {
+  "keep": false
+ },
+ "bias": {
+  "keep": false
+ },
+ "features": {
+  "keep": false
+ },
+ "chip interconnects": {
+  "keep": true,
+  "ko": "칩 인터커넥트"
+ },
+ "trace": {
+  "keep": false
+ },
+ "front end": {
+  "keep": true,
+  "ko": "프런트엔드"
+ },
+ "inertial": {
+  "keep": true,
+  "ko": "관성 센서"
+ },
+ "intelligent": {
+  "keep": false
+ },
+ "removal": {
+  "keep": false
+ },
+ "ceramic substrate": {
+  "keep": true,
+  "ko": "세라믹 기판"
+ },
+ "virtual": {
+  "keep": false
+ },
+ "switch": {
+  "keep": true,
+  "ko": "스위치"
+ },
+ "modification": {
+  "keep": false
+ },
+ "body": {
+  "keep": false
+ },
+ "microelectronic": {
+  "keep": true,
+  "ko": "마이크로전자"
+ },
+ "electro thermo": {
+  "keep": true,
+  "ko": "전기-열 연성"
+ },
+ "electrode": {
+  "keep": true,
+  "ko": "전극"
+ },
+ "investigations": {
+  "keep": false
+ },
+ "elastic": {
+  "keep": true,
+  "ko": "탄성"
+ },
+ "bulk": {
+  "keep": false
+ },
+ "diodes": {
+  "keep": true,
+  "ko": "다이오드"
+ },
+ "sustained": {
+  "keep": false
+ },
+ "junction temperature": {
+  "keep": true,
+  "ko": "접합 온도"
+ },
+ "temperature storage": {
+  "keep": true,
+  "ko": "고온 저장"
+ },
+ "physics informed": {
+  "keep": true,
+  "ko": "물리 기반 학습"
+ },
+ "gate": {
+  "keep": true,
+  "ko": "게이트"
+ },
+ "c2w hybrid": {
+  "keep": true,
+  "ko": "칩-투-웨이퍼 하이브리드 본딩"
+ },
+ "nonlinear": {
+  "keep": true,
+  "ko": "비선형"
+ },
+ "incorporating": {
+  "keep": false
+ },
+ "electrochemical migration": {
+  "keep": true,
+  "ko": "전기화학적 이동(ECM)"
+ },
+ "conformal": {
+  "keep": true,
+  "ko": "컨포멀(등각) 코팅"
+ },
+ "attachment": {
+  "keep": true,
+  "ko": "부착(다이 어태치)"
+ },
+ "placement": {
+  "keep": true,
+  "ko": "배치(실장 위치)"
+ },
+ "opto": {
+  "keep": true,
+  "ko": "광전자(옵토)"
+ },
+ "resonant": {
+  "keep": true,
+  "ko": "공진"
+ },
+ "integrating": {
+  "keep": false
+ },
+ "curing": {
+  "keep": true,
+  "ko": "경화"
+ },
+ "interactions": {
+  "keep": false
+ },
+ "inductance": {
+  "keep": true,
+  "ko": "인덕턴스"
+ },
+ "deposited": {
+  "keep": false
+ },
+ "interface material": {
+  "keep": true,
+  "ko": "계면 소재"
+ },
+ "viscoelastic": {
+  "keep": true,
+  "ko": "점탄성"
+ },
+ "temperature sintering": {
+  "keep": true,
+  "ko": "저온 소결"
+ },
+ "formed": {
+  "keep": false
+ },
+ "computer": {
+  "keep": false
+ },
+ "informed": {
+  "keep": false
+ },
+ "topography": {
+  "keep": true,
+  "ko": "표면 형상(토포그래피)"
+ },
+ "step": {
+  "keep": false
+ },
+ "objective": {
+  "keep": false
+ },
+ "infrared": {
+  "keep": true,
+  "ko": "적외선"
+ },
+ "c2w": {
+  "keep": true,
+  "ko": "칩-투-웨이퍼(C2W)"
+ },
+ "bismuth": {
+  "keep": true,
+  "ko": "비스무트"
+ },
+ "coefficient": {
+  "keep": false
+ },
+ "guided": {
+  "keep": false
+ },
+ "gradient": {
+  "keep": true,
+  "ko": "구배(그래디언트)"
+ },
+ "caused": {
+  "keep": false
+ },
+ "random": {
+  "keep": false
+ },
+ "surfaces": {
+  "keep": false
+ },
+ "organic substrate": {
+  "keep": true,
+  "ko": "유기 기판"
+ },
+ "finish": {
+  "keep": true,
+  "ko": "표면 처리(피니시)"
+ },
+ "porous": {
+  "keep": true,
+  "ko": "다공성"
+ },
+ "overlay": {
+  "keep": true,
+  "ko": "오버레이(정렬)"
+ },
+ "electrodeposition": {
+  "keep": true,
+  "ko": "전착(전기증착)"
+ },
+ "inspection": {
+  "keep": true,
+  "ko": "검사"
+ },
+ "migration": {
+  "keep": true,
+  "ko": "이동(마이그레이션)"
+ },
+ "printed circuit": {
+  "keep": true,
+  "ko": "인쇄회로"
+ },
+ "roughness": {
+  "keep": true,
+  "ko": "표면 거칠기"
+ },
+ "fpga": {
+  "keep": true,
+  "ko": "FPGA"
+ },
+ "raman spectroscopy": {
+  "keep": true,
+  "ko": "라만 분광법"
+ },
+ "resistivity": {
+  "keep": true,
+  "ko": "비저항"
+ },
+ "connected": {
+  "keep": false
+ },
+ "foil": {
+  "keep": true,
+  "ko": "금속 포일"
+ },
+ "transistors": {
+  "keep": true,
+  "ko": "트랜지스터"
+ },
+ "diffusion": {
+  "keep": true,
+  "ko": "확산"
+ },
+ "pads": {
+  "keep": true,
+  "ko": "패드"
+ },
+ "microchannels": {
+  "keep": true,
+  "ko": "마이크로채널"
+ },
+ "raman": {
+  "keep": true,
+  "ko": "라만"
+ },
+ "controlled": {
+  "keep": false
+ },
+ "shaped": {
+  "keep": false
+ },
+ "fillers": {
+  "keep": true,
+  "ko": "필러(충전재)"
+ },
+ "creep": {
+  "keep": true,
+  "ko": "크리프"
+ },
+ "thermal shock": {
+  "keep": true,
+  "ko": "열충격"
+ },
+ "package package": {
+  "keep": false
+ },
+ "package substrate": {
+  "keep": true,
+  "ko": "패키지 기판"
+ },
+ "boards": {
+  "keep": true,
+  "ko": "보드(기판)"
+ },
+ "after": {
+  "keep": false
+ },
+ "key": {
+  "keep": false
+ },
+ "factors": {
+  "keep": false
+ },
+ "power electronic": {
+  "keep": true,
+  "ko": "전력전자"
+ },
+ "temperature dependent": {
+  "keep": true,
+  "ko": "온도 의존성"
+ },
+ "nand": {
+  "keep": true,
+  "ko": "낸드"
+ },
+ "misalignment": {
+  "keep": true,
+  "ko": "정렬 오차"
+ },
+ "surface activation": {
+  "keep": true,
+  "ko": "표면 활성화"
+ },
+ "shrinkage": {
+  "keep": true,
+  "ko": "수축"
+ },
+ "power devices": {
+  "keep": true,
+  "ko": "전력 소자"
+ },
+ "dielectric materials": {
+  "keep": true,
+  "ko": "유전 소재"
+ },
+ "quantum computing": {
+  "keep": true,
+  "ko": "양자 컴퓨팅"
+ },
+ "thermal budget": {
+  "keep": true,
+  "ko": "열 예산"
+ },
+ "bending": {
+  "keep": true,
+  "ko": "굽힘"
+ },
+ "polarized": {
+  "keep": true,
+  "ko": "편광"
+ },
+ "insulation": {
+  "keep": true,
+  "ko": "절연"
+ },
+ "lab": {
+  "keep": false
+ },
+ "nano copper": {
+  "keep": true,
+  "ko": "나노 구리"
+ },
+ "micro pin": {
+  "keep": true,
+  "ko": "마이크로 핀"
+ },
+ "coupler": {
+  "keep": true,
+  "ko": "커플러"
+ },
+ "microstructures": {
+  "keep": true,
+  "ko": "미세구조"
+ },
+ "boron": {
+  "keep": true,
+  "ko": "붕소"
+ },
+ "direct write": {
+  "keep": true,
+  "ko": "직접 묘화(직접 프린팅)"
+ },
+ "membrane": {
+  "keep": true,
+  "ko": "멤브레인"
+ },
+ "controller": {
+  "keep": true,
+  "ko": "컨트롤러"
+ },
+ "sidewall": {
+  "keep": true,
+  "ko": "측벽"
+ },
+ "variable": {
+  "keep": false
+ },
+ "antennas": {
+  "keep": true,
+  "ko": "안테나"
+ },
+ "solder paste": {
+  "keep": true,
+  "ko": "솔더 페이스트"
+ },
+ "fcbga package": {
+  "keep": true,
+  "ko": "FCBGA 패키지"
+ },
+ "aluminum wire": {
+  "keep": true,
+  "ko": "알루미늄 와이어"
+ },
+ "neural networks": {
+  "keep": true,
+  "ko": "신경망"
+ },
+ "reduced": {
+  "keep": false
+ },
+ "electro thermal": {
+  "keep": true,
+  "ko": "전기-열 연성"
+ },
+ "soc": {
+  "keep": true,
+  "ko": "시스템온칩(SoC)"
+ },
+ "solid state": {
+  "keep": true,
+  "ko": "솔리드 스테이트(고체 소자)"
+ },
+ "predicting": {
+  "keep": false
+ },
+ "communication": {
+  "keep": false
+ },
+ "nanoparticle": {
+  "keep": true,
+  "ko": "나노입자"
+ },
+ "planar": {
+  "keep": false
+ },
+ "hermetic": {
+  "keep": true,
+  "ko": "기밀 봉지"
+ },
+ "formic": {
+  "keep": true,
+  "ko": "포름산"
+ },
+ "formic acid": {
+  "keep": true,
+  "ko": "포름산"
+ },
+ "adhesives": {
+  "keep": true,
+  "ko": "접착제"
+ },
+ "thickness": {
+  "keep": false
+ },
+ "wiring": {
+  "keep": true,
+  "ko": "배선"
+ },
+ "multiple": {
+  "keep": false
+ },
+ "data centers": {
+  "keep": true,
+  "ko": "데이터센터"
+ },
+ "pin fin": {
+  "keep": true,
+  "ko": "핀 휜(방열 핀)"
+ },
+ "synthesis": {
+  "keep": false
+ },
+ "encapsulated": {
+  "keep": true,
+  "ko": "봉지(캡슐화)"
+ },
+ "budget": {
+  "keep": false
+ },
+ "digital twin": {
+  "keep": true,
+  "ko": "디지털 트윈"
+ },
+ "power distribution": {
+  "keep": true,
+  "ko": "전력 분배"
+ },
+ "surface roughness": {
+  "keep": true,
+  "ko": "표면 거칠기"
+ },
+ "exploration": {
+  "keep": false
+ },
+ "sequential": {
+  "keep": false
+ },
+ "hierarchical": {
+  "keep": false
+ },
+ "insertion": {
+  "keep": false
+ },
+ "spreader": {
+  "keep": true,
+  "ko": "스프레더(열 확산판)"
+ },
+ "heat spreader": {
+  "keep": true,
+  "ko": "히트 스프레더"
+ },
+ "principles": {
+  "keep": false
+ },
+ "data driven": {
+  "keep": false
+ },
+ "parylene": {
+  "keep": true,
+  "ko": "파릴렌"
+ },
+ "crystal plasticity": {
+  "keep": true,
+  "ko": "결정 소성"
+ },
+ "servers": {
+  "keep": true,
+  "ko": "서버"
+ },
+ "titanium": {
+  "keep": true,
+  "ko": "티타늄"
+ },
+ "rejection": {
+  "keep": false
+ },
+ "microsystems": {
+  "keep": true,
+  "ko": "마이크로시스템"
+ },
+ "plate liquid": {
+  "keep": true,
+  "ko": "액냉 플레이트"
+ },
+ "functional": {
+  "keep": false
+ },
+ "cross": {
+  "keep": false
+ },
+ "atomic": {
+  "keep": false
+ },
+ "test vehicle": {
+  "keep": true,
+  "ko": "테스트 비히클"
+ },
+ "centers": {
+  "keep": false
+ },
+ "sustainable": {
+  "keep": false
+ },
+ "computational": {
+  "keep": false
+ },
+ "silicon carbide": {
+  "keep": true,
+  "ko": "탄화규소(SiC)"
+ },
+ "carbide": {
+  "keep": true,
+  "ko": "탄화물"
+ },
+ "one": {
+  "keep": false
+ },
+ "load": {
+  "keep": false
+ },
+ "connector": {
+  "keep": true,
+  "ko": "커넥터"
+ },
+ "nanoscale": {
+  "keep": true,
+  "ko": "나노스케일"
+ },
+ "feasibility": {
+  "keep": false
+ },
+ "element simulation": {
+  "keep": true,
+  "ko": "유한요소 시뮬레이션"
+ },
+ "processor": {
+  "keep": true,
+  "ko": "프로세서"
+ },
+ "feature": {
+  "keep": false
+ },
+ "singulation": {
+  "keep": true,
+  "ko": "개편화(싱귤레이션)"
+ },
+ "discrete": {
+  "keep": false
+ },
+ "bayesian": {
+  "keep": true,
+  "ko": "베이지안"
+ },
+ "transient thermal": {
+  "keep": true,
+  "ko": "과도 열 해석"
+ },
+ "lithium": {
+  "keep": true,
+  "ko": "리튬"
+ },
+ "nitride": {
+  "keep": true,
+  "ko": "질화물"
+ },
+ "compatible": {
+  "keep": false
+ },
+ "local": {
+  "keep": false
+ },
+ "heterogenous integration": {
+  "keep": true,
+  "ko": "이종 집적"
+ },
+ "jet printing": {
+  "keep": true,
+  "ko": "젯 프린팅"
+ },
+ "optoelectronic": {
+  "keep": true,
+  "ko": "광전자"
+ },
+ "peak": {
+  "keep": false
+ },
+ "powered": {
+  "keep": false
+ },
+ "soluble": {
+  "keep": false
+ },
+ "chambers": {
+  "keep": false
+ },
+ "vapor chambers": {
+  "keep": true,
+  "ko": "증기 챔버"
+ },
+ "fin": {
+  "keep": true,
+  "ko": "방열 핀"
+ },
+ "aerosol jet": {
+  "keep": true,
+  "ko": "에어로졸 젯"
+ },
+ "dot": {
+  "keep": false
+ },
+ "identification": {
+  "keep": false
+ },
+ "integrated package": {
+  "keep": true,
+  "ko": "집적 패키지"
+ },
+ "algan": {
+  "keep": true,
+  "ko": "알루미늄 갈륨 질화물(AlGaN)"
+ },
+ "write": {
+  "keep": false
+ },
+ "forming": {
+  "keep": false
+ },
+ "continuous": {
+  "keep": false
+ },
+ "error": {
+  "keep": false
+ },
+ "silver paste": {
+  "keep": true,
+  "ko": "은 페이스트"
+ },
+ "grinding": {
+  "keep": true,
+  "ko": "연삭"
+ },
+ "molding compounds": {
+  "keep": true,
+  "ko": "몰딩 컴파운드"
+ },
+ "point": {
+  "keep": false
+ },
+ "extraction": {
+  "keep": false
+ },
+ "qfn": {
+  "keep": true,
+  "ko": "QFN 패키지"
+ },
+ "acid": {
+  "keep": false
+ },
+ "source": {
+  "keep": false
+ },
+ "preparation": {
+  "keep": false
+ },
+ "silicon interposer": {
+  "keep": true,
+  "ko": "실리콘 인터포저"
+ },
+ "w2w": {
+  "keep": true,
+  "ko": "웨이퍼 대 웨이퍼 접합(W2W)"
+ },
+ "vapor chamber": {
+  "keep": true,
+  "ko": "증기 챔버"
+ },
+ "hotspot": {
+  "keep": true,
+  "ko": "핫스팟"
+ },
+ "copper sintering": {
+  "keep": true,
+  "ko": "구리 소결"
+ },
+ "structured": {
+  "keep": false
+ },
+ "micro led": {
+  "keep": true,
+  "ko": "마이크로 LED"
+ },
+ "behaviors": {
+  "keep": false
+ },
+ "reinforcement learning": {
+  "keep": true,
+  "ko": "강화학습"
+ },
+ "constitutive": {
+  "keep": true,
+  "ko": "구성 방정식(구성 모델)"
+ },
+ "uniform": {
+  "keep": false
+ },
+ "femtosecond laser": {
+  "keep": true,
+  "ko": "펨토초 레이저"
+ },
+ "embedded bridge": {
+  "keep": true,
+  "ko": "임베디드 브리지"
+ },
+ "silicone": {
+  "keep": true,
+  "ko": "실리콘(고분자)"
+ },
+ "silicon photonics": {
+  "keep": true,
+  "ko": "실리콘 포토닉스"
+ },
+ "fanout": {
+  "keep": true,
+  "ko": "팬아웃 패키징"
+ },
+ "pressureless": {
+  "keep": true,
+  "ko": "무가압 (소결)"
+ },
+ "hardware": {
+  "keep": false
+ },
+ "crosstalk": {
+  "keep": true,
+  "ko": "크로스토크(신호 간섭)"
+ },
+ "fabricated": {
+  "keep": false
+ },
+ "top": {
+  "keep": false
+ },
+ "tuning": {
+  "keep": false
+ },
+ "driven": {
+  "keep": false
+ },
+ "immersion cooling": {
+  "keep": true,
+  "ko": "액침 냉각"
+ },
+ "pillar": {
+  "keep": true,
+  "ko": "필러(기둥 범프)"
+ },
+ "improving": {
+  "keep": false
+ },
+ "debonding": {
+  "keep": true,
+  "ko": "디본딩"
+ },
+ "parameter": {
+  "keep": false
+ },
+ "equivalent": {
+  "keep": false
+ },
+ "neural network": {
+  "keep": true,
+  "ko": "신경망"
+ },
+ "accurate": {
+  "keep": false
+ },
+ "rapid": {
+  "keep": false
+ },
+ "simulations": {
+  "keep": false
+ },
+ "temporary bonding": {
+  "keep": true,
+  "ko": "임시 본딩"
+ },
+ "resist": {
+  "keep": true,
+  "ko": "레지스트(감광제)"
+ },
+ "integrated circuits": {
+  "keep": true,
+  "ko": "집적회로"
+ },
+ "sintered silver": {
+  "keep": true,
+  "ko": "소결 은"
+ },
+ "server": {
+  "keep": true,
+  "ko": "서버"
+ },
+ "imc": {
+  "keep": true,
+  "ko": "금속간화합물(IMC)"
+ },
+ "dimensional": {
+  "keep": false
+ },
+ "topology": {
+  "keep": true,
+  "ko": "토폴로지"
+ },
+ "broadband": {
+  "keep": true,
+  "ko": "광대역"
+ },
+ "studies": {
+  "keep": false
+ },
+ "emc": {
+  "keep": true,
+  "ko": "에폭시 몰딩 컴파운드(EMC)"
+ },
+ "mathrm": {
+  "keep": false
+ },
+ "melting": {
+  "keep": true,
+  "ko": "용융"
+ },
+ "supply": {
+  "keep": false
+ },
+ "propagation": {
+  "keep": false
+ },
+ "welding": {
+  "keep": true,
+  "ko": "용접"
+ },
+ "analytical": {
+  "keep": false
+ },
+ "dielectric properties": {
+  "keep": true,
+  "ko": "유전 특성"
+ },
+ "shear strength": {
+  "keep": true,
+  "ko": "전단 강도"
+ },
+ "ceramics": {
+  "keep": true,
+  "ko": "세라믹"
+ },
+ "parallel": {
+  "keep": false
+ },
+ "designs": {
+  "keep": false
+ },
+ "micro bump": {
+  "keep": true,
+  "ko": "마이크로 범프"
+ },
+ "kinetics": {
+  "keep": true,
+  "ko": "반응 동역학"
+ },
+ "resistant": {
+  "keep": false
+ },
+ "electrodes": {
+  "keep": true,
+  "ko": "전극"
+ },
+ "copper pillar": {
+  "keep": true,
+  "ko": "구리 필러"
+ },
+ "resonators": {
+  "keep": true,
+  "ko": "공진기"
+ },
+ "scanning": {
+  "keep": false
+ },
+ "microfluidic": {
+  "keep": true,
+  "ko": "마이크로유체"
+ },
+ "nanoindentation": {
+  "keep": true,
+  "ko": "나노압입"
+ },
+ "eutectic": {
+  "keep": true,
+  "ko": "공정(공융)"
+ },
+ "waveguides": {
+  "keep": true,
+  "ko": "도파관"
+ },
+ "activated": {
+  "keep": false
+ },
+ "volume": {
+  "keep": false
+ },
+ "change material": {
+  "keep": true,
+  "ko": "상변화 물질"
+ },
+ "implementation": {
+  "keep": false
+ },
+ "power supply": {
+  "keep": true,
+  "ko": "전원 공급 장치"
+ },
+ "foam": {
+  "keep": true,
+  "ko": "폼(발포체)"
+ },
+ "channels": {
+  "keep": false
+ },
+ "directional": {
+  "keep": false
+ },
+ "shape": {
+  "keep": false
+ },
+ "wafer scale": {
+  "keep": true,
+  "ko": "웨이퍼 스케일"
+ },
+ "equipment": {
+  "keep": false
+ },
+ "lens": {
+  "keep": true,
+  "ko": "렌즈"
+ },
+ "artificial neural": {
+  "keep": true,
+  "ko": "인공 신경망"
+ },
+ "sensitivity": {
+  "keep": false
+ },
+ "display": {
+  "keep": true,
+  "ko": "디스플레이"
+ },
+ "asymmetric": {
+  "keep": false
+ },
+ "alternative": {
+  "keep": false
+ },
+ "domain": {
+  "keep": false
+ },
+ "alumina": {
+  "keep": true,
+  "ko": "알루미나"
+ },
+ "epoxy resin": {
+  "keep": true,
+  "ko": "에폭시 수지"
+ },
+ "contents": {
+  "keep": false
+ },
+ "chip chip": {
+  "keep": true,
+  "ko": "칩 대 칩"
+ },
+ "atmosphere": {
+  "keep": false
+ },
+ "micro bumps": {
+  "keep": true,
+  "ko": "마이크로 범프"
+ },
+ "shift": {
+  "keep": false
+ },
+ "approaches": {
+  "keep": false
+ },
+ "noise": {
+  "keep": true,
+  "ko": "노이즈(잡음)"
+ },
+ "aligned": {
+  "keep": false
+ },
+ "soft": {
+  "keep": false
+ },
+ "laminate": {
+  "keep": true,
+  "ko": "라미네이트"
+ },
+ "cycle": {
+  "keep": false
+ },
+ "wires": {
+  "keep": true,
+  "ko": "와이어"
+ },
+ "nickel": {
+  "keep": true,
+  "ko": "니켈"
+ },
+ "force": {
+  "keep": false
+ },
+ "piezoelectric": {
+  "keep": true,
+  "ko": "압전"
+ },
+ "igbt module": {
+  "keep": true,
+  "ko": "IGBT 모듈"
+ },
+ "nanotwinned copper": {
+  "keep": true,
+  "ko": "나노쌍정 구리"
+ },
+ "characteristic": {
+  "keep": false
+ },
+ "drive": {
+  "keep": false
+ },
+ "die shift": {
+  "keep": true,
+  "ko": "다이 시프트"
+ },
+ "within": {
+  "keep": false
+ },
+ "chip packages": {
+  "keep": true,
+  "ko": "칩 패키지"
+ },
+ "electronic systems": {
+  "keep": false
+ },
+ "super": {
+  "keep": false
+ },
+ "path": {
+  "keep": false
+ },
+ "capability": {
+  "keep": false
+ },
+ "matrix": {
+  "keep": false
+ },
+ "flex": {
+  "keep": true,
+  "ko": "플렉스(연성 기판)"
+ },
+ "experiment": {
+  "keep": false
+ },
+ "form factor": {
+  "keep": true,
+  "ko": "폼 팩터"
+ },
+ "wire bond": {
+  "keep": true,
+  "ko": "와이어 본드"
+ },
+ "al2o3": {
+  "keep": true,
+  "ko": "산화알루미늄(Al2O3)"
+ },
+ "filler": {
+  "keep": true,
+  "ko": "필러(충전재)"
+ },
+ "random vibration": {
+  "keep": true,
+  "ko": "랜덤 진동"
+ },
+ "rates": {
+  "keep": false
+ },
+ "press": {
+  "keep": false
+ },
+ "icept": {
+  "keep": false
+ },
+ "submicron": {
+  "keep": true,
+  "ko": "서브마이크론"
+ },
+ "microstrip": {
+  "keep": true,
+  "ko": "마이크로스트립"
+ },
+ "porosity": {
+  "keep": true,
+  "ko": "기공률(다공성)"
+ },
+ "conductive film": {
+  "keep": true,
+  "ko": "전도성 필름"
+ },
+ "behaviour": {
+  "keep": false
+ },
+ "bga package": {
+  "keep": true,
+  "ko": "BGA 패키지"
+ },
+ "electronic devices": {
+  "keep": false
+ },
+ "constant": {
+  "keep": false
+ },
+ "flexible printed": {
+  "keep": true,
+  "ko": "유연 인쇄(플렉서블 인쇄)"
+ },
+ "conductive adhesive": {
+  "keep": true,
+  "ko": "전도성 접착제"
+ },
+ "pack": {
+  "keep": false
+ },
+ "pulse": {
+  "keep": false
+ },
+ "sized": {
+  "keep": false
+ },
+ "bare": {
+  "keep": false
+ },
+ "surface mount": {
+  "keep": true,
+  "ko": "표면 실장"
+ },
+ "mount": {
+  "keep": false
+ },
+ "microstructure evolution": {
+  "keep": true,
+  "ko": "미세조직 변화"
+ },
+ "spreaders": {
+  "keep": true,
+  "ko": "열 확산판(스프레더)"
+ },
+ "medical": {
+  "keep": false
+ },
+ "mini": {
+  "keep": false
+ },
+ "bonding material": {
+  "keep": true,
+  "ko": "접합 재료"
+ },
+ "interference shielding": {
+  "keep": true,
+  "ko": "전자파 간섭 차폐"
+ },
+ "automotive radar": {
+  "keep": true,
+  "ko": "차량용 레이더"
+ },
+ "prolonged": {
+  "keep": false
+ },
+ "micro solder": {
+  "keep": true,
+  "ko": "마이크로 솔더"
+ },
+ "silver joints": {
+  "keep": true,
+  "ko": "은 접합부"
+ },
+ "silver nanowire": {
+  "keep": true,
+  "ko": "은 나노와이어"
+ },
+ "electroless plating": {
+  "keep": true,
+  "ko": "무전해 도금"
+ },
+ "supercapacitors": {
+  "keep": true,
+  "ko": "슈퍼커패시터"
+ },
+ "microscale": {
+  "keep": false
+ },
+ "esd": {
+  "keep": true,
+  "ko": "정전기 방전(ESD)"
+ },
+ "chip stacking": {
+  "keep": true,
+  "ko": "칩 적층"
+ },
+ "impedance": {
+  "keep": true,
+  "ko": "임피던스"
+ },
+ "damascene": {
+  "keep": true,
+  "ko": "다마신 공정"
+ },
+ "thermally": {
+  "keep": false
+ },
+ "additively manufactured": {
+  "keep": true,
+  "ko": "적층 제조 부품"
+ },
+ "solutions": {
+  "keep": false
+ },
+ "wafers": {
+  "keep": true,
+  "ko": "웨이퍼"
+ },
+ "heterogeneously": {
+  "keep": false
+ },
+ "heterogeneously integrated": {
+  "keep": true,
+  "ko": "이종 집적"
+ },
+ "semi": {
+  "keep": false
+ },
+ "glass substrate": {
+  "keep": true,
+  "ko": "유리 기판",
+  "desc": "칩을 얹어 연결하는 받침판을 유리로 만들어 표면이 매끄럽고 휘어짐이 적도록 한 기판이다."
+ },
+ "mosfet": {
+  "keep": true,
+  "ko": "모스펫(MOSFET)",
+  "desc": "전압으로 전류의 흐름을 켜고 끄는 작은 전자 스위치 역할을 하는 반도체 소자이다."
+ },
+ "precision": {
+  "keep": false
+ },
+ "beyond": {
+  "keep": false
+ },
+ "glass substrates": {
+  "keep": true,
+  "ko": "유리 기판"
+ },
+ "power chips": {
+  "keep": true,
+  "ko": "전력 반도체 칩"
+ },
+ "types": {
+  "keep": false
+ },
+ "limits": {
+  "keep": false
+ },
+ "thz": {
+  "keep": true,
+  "ko": "테라헤르츠(THz)"
+ },
+ "fusion": {
+  "keep": false
+ },
+ "thermodynamic": {
+  "keep": false
+ },
+ "chip integration": {
+  "keep": true,
+  "ko": "칩 집적"
+ },
+ "sic mosfet": {
+  "keep": true,
+  "ko": "SiC 모스펫"
+ },
+ "heatsink": {
+  "keep": true,
+  "ko": "히트싱크(방열판)"
+ },
+ "solder alloy": {
+  "keep": true,
+  "ko": "솔더 합금"
+ },
+ "miniaturization": {
+  "keep": true,
+  "ko": "소형화"
+ },
+ "capping": {
+  "keep": true,
+  "ko": "캐핑(보호층)"
+ },
+ "near": {
+  "keep": false
+ },
+ "sio": {
+  "keep": true,
+  "ko": "산화규소(SiO)"
+ },
+ "cleaning": {
+  "keep": true,
+  "ko": "세정"
+ },
+ "device packaging": {
+  "keep": true,
+  "ko": "소자 패키징"
+ },
+ "accuracy": {
+  "keep": false
+ },
+ "compounds": {
+  "keep": false
+ },
+ "plastic": {
+  "keep": true,
+  "ko": "플라스틱"
+ },
+ "boundary": {
+  "keep": false
+ },
+ "packaging platform": {
+  "keep": true,
+  "ko": "패키징 플랫폼"
+ },
+ "pitch rdl": {
+  "keep": true,
+  "ko": "미세 피치 재배선층(RDL)"
+ },
+ "configurations": {
+  "keep": false
+ },
+ "quantum dot": {
+  "keep": true,
+  "ko": "양자점"
+ },
+ "cooling system": {
+  "keep": true,
+  "ko": "냉각 시스템"
+ },
+ "microsystem": {
+  "keep": true,
+  "ko": "마이크로시스템"
+ },
+ "gold": {
+  "keep": true,
+  "ko": "금"
+ },
+ "system integration": {
+  "keep": true,
+  "ko": "시스템 집적"
+ },
+ "sub thz": {
+  "keep": true,
+  "ko": "서브 테라헤르츠"
+ },
+ "chemical": {
+  "keep": false
+ },
+ "adaptive": {
+  "keep": false
+ },
+ "phosphor": {
+  "keep": true,
+  "ko": "형광체"
+ },
+ "circuit board": {
+  "keep": true,
+  "ko": "회로 기판(PCB)"
+ },
+ "chiplet integration": {
+  "keep": true,
+  "ko": "칩렛 집적"
+ },
+ "seed layer": {
+  "keep": true,
+  "ko": "시드층"
+ },
+ "immersion": {
+  "keep": true,
+  "ko": "액침 냉각"
+ },
+ "etching": {
+  "keep": true,
+  "ko": "식각"
+ },
+ "automated": {
+  "keep": false
+ },
+ "combined": {
+  "keep": false
+ },
+ "out packaging": {
+  "keep": true,
+  "ko": "팬아웃 패키징"
+ },
+ "thermoelectric": {
+  "keep": true,
+  "ko": "열전"
+ },
+ "plated": {
+  "keep": true,
+  "ko": "도금"
+ },
+ "cooler": {
+  "keep": true,
+  "ko": "쿨러(냉각기)"
+ },
+ "ball grid": {
+  "keep": true,
+  "ko": "볼 그리드 어레이"
+ },
+ "layout": {
+  "keep": false
+ },
+ "chip packaging": {
+  "keep": true,
+  "ko": "칩 패키징"
+ },
+ "diode": {
+  "keep": true,
+  "ko": "다이오드"
+ },
+ "level thermal": {
+  "keep": false
+ },
+ "orientation": {
+  "keep": false
+ },
+ "emitting": {
+  "keep": false
+ },
+ "review": {
+  "keep": false
+ },
+ "layered": {
+  "keep": false
+ },
+ "hemt": {
+  "keep": true,
+  "ko": "고전자이동도 트랜지스터(HEMT)"
+ },
+ "light emitting": {
+  "keep": true,
+  "ko": "발광"
+ },
+ "emitting diodes": {
+  "keep": true,
+  "ko": "발광 다이오드"
+ },
+ "gan hemt": {
+  "keep": true,
+  "ko": "GaN HEMT"
+ },
+ "harsh": {
+  "keep": false
+ },
+ "imcs": {
+  "keep": true,
+  "ko": "금속간화합물(IMC)"
+ },
+ "solid liquid": {
+  "keep": true,
+  "ko": "고-액 상호확산"
+ },
+ "growth behavior": {
+  "keep": false
+ },
+ "composite solder": {
+  "keep": true,
+  "ko": "복합 솔더"
+ }
+}
